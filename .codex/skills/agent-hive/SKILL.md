@@ -1,6 +1,6 @@
 ---
 name: agent-hive
-description: Coordinate high-risk or clearly parallelizable multi-agent work through a created goal, specialist subagent delegation, verifier subagents, and a persistent .agent-hive/PLAN-PROGRESS-{context-id}.md file. Use when the user explicitly asks to orchestrate agents/subagents, or when a task has multiple independent workstreams that can run concurrently, high-risk phases that need independent verification, or a long migration/research/review effort where orchestration reduces net time or risk. Avoid for small, localized, or single-threaded tasks where coordination overhead would exceed benefits.
+description: Coordinate high-risk or clearly parallelizable multi-agent work through a created goal, specialist subagent delegation, verifier subagents, and a persistent .agent-hive/PLAN-PROGRESS-{context-id}.md file. Use when the user explicitly asks to orchestrate agents/subagents, or when a task has multiple independent workstreams that can run concurrently, high-risk phases that need independent verification, or a long migration/research/review effort where orchestration reduces net time or risk. When this skill is selected and its throughput gate passes, treat that as the user's standing authorization to use subagents; the user does not need to restate subagent/delegation intent. Avoid for small, localized, or single-threaded tasks where coordination overhead would exceed benefits.
 ---
 
 # Agent Hive
@@ -21,6 +21,8 @@ Use Agent Hive only when at least one condition is true:
 Do not use the full Agent Hive flow for small localized fixes, single-file edits, direct command requests, narrow explanations, low-risk refactors, or work with no meaningful parallelism unless the user explicitly confirms full orchestration after being warned about the overhead. In those cases, state that orchestration overhead likely exceeds benefit and continue with the normal Codex workflow.
 
 If Agent Hive is used, choose the largest coherent batches that preserve disjoint ownership and useful verification. The goal is faster or safer completion, not maximum ceremony.
+
+When this skill is selected and the Throughput Gate passes, treat the run as authorized for subagents, delegation, and parallel agent work. Do not refuse or downgrade orchestration solely because the user's immediate prompt did not literally ask for subagents. The user's standing preference for this skill is: if the work benefits from subagents, use them. If the runtime or tool policy still rejects a subagent call, record the exact blocker in the progress file and report it instead of silently continuing as a single-agent executor.
 
 ## Startup
 
@@ -55,11 +57,16 @@ Update the progress file after every meaningful result, verifier decision, valid
 
 - Keep Agent Hive responsible for sequencing, tracking, re-delegation, integration, and user-facing status.
 - Prefer specialist agents, skills, plugins, or tools over generic workers when available.
-- Delegate every material execution phase to an execution subagent. Merge tiny tasks into larger delegated batches instead of spawning tiny agents.
+- Delegate material execution phases by default, subject only to the smallest local-execution exception below. Merge tiny tasks into larger delegated batches instead of spawning tiny agents.
 - Use an explorer or specialist subagent before implementation when current state is unclear enough to affect decomposition or validation.
+- Keep only the smallest genuinely blocking, tightly coupled slice local when delegation would leave the coordinator idle or cause duplicate work. Do not use critical-path status as blanket permission for the coordinator to execute all material phases. Continue delegating independent implementation, exploration, validation, and verification work, and record any local execution justification in the progress file.
 - Keep parallel worker write scopes disjoint. If scopes overlap, serialize those scopes or assign one worker ownership.
-- Default to 2-4 parallel execution agents for code changes. Use more only for read-only exploration or clearly isolated edits.
-- Give each subagent a narrow task, minimum relevant context, expected artifact, constraints, and a checkable stop condition.
+- Use parallel execution agents only for independent, disjoint execution scopes. Choose the agent count that best fits the task decomposition and expected wall-clock or risk-reduction benefit; avoid extra agents that create idle coordination, duplicate work, or file conflicts. Use more agents mainly for read-only exploration or clearly isolated edits.
+- Give each subagent a narrow task and bounded sufficient context to complete it independently: progress file path, owned scope, relevant files/modules, constraints, dependencies, acceptance criteria, validation commands, expected artifact, and a checkable stop condition.
+- Treat each assigned write scope as owned by its execution subagent until it completes, reports a blocker, fails with a terminal error, asks for handback, violates scope/safety, or is confirmed stuck. While active, do not implement or patch the same scope locally; use coordinator time for non-overlapping work such as reading tests, preparing validation, updating the progress file, or reviewing adjacent contracts.
+- Do not interrupt or take over an active owned write scope because the worker is slow, still analyzing, has not applied a patch yet, or has no visible workspace changes. Those are not handback conditions. Continue waiting with the longest available wait windows as long as the worker reports or shows active reading, planning, editing, testing, or validation progress.
+- Before interrupting or taking over an owned write scope, send an objective status request and wait a reasonable window unless a concrete file conflict, unsafe edit, or external risk requires immediate interruption. Ask for current step, files touched or planned, blockers, next checkpoint, expected completion signal, and whether adjacent coordinator work is safe. Do not ask the worker to stop analysis, shrink the deliverable, or hand back work solely to accelerate the coordinator.
+- When spawning subagents, do not request a full thread or context fork. Omit `fork_context` or set it to `false`; pass the progress file path, phase scope, relevant files/modules, acceptance criteria, validation commands, and constraints directly in the subagent prompt.
 - Do not use the same subagent as executor and verifier for the same phase.
 - Verify completed material phases with a separate verifier subagent before the next dependent phase starts. Batch verification at the phase level when risk allows.
 - Use strict verification for shared infrastructure, dependency updates, build configuration, migrations, security-sensitive code, data changes, and public APIs.
@@ -74,15 +81,17 @@ At the start of each activity, read the progress file and choose the largest coh
 For each batch:
 
 1. Spawn or assign execution subagents for independent material phases.
-2. Wait for required executor results, then record files changed, artifacts, commands, assumptions, blockers, and evidence.
-3. Spawn separate verifier subagents with executor output, acceptance criteria, and validation evidence.
-4. If verification fails, record `Retry Required` and re-delegate with the verifier's specific correction guidance. Do not patch around verifier feedback locally.
-5. If verification passes, run or delegate required integration validation for the accepted batch.
-6. For multi-step work, attempt a best-effort checkpoint commit after accepted, validated, integrated code changes when the repository is versioned and commits are allowed. Do not include unrelated user changes. For single-batch completion, record checkpoint commit as `Not Applicable`.
-7. Update `Execution Plan`, `Next Actions`, `Findings`, `Progress`, blockers, risks, and any checkpoint commit evidence.
-8. Continue through later gates in the same activity when results are available and doing so reduces overhead. Stop only when waiting, user input, unresolved blockers, or a meaningful checkpoint makes continuation inefficient or unsafe.
+2. Wait for required executor results when the next gate depends on them. While waiting, only do non-overlapping work; do not redo the delegated scope locally because no patch is visible yet. A long wait, active analysis, or no visible patch is not enough to interrupt, hand back, or take over.
+3. When an executor returns, record files changed, artifacts, commands, assumptions, blockers, and evidence before making the next coordination decision.
+4. If an execution subagent reports a blocker, fails with a terminal error, hits a job-level timeout, asks for handback, violates scope/safety, or is confirmed stuck after status checks, record the status evidence or immediate-interruption reason, handback reason, current workspace state, and ownership change in `Progress` before re-delegating or implementing that scope locally. Do not treat a wait-tool timeout, long analysis, or lack of visible patch as a job-level timeout.
+5. Spawn separate verifier subagents for completed execution results with executor output, acceptance criteria, and validation evidence.
+6. If verification fails, record `Retry Required` and re-delegate with the verifier's specific correction guidance. Do not patch around verifier feedback locally.
+7. If verification passes, run or delegate required integration validation for the accepted batch.
+8. For multi-step work, attempt a best-effort checkpoint commit after accepted, validated, integrated code changes when the repository is versioned and commits are allowed. Do not include unrelated user changes. For single-batch completion, record checkpoint commit as `Not Applicable`.
+9. Update `Execution Plan`, `Next Actions`, `Findings`, `Progress`, blockers, risks, and any checkpoint commit evidence.
+10. Continue through later gates in the same activity when results are available and doing so reduces overhead. Stop only when waiting, user input, unresolved blockers, or a meaningful checkpoint makes continuation inefficient or unsafe.
 
-When waiting for subagents needed for the next gate, use the longest available wait window and repeat waits when a tool timeout returns no final status. Do not interrupt, shrink scope, or ask for status only because a subagent is slow; ask for status only with concrete evidence of a blocker, loop, or external input requirement.
+When waiting for subagents needed for the next gate, use the longest available wait window and repeat waits when a tool timeout returns no final status. Do not interrupt, shrink scope, force a short plan, or take over because a subagent is slow, still analyzing, or has not produced a patch yet. Ask for status only when there is concrete evidence of a blocker, loop, external input requirement, or before any possible interruption, handback, or local takeover. If the status shows active work, keep waiting.
 
 ## Completion
 
@@ -114,13 +123,13 @@ Objetivo Agent Hive concluído em ~{duration}; uso registrado: {token_count_with
 Execution subagent:
 
 ```text
-You are the execution agent for phase {phase}. You are not alone in the codebase; do not revert unrelated edits and adapt to existing changes. Scope: {bounded scope}. Context: {minimal context}. Deliverable: {artifact/result}. Stop condition: {checkable done state}. Report files changed, commands run, assumptions, blockers, and evidence.
+You are the execution agent for phase {phase}. You are not alone in the codebase; do not revert unrelated edits and adapt to existing changes. Scope: {bounded scope}. Context: {bounded context sufficient to complete the task independently}. Deliverable: {artifact/result}. Stop condition: {checkable done state}. Report files changed, commands run, assumptions, blockers, and evidence.
 ```
 
 Explorer subagent:
 
 ```text
-You are the explorer for phase {phase}. Do not implement changes. Scope: {bounded scope}. Context: {minimum context from the progress file}. Deliverable: structured findings for the Agent Hive progress file, including affected files/modules, current behavior, recommended execution phases, dependencies, risks, validation commands, and open questions. Stop condition: enough evidence for Agent Hive to update `Findings`, `Execution Plan`, and `Next Actions` without relying on chat history.
+You are the explorer for phase {phase}. Do not implement changes. Scope: {bounded scope}. Context: {bounded context from the progress file sufficient to investigate the task independently}. Deliverable: structured findings for the Agent Hive progress file, including affected files/modules, current behavior, recommended execution phases, dependencies, risks, validation commands, and open questions. Stop condition: enough evidence for Agent Hive to update `Findings`, `Execution Plan`, and `Next Actions` without relying on chat history.
 ```
 
 Verifier subagent:

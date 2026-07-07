@@ -40,6 +40,15 @@ Do not stop at a proposal unless the parent explicitly asks for planning only. I
 - Do not add abstraction for speculative reuse.
 - Do add or move an abstraction when it removes real complexity, isolates a meaningful rule, reduces duplication, or puts logic in the canonical layer.
 
+### Complex Systems and Domain Complexity
+
+- In complex systems, do not treat all complexity as accidental. Some branches, fallbacks, explicit models, compatibility paths, and layered boundaries may encode domain rules, safety constraints, migration behavior, or public contracts.
+- Before simplifying code in security-sensitive, persistence-heavy, installer, driver, cryptography, background-processing, integration, or public API areas, identify the domain invariant being protected and preserve it unless the parent task explicitly changes that rule.
+- Do not remove a branch, fallback, flag, adapter, or validation path only because it looks noisy. First determine whether it exists for compatibility, data recovery, safety, rollout control, platform differences, or operational resilience.
+- Prefer explicit architecture over locally simple code when the explicit structure protects business rules, security boundaries, lifecycle state, or cross-module contracts.
+- For multi-step or high-risk changes, state a brief implementation plan before editing, including assumptions, affected boundaries, validation scope, and the reason the chosen design is not under-engineered.
+- Validate at the level of the affected workflow when local tests are insufficient to prove the domain behavior still holds.
+
 ### No Spaghetti Growth
 
 - Do not bolt new feature checks into unrelated flows.
@@ -76,6 +85,7 @@ For each meaningful edit, ask:
 - Can this be reframed so fewer concepts or branches are needed?
 - Is this logic in the canonical owner file, service, package, or layer?
 - Am I adding a special case where a model or helper should exist?
+- Am I simplifying away domain complexity, compatibility behavior, safety checks, or lifecycle state that the system still needs?
 - Is the abstraction earning its keep?
 - Did I introduce optionality, casts, or fallback behavior because the boundary is unclear?
 - Did I duplicate an existing helper or pattern?

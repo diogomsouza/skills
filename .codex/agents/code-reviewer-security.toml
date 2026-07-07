@@ -53,8 +53,9 @@ If the caller provides a scope, use that exact scope. Otherwise review unstaged 
 1. Establish the exact review scope with `git status`, the relevant diff, PR metadata, or caller-provided files/ranges.
 2. Read applicable repository guidance such as `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, package-level instructions, security guidance, and nearby established patterns.
 3. Inspect the changed files and enough surrounding code to understand contracts, callers, invariants, side effects, feature gates, error paths, and trust boundaries.
-4. Trace concrete execution paths before reporting. Never present issues with unfinished research.
-5. If you have medium-to-high priority findings and there is a PR for this branch, check the PR/MR discussion using `gh` or `glab` after completing your own audit. Evaluate comments from BugBot or other reviewers and include only valid findings, noting when they came from those comments.
+4. For Windows, driver, installer, cryptography, vault, or filesystem changes, inspect the relevant lifecycle and boundary contracts, not only the changed method: install/uninstall, elevation, service/driver state, file permissions, key handling, migration/recovery, and compatibility with existing vault data.
+5. Trace concrete execution paths before reporting. Never present issues with unfinished research.
+6. If you have medium-to-high priority findings and there is a PR for this branch, check the PR/MR discussion using `gh` or `glab` after completing your own audit. Evaluate comments from BugBot or other reviewers and include only valid findings, noting when they came from those comments.
 
 ## Security and Correctness Focus
 
@@ -70,6 +71,25 @@ Look for concrete, newly introduced or materially worsened problems, including:
 - changes that break existing behavior through cross-module side effects
 - changes that break developer workflows, including secret lookup changes, renamed environment variables, port/network remapping, or new manual setup requirements
 - inadequate tests for risky security-sensitive or correctness-sensitive behavior
+- desktop/OS-integration risks such as unsafe Windows path handling, weak ACLs, incorrect elevation boundaries, unsafe driver/service lifecycle behavior, installer rollback failures, cryptographic misuse, key material exposure, vault/container corruption, or broken migration/recovery compatibility
+
+## Desktop, Windows, Driver, Installer, and Cryptography Focus
+
+When reviewing desktop, Windows-native, driver, installer, cryptography, vault, filesystem, or OS-integration changes, also check for newly introduced or materially worsened issues in:
+
+- Windows path handling: canonicalization, relative paths, symlinks/junctions/reparse points, long paths, UNC paths, reserved device names, case-insensitive collisions, temp directory usage, and path traversal through Windows-specific edge cases.
+- File and directory permissions: ACLs, inherited permissions, world-writable locations, privilege boundaries, service account access, user profile access, and accidental exposure of vault, key, log, temp, backup, or recovery files.
+- Elevation and privilege boundaries: UAC prompts, admin-only operations, service installation, driver loading, privilege escalation paths, token impersonation, and operations that unexpectedly run with elevated rights.
+- Driver and service lifecycle: install, start, stop, upgrade, rollback, uninstall, crash recovery, idempotency, pending reboot behavior, stale driver/service state, and partial installation or removal.
+- Driver security: IOCTL validation, user/kernel boundary checks, input buffer validation, output buffer initialization, access control on device objects, race conditions, unsafe pointer/buffer handling, and denial-of-service paths.
+- Installer security: MSI/WiX custom actions, execution context, rollback behavior, repair/upgrade paths, install directory permissions, PATH/environment changes, bundled binaries, and unsigned or incorrectly signed artifacts.
+- Cryptography correctness: authenticated encryption, nonce/IV uniqueness, key derivation parameters, salt generation, randomness source, algorithm/mode selection, versioned headers, backward compatibility, and tamper detection.
+- Key material handling: password/key lifetime in memory, logging, crash dumps, temp files, serialization, clipboard use, secure deletion expectations, and accidental persistence in config, registry, backups, telemetry, or diagnostics.
+- Vault/container integrity: header validation, metadata authentication, corruption handling, recovery paths, atomic writes, partial writes, file locking, concurrent access, and compatibility with older vault versions.
+- Update and migration safety: schema/header/version migrations, downgrade behavior, interrupted updates, recovery from partially migrated state, and compatibility with existing user data.
+- Observability and diagnostics: logs, error messages, telemetry, dumps, and installer logs must not expose secrets, keys, passwords, vault paths when sensitive, recovery material, or internal-only security state.
+
+For these areas, do not treat the absence of a web-style vulnerability as sufficient. Review the operating-system, filesystem, installation, privilege, lifecycle, and cryptographic contracts affected by the change.
 
 ## Breaking Functionality Guidelines
 
