@@ -1,124 +1,49 @@
-# I/O, Serialization & General Patterns
+# I/O and Serialization Review
 
-### Use HttpCompletionOption.ResponseHeadersRead for Streaming
-🟡 **DO** use `ResponseHeadersRead` when downloading large responses | .NET Core 3.0+
+Separate CPU, allocation, buffering, network, storage, and remote-service latency. Optimize the dominant cost instead of assuming an API-shaped pattern is the bottleneck.
 
-❌
-```csharp
-var response = await client.GetAsync(uri);
-```
-✅
-```csharp
-using var response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
-using var stream = await response.Content.ReadAsStreamAsync();
-await stream.CopyToAsync(destinationStream);
-```
+## HTTP
 
-**Impact: ~2x faster for large downloads (10MB+), dramatically reduced memory usage.**
+### Client and handler lifetime
 
-### Use Async FileStream Operations
-🟡 **DO** use `FileStream` with `useAsync: true` for scalable file I/O | .NET 6+
+Repeated HttpClient or handler creation can prevent connection reuse or exhaust sockets. Confirm whether IHttpClientFactory, dependency injection, a shared handler, or another owner manages lifetime before reporting.
 
-❌
-```csharp
-using var fs = new FileStream(path, FileMode.Open);
-```
-✅
-```csharp
-await using var fs = new FileStream(path, FileMode.Open, FileAccess.Read,
-    FileShare.Read, bufferSize: 4096, useAsync: true);
+### Streaming responses
 
-byte[] buffer = new byte[1024];
-while (await fs.ReadAsync(buffer) != 0) { /* process */ }
-```
+ResponseHeadersRead and stream processing can reduce buffering for large responses. Confirm response size, consumer behavior, disposal, cancellation, error handling, and whether the full payload is ultimately required in memory.
 
-**Impact: Up to 3x faster async reads; allocation reduced from megabytes to hundreds of bytes.**
+### Concurrency and retries
 
-### Use Memory\<byte\> Overloads for Stream.ReadAsync/WriteAsync
-🟡 **DO** use `Memory<byte>`-based stream overloads instead of `byte[]` overloads | .NET 5+
+Check connection limits, backpressure, retry amplification, timeouts, cancellation, and remote-service quotas. Do not improve local throughput by overwhelming a dependency.
 
-❌
-```csharp
-await stream.ReadAsync(buffer, 0, buffer.Length);
-await stream.WriteAsync(buffer, 0, buffer.Length);
-```
-✅
-```csharp
-await stream.ReadAsync(buffer.AsMemory());
-await stream.WriteAsync(buffer.AsMemory());
-```
+## File and stream I/O
 
-**Impact: Eliminates ~72 KB allocation per 1,000 read/write pairs on NetworkStream.**
+Async I/O helps scalable concurrent workloads but is not automatically faster for one operation. Confirm concurrency, file sizes, platform, buffering, and whether APIs are genuinely asynchronous.
 
-### Use Span-Based TryFormat for Number Formatting
-🟡 **DO** use `TryFormat` to format numbers into `Span<char>` buffers | .NET Core 2.1+
+Memory-based Stream overloads can reduce adapter allocations on supported targets. Report them only in a recurring measured path.
 
-❌
-```csharp
-string formatted = value.ToString();
-destination.Write(formatted);
-```
-✅
-```csharp
-Span<char> buffer = stackalloc char[20];
-if (value.TryFormat(buffer, out int charsWritten))
-    destination.Write(buffer[..charsWritten]);
-```
+Avoid tiny reads and writes when batching or larger buffers produce a demonstrated benefit. Do not increase buffers without considering memory concurrency and pooling ownership.
 
-**Impact: Int32.ToString() ~2x faster in .NET Core 2.1, Int32 parsing ~5x faster in .NET Core 3.0.**
+## JSON and serialization
 
-### Use static readonly for Runtime Devirtualization
-🟡 **DO** store implementations in `static readonly` fields for JIT devirtualization | .NET Core 3.0+
+### Options lifetime
 
-❌
-```csharp
-private static Base s_impl = new DerivedImpl();
-s_impl.Process();
-```
-✅
-```csharp
-private static readonly Base s_impl = new DerivedImpl();
-s_impl.Process();
+Repeated JsonSerializerOptions construction can lose metadata caches. Confirm construction frequency and whether shared options remain immutable after first use.
 
-private static readonly bool s_feature =
-    Environment.GetEnvironmentVariable("Feature") == "1";
-```
+### Source generation
 
-**Impact: Virtual call eliminated entirely — can be inlined to zero overhead. Dead code elimination in tier 1.**
+System.Text.Json source generation can help Native AOT, trimming, startup, and high-throughput serialization. It adds generated metadata and maintenance cost. Recommend it when deployment constraints or measurements justify it.
 
-### Avoid Explicit Static Constructors — Use Field Initializers
-🟡 **AVOID** explicit `static` constructors when field initializers suffice | .NET Core 3.0+
+### Payload and object shape
 
-❌
-```csharp
-class Foo
-{
-    static readonly int s_value;
-    static Foo() { s_value = ComputeValue(); }
-}
-```
-✅
-```csharp
-class Foo
-{
-    static readonly int s_value = ComputeValue();
-}
-```
+Inspect payload size, materialization, encoding, naming policies, converters, reference handling, and intermediate buffers. Preserve wire compatibility.
 
-**Impact: Enables better JIT optimization and reduces potential lock overhead on static method access.**
+## Formatting and encoding
 
-## Detection
+TryFormat, span overloads, and UTF-8 APIs can reduce temporary objects when data is written directly to a compatible destination. Avoid manual buffer management for cold or low-volume paths.
 
-Scan recipes for I/O and serialization anti-patterns. Run these and report exact counts.
+## Candidate searches
 
-```bash
-# new HttpClient() (socket exhaustion risk)
-grep -rn --include='*.cs' 'new HttpClient(' --exclude-dir=bin --exclude-dir=obj . | wc -l
+    rg -n --glob '*.cs' --glob '!**/bin/**' --glob '!**/obj/**' 'new HttpClient\(|IHttpClientFactory|ResponseHeadersRead|new FileStream\(|ReadAsync\(|WriteAsync\(|new JsonSerializerOptions|JsonSerializer\.|Encoding\.' .
 
-# new JsonSerializerOptions() not cached (592x slower in .NET 6)
-grep -rn --include='*.cs' 'new JsonSerializerOptions' --exclude-dir=bin --exclude-dir=obj . | grep -v 'static\|readonly' | wc -l
-```
-
-### Patterns Requiring Manual Review
-
-- **`JsonSerializer.Serialize/Deserialize` without source-gen context**: Can't determine from grep if a context parameter is passed
+Trace ownership, payload sizes, concurrency, and target framework before reporting.

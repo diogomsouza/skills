@@ -1,196 +1,133 @@
 ---
 name: analyzing-dotnet-performance
-description: >-
-  Scans .NET code for ~50 performance anti-patterns across async, memory,
-  strings, collections, LINQ, regex, serialization, and I/O with tiered
-  severity classification. Use when analyzing .NET code for optimization
-  opportunities, reviewing hot paths, or auditing allocation-heavy patterns.
-license: MIT
+description: Analyze C# and .NET performance using workload context, profiling or benchmark evidence, and targeted static inspection. Use for slow or allocation-heavy code, hot paths, async or thread-pool issues, regex, collections, serialization, I/O bottlenecks, or a requested .NET performance audit. Do not use for speculative optimization of cold code or database-only problems.
 ---
 
-# .NET Performance Patterns
+# Analyze .NET Performance
 
-Scan C#/.NET code for performance anti-patterns and produce prioritized findings with concrete fixes. Patterns sourced from the official .NET performance blog series, distilled to customer-actionable guidance.
+Find performance problems that matter in the actual workload. Treat static searches as candidate discovery, not proof. Never invent speedups, allocation savings, or severity from pattern counts alone.
 
-## When to Use
+## Operating Boundary
 
-- Reviewing C#/.NET code for performance optimization opportunities
-- Auditing hot paths for allocation-heavy or inefficient patterns
-- Systematic scan of a codebase for known anti-patterns before release
-- Second-opinion analysis after manual performance review
-
-## When Not to Use
-
-- **Algorithmic complexity analysis** — this skill targets API usage patterns, not algorithm design
-- **Code not on a hot path** with no performance requirements — avoid premature optimization
-
-## Inputs
-
-| Input | Required | Description |
-|-------|----------|-------------|
-| Source code | Yes | C# files, code blocks, or repository paths to scan |
-| Hot-path context | Recommended | Which code paths are performance-critical |
-| Target framework | Recommended | .NET version (some patterns require .NET 8+) |
-| Scan depth | Optional | `critical-only`, `standard` (default), or `comprehensive` |
+- If the user asks only for analysis, do not edit files.
+- If the user asks for fixes, change only high-confidence bottlenecks and validate correctness and performance.
+- Read applicable AGENTS.md, project files, target frameworks, build configuration, benchmarks, tests, and existing diagnostics.
+- Preserve behavior, thread safety, compatibility, cancellation, disposal, and security.
+- Do not recommend framework upgrades, unsafe code, pooling, spans, ValueTask, source generation, or low-level collection APIs unless the workload and tradeoffs justify them.
 
 ## Workflow
 
-### Step 1: Load Reference Files (if available)
+### 1. Establish the performance question
 
-Try to load `references/critical-patterns.md` and the topic-specific reference files listed below. These contain detailed detection recipes and grep commands.
+Identify:
 
-**If reference files are not found** (e.g., in a sandboxed environment or when the skill is embedded as instructions only), **skip file loading and proceed directly to Step 3** using the scan recipes listed inline below. Do not spend time searching the filesystem for reference files — if they aren't at the expected relative path, they aren't available.
+- the operation or user-visible symptom;
+- the hot path, expected call frequency, concurrency, and data sizes;
+- the target framework, runtime, platform, and deployment mode;
+- the success metric, such as latency, throughput, allocations, startup, memory, or I/O; and
+- existing traces, counters, benchmarks, logs, dumps, or production evidence.
 
-### Step 2: Detect Code Signals and Select Topic Recipes
+Inspect the repository before asking for facts that can be discovered locally. If workload context or measurements are missing, continue with a static candidate audit but label it clearly as unmeasured.
 
-Scan the code for signals that indicate which pattern categories to check. If reference files were loaded, use their `## Detection` sections. Otherwise, use the inline recipes in Step 3.
+### 2. Prefer evidence already available
 
-| Signal in Code | Topic |
-|----------------|-------|
-| `async`, `await`, `Task`, `ValueTask` | Async patterns |
-| `Span<`, `Memory<`, `stackalloc`, `ArrayPool`, `string.Substring`, `.Replace(`, `.ToLower()`, `+=` in loops, `params` | Memory & strings |
-| `Regex`, `[GeneratedRegex]`, `Regex.Match`, `RegexOptions.Compiled` | Regex patterns |
-| `Dictionary<`, `List<`, `.ToList()`, `.Where(`, `.Select(`, LINQ methods, `static readonly Dictionary<` | Collections & LINQ |
-| `JsonSerializer`, `HttpClient`, `Stream`, `FileStream` | I/O & serialization |
+Use existing BenchmarkDotNet projects, profiler captures, dotnet-counters output, dotnet-trace data, application metrics, load tests, or reproducible timings before proposing changes.
 
-Always check structural patterns (unsealed classes) regardless of signals.
+When measurement is practical and authorized:
 
-**Scan depth controls scope:**
-- `critical-only`: Only critical patterns (deadlocks, >10x regressions)
-- `standard` (default): Critical + detected topic patterns
-- `comprehensive`: All pattern categories
+- measure the smallest representative scenario;
+- use release or production-like configuration;
+- warm up when the runtime or benchmark requires it;
+- compare the same workload and environment before and after; and
+- report variance and measurement limits.
 
-### Step 3: Scan and Report
+Do not install new profilers or benchmark packages unless the user asks or the project already expects them.
 
-**For files under 500 lines, read the entire file first** — you'll spot most patterns faster than running individual grep recipes. Use grep to confirm counts and catch patterns you might miss visually.
+### 3. Inspect the relevant code path
 
-For each relevant pattern category, run the detection recipes below. Report exact counts, not estimates.
+Read complete methods and follow callers, callees, allocation boundaries, async flow, collection sizes, serialization, and I/O behavior. Search narrowly with rg and exclude generated output such as bin and obj.
 
-**Core scan recipes** (run these when reference files aren't available):
-```
-# Strings & memory
-grep -n '\.IndexOf(\"' FILE                    # Missing StringComparison
-grep -n '\.Substring(' FILE                    # Substring allocations
-grep -En '\.(StartsWith|EndsWith|Contains)\s*\(' FILE  # Missing StringComparison
-grep -n '\.ToLower()\|\.ToUpper()' FILE        # Culture-sensitive + allocation
-grep -n '\.Replace(' FILE                      # Chained Replace allocations
-grep -n 'params ' FILE                         # params array allocation
+Example candidate search:
 
-# Collections & LINQ
-grep -n '\.Select\|\.Where\|\.OrderBy\|\.GroupBy' FILE  # LINQ on hot path
-grep -n '\.All\|\.Any' FILE                    # LINQ on string/char
-grep -n 'new Dictionary<\|new List<' FILE      # Per-call allocation
-grep -n 'static readonly Dictionary<' FILE     # FrozenDictionary candidate
+    rg -n --glob '*.cs' --glob '!**/bin/**' --glob '!**/obj/**' '\.Result|\.Wait\(|async void|new Regex\(|new HttpClient\(|new JsonSerializerOptions' .
 
-# Regex
-grep -n 'RegexOptions.Compiled' FILE           # Compiled regex budget
-grep -n 'new Regex(' FILE                      # Per-call regex
-grep -n 'GeneratedRegex' FILE                  # Positive: source-gen regex
+Use an equivalent search tool only when rg is unavailable. A textual hit is never a finding until type, lifetime, frequency, and execution context are confirmed.
 
-# Structural
-grep -n 'public class \|internal class ' FILE  # Unsealed classes
-grep -n 'sealed class' FILE                    # Already sealed
-grep -n ': IEquatable' FILE                    # Positive: struct equality
-```
+### 4. Load only relevant references
 
-**Rules:**
-- Run every relevant recipe for the detected pattern categories
-- **Emit a scan execution checklist** before classifying findings — list each recipe and the hit count
-- A result of **0 hits** is valid and valuable (confirms good practice)
-- If reference files were loaded, also run their `## Detection` recipes
+Always read [critical-patterns.md](references/critical-patterns.md) for stability and pathological-cost candidates.
 
-**Verify-the-Inverse Rule:** For absence patterns, always count both sides and report the ratio (e.g., "N of M classes are sealed"). The ratio determines severity — 0/185 is systematic, 12/15 is a consistency fix.
+Then load only the categories signaled by the code or workload:
 
-### Step 3b: Cross-File Consistency Check
+- Async, Task, ValueTask, locks, or concurrency: [async-patterns.md](references/async-patterns.md)
+- Strings, buffers, spans, formatting, or allocation pressure: [memory-and-strings.md](references/memory-and-strings.md)
+- Collections, dictionaries, LINQ, or repeated enumeration: [collections-and-linq.md](references/collections-and-linq.md)
+- Regex construction, matching, or untrusted patterns: [regex-patterns.md](references/regex-patterns.md)
+- HTTP, files, streams, JSON, or serialization: [io-and-serialization.md](references/io-and-serialization.md)
+- Devirtualization, sealing, structs, or dispatch: [structural-patterns.md](references/structural-patterns.md)
 
-If an optimized pattern is found in one file, check whether sibling files (same directory, same interface, same base class) use the un-optimized equivalent. Flag as 🟡 Moderate with the optimized file as evidence.
+Do not load every reference for a narrow review.
 
-### Step 3c: Compound Allocation Check
+### 5. Confirm each candidate
 
-After running scan recipes, look for these multi-allocation patterns that single-line recipes miss:
+Before reporting, answer:
 
-1. **Branched `.Replace()` chains:** Methods that call `.Replace()` across multiple `if/else` branches — report total allocation count across all branches, not just per-line.
-2. **Cross-method chaining:** When a public method delegates to another method that itself allocates intermediates (e.g., A calls B which does 3 regex replaces, then A calls C), report the total chain cost as one finding.
-3. **Compound `+=` with embedded allocating calls:** Lines like `result += $"...{Foo().ToLower()}"` are 2+ allocations (interpolation + ToLower + concatenation) — flag the compound cost, not just the `.ToLower()`.
-4. **`string.Format` specificity:** Distinguish resource-loaded format strings (not fixable) from compile-time literal format strings (fixable with interpolation). Enumerate the actionable sites.
+1. Does the code execute in the relevant workload?
+2. Is it frequent, concurrent, allocation-heavy, blocking, or operating on large data?
+3. Does the target framework already optimize this case?
+4. Does the proposed alternative preserve semantics and lifecycle?
+5. Is the expected impact measured, supported by direct evidence, or still hypothetical?
+6. Does the change add complexity, pooling obligations, lifetime risk, or version constraints?
 
-### Step 4: Classify and Prioritize Findings
+Reject candidates that are cold, one-time, generated, test-only, already optimized, semantically different, or unsupported by the target framework.
 
-Assign each finding a severity:
+### 6. Prioritize honestly
 
-| Severity | Criteria | Action |
-|----------|----------|--------|
-| 🔴 **Critical** | Deadlocks, crashes, security vulnerabilities, >10x regression | Must fix |
-| 🟡 **Moderate** | 2-10x improvement opportunity, best practice for hot paths | Should fix on hot paths |
-| ℹ️ **Info** | Pattern applies but code may not be on a hot path | Consider if profiling shows impact |
+Classify by evidence and impact:
 
-**Prioritization rules:**
-1. If the user identified hot-path code, elevate all findings in that code to their maximum severity
-2. If hot-path context is unknown, report 🔴 Critical findings unconditionally; report 🟡 Moderate findings with a note: _"Impactful if this code is on a hot path"_
-3. Never suggest micro-optimizations on code that is clearly not performance-sensitive
+- **Critical**: concrete deadlock, starvation, unbounded resource growth, denial-of-service path, or pathological cost with an identifiable trigger.
+- **High**: measured bottleneck or strongly evidenced dominant cost in a confirmed hot path.
+- **Moderate**: confirmed recurring cost with a proportionate, low-risk fix.
+- **Measurement candidate**: plausible optimization that still needs profiling or a benchmark. Keep these separate from findings.
 
-**Scale-based severity escalation:**
-When the same pattern appears across many instances, escalate severity:
-- 1-10 instances of the same anti-pattern → report at the pattern's base severity
-- 11-50 instances → escalate ℹ️ Info patterns to 🟡 Moderate
-- 50+ instances → escalate to 🟡 Moderate with elevated priority; flag as a codebase-wide systematic issue
+Do not escalate because the same syntax appears many times. Scale matters only when those sites participate in the measured workload.
 
-Always report exact counts (from scan recipes), not estimates or agent summaries.
+## Output
 
-### Step 5: Generate Findings
+Write in the user's language.
 
-**Keep findings compact.** Each finding is one short block — not an essay. Group by severity (🔴 → 🟡 → ℹ️), not by file.
+### Scope and evidence
 
-Format per finding:
+- Files and workload reviewed.
+- Target framework and relevant runtime assumptions.
+- Measurements, traces, benchmarks, or static-only limitations.
 
-```
-#### ID. Title (N instances)
-**Impact:** one-line impact statement
-**Files:** file1.cs:L1, file2.cs:L2, ... (list locations, don't build tables)
-**Fix:** one-line description of the change (e.g., "Add `StringComparison.Ordinal` parameter")
-**Caveat:** only if non-obvious (version requirement, correctness risk)
-```
+### Findings
 
-**Rules for compact output:**
-- **No ❌/✅ code blocks** for trivial fixes (adding a keyword, parameter, or type change). A one-line fix description suffices.
-- **Only include code blocks** for non-obvious transformations (e.g., replacing a LINQ chain with a foreach loop, or hoisting a closure).
-- **File locations as inline comma-separated list**, not a table. Use `File.cs:L42` format.
-- **No explanatory prose** beyond the Impact line — the severity icon already conveys urgency.
-- **Merge related findings** that share the same fix (e.g., all `.ToLower()` calls go in one finding, not split by file).
-- **Positive findings** in a bullet list, not a table. One line per pattern: `✅ Pattern — evidence`.
+Group findings by severity. For each finding include:
 
-End with a summary table and disclaimer:
+- **Location:** path and exact line or narrow range.
+- **Evidence:** call path, frequency, measurement, allocation source, blocking behavior, or resource lifetime.
+- **Impact:** metric affected without unsupported numeric claims.
+- **Fix:** smallest behavior-preserving change.
+- **Tradeoff:** complexity, compatibility, pooling, lifetime, or correctness cost.
+- **Validation:** exact benchmark, trace, counter, test, or scenario that proves the change.
 
-```markdown
-| Severity | Count | Top Issue |
-|----------|-------|-----------|
-| 🔴 Critical | N | ... |
-| 🟡 Moderate | N | ... |
-| ℹ️ Info | N | ... |
+### Measurement candidates
 
-> ⚠️ **Disclaimer:** These results are generated by an AI assistant and are non-deterministic. Findings may include false positives, miss real issues, or suggest changes that are incorrect for your specific context. Always verify recommendations with benchmarks and human review before applying changes to production code.
-```
+List unmeasured candidates separately with the evidence needed to promote or reject them. Do not present them as defects.
 
-## Validation
+If no material issue is supported, say so and identify the next measurement that would reduce uncertainty.
 
-Before delivering results, verify:
+## Fix Validation
 
-- [ ] All critical patterns were checked (from reference files or inline recipes)
-- [ ] Topic-specific recipes run only when matching signals detected
-- [ ] Each finding includes a concrete code fix
-- [ ] Scan execution checklist is complete (all recipes run)
-- [ ] Summary table included at end
+When implementing an optimization:
 
-## Common Pitfalls
+1. Run the smallest relevant correctness tests.
+2. Build the affected project in the configuration relevant to the workload.
+3. Re-run the same measurement before and after.
+4. Confirm the result is not measurement noise.
+5. Check allocations, latency, throughput, memory, and concurrency behavior relevant to the change.
+6. Revert or report the optimization as unproven when it does not produce a reliable benefit.
 
-| Pitfall | Correct Approach |
-|---------|-----------------|
-| Flagging every `Dictionary` as needing `FrozenDictionary` | Only flag if the dictionary is never mutated after construction |
-| Suggesting `Span<T>` in async methods | Use `Memory<T>` in async code; `Span<T>` only in sync hot paths |
-| Reporting LINQ outside hot paths | Only flag LINQ in identified hot paths or tight loops; LINQ is acceptable in code that runs infrequently. Since .NET 7, LINQ Min/Max/Sum/Average are vectorized — blanket bans on LINQ are misguided |
-| Suggesting `ConfigureAwait(false)` in app code | Only applicable in library code; not primarily a performance concern |
-| Recommending `ValueTask` everywhere | Only for hot paths with frequent synchronous completion |
-| Flagging `new HttpClient()` in DI services | Check if `IHttpClientFactory` is already in use |
-| Suggesting `[GeneratedRegex]` for dynamic patterns | Only flag when the pattern string is a compile-time literal |
-| Suggesting `CollectionsMarshal.AsSpan` broadly | Only for ultra-hot paths with benchmarked evidence; adds complexity and fragility |
-| Suggesting `unsafe` code for micro-optimizations | Avoid `unsafe` except where absolutely necessary — do not recommend it for micro-optimizations that don't matter. Safe alternatives like `Span<T>`, `stackalloc` in safe context, and `ArrayPool` cover the vast majority of performance needs |
+Never trade correctness or maintainability for an unmeasured micro-optimization.

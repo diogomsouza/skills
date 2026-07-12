@@ -1,112 +1,48 @@
-# Async & Concurrency Patterns
+# Async and Concurrency Review
 
-### Don't Expose Async Wrappers for Sync Methods
-🟡 **AVOID** wrapping sync methods with `Task.Run` in libraries | .NET Core+
+Evaluate async code in the context of scheduler behavior, request concurrency, I/O latency, cancellation, and resource limits. Syntax alone does not establish a performance problem.
 
-❌
-```csharp
-public Task<int> ComputeHashAsync(byte[] data) =>
-    Task.Run(() => ComputeHash(data));
-```
-✅
-```csharp
-public int ComputeHash(byte[] data) { /* CPU-bound work */ }
-// Consumer decides: var hash = await Task.Run(() => lib.ComputeHash(data));
-```
+## Review questions
 
-**Impact: Eliminates unnecessary thread pool queue/dequeue overhead per call.**
+- Is the operation I/O-bound, CPU-bound, or mixed?
+- Does it block a request, UI, scheduler, or limited worker thread?
+- What is the maximum concurrency and input size?
+- Is cancellation propagated through downstream calls?
+- Are tasks observed, awaited, and bounded?
+- Does the change reduce throughput or only change single-call latency?
 
-### Don't Expose Sync Wrappers for Async Methods
-🟡 **AVOID** creating sync wrappers that block on async implementations | .NET Core+
+## Candidate patterns
 
-❌
-```csharp
-public string GetData() => GetDataAsync().Result;
-```
-✅
-```csharp
-public async Task<string> GetDataAsync() { /* ... */ }
-```
+### Sync-over-async
 
-**Impact: Prevents deadlocks and thread pool starvation from hidden sync-over-async blocking.**
+Inspect Result, Wait, and GetAwaiter().GetResult calls. Confirm the receiver type and execution context. Prefer an async call chain when blocking consumes scarce threads or creates a deadlock or reentrancy path.
 
-### Use ValueTask for Hot Paths with Frequent Sync Completion
-🟡 **DO** use `ValueTask<T>` on hot paths where sync completion is common | .NET Core 2.1+
+### Task.Run wrappers
 
-❌
-```csharp
-public async Task<int> ReadAsync(Memory<byte> buffer)
-{
-    if (_bufferedCount > 0)
-        return ReadFromBuffer(buffer.Span);
-    return await ReadAsyncCore(buffer);
-}
-```
-✅
-```csharp
-public ValueTask<int> ReadAsync(Memory<byte> buffer)
-{
-    if (_bufferedCount > 0)
-        return new ValueTask<int>(ReadFromBuffer(buffer.Span));
-    return new ValueTask<int>(ReadAsyncCore(buffer));
-}
-```
+In reusable libraries, do not wrap synchronous I/O or CPU work in Task.Run merely to expose an async API. In application code, Task.Run may be appropriate to keep UI work responsive or isolate CPU work when the scheduler and cancellation behavior are understood.
 
-**Impact: Eliminates Task\<T\> allocation on synchronous completion — the struct stores results inline.**
+### ValueTask
 
-### Use Channels for Producer/Consumer
-🟡 **DO** use `System.Threading.Channels` for producer-consumer patterns | .NET Core 3.0+
+Recommend ValueTask only when profiling shows Task allocation matters and synchronous completion is common. Account for its larger return value, consumption rules, combinator friction, and implementation complexity.
 
-❌
-```csharp
-var queue = new BlockingCollection<WorkItem>();
-var item = queue.Take();
-```
-✅
-```csharp
-var channel = Channel.CreateUnbounded<WorkItem>();
+### Async state machines
 
-// Producer
-await channel.Writer.WriteAsync(item);
+Avoid recommending manual task forwarding solely to remove an async state machine. First check exception timing, using or finally scopes, cancellation, stack traces, and whether a benchmark shows meaningful overhead.
 
-// Consumer
-await foreach (var item in channel.Reader.ReadAllAsync())
-    Process(item);
-```
+### Producer and consumer flows
 
-**Impact: ~25% faster, ~95% fewer GC collections vs manual approaches.**
+Channels, bounded queues, and semaphores can provide backpressure. Recommend them when existing throughput, memory, or external-service pressure demonstrates a need. Do not replace a simple bounded flow with infrastructure for theoretical scalability.
 
-### Avoid False Sharing with Thread-Local State
-🟡 **AVOID** adjacent mutable fields written by different threads | .NET 7+
+### Contention and false sharing
 
-❌
-```csharp
-class SharedCounters
-{
-    public long Counter1;
-    public long Counter2;
-}
-```
-✅
-```csharp
-[StructLayout(LayoutKind.Explicit, Size = 128)]
-struct PaddedCounter
-{
-    [FieldOffset(0)] public long Value;
-}
-```
+Require profiler, counter, or benchmark evidence before suggesting lock restructuring, padding, partitioning, atomics, or thread-local state. These changes are architecture and correctness sensitive.
 
-**Impact: Eliminates cross-core cache invalidation — can improve multi-threaded throughput by 10x+.**
+### Cancellation
 
-## Detection
+Missing CancellationToken propagation can waste work after callers abandon an operation. Treat it as a performance finding only when abandoned work is material in the relevant workload.
 
-Scan recipes for async anti-patterns. Run these and report exact counts.
+## Candidate searches
 
-```bash
-# async void methods (correctness issue — crashes on exception)
-grep -rn --include='*.cs' 'async void' --exclude-dir=bin --exclude-dir=obj . | grep -v 'event' | wc -l
-```
+    rg -n --glob '*.cs' --glob '!**/bin/**' --glob '!**/obj/**' 'async void|Task\.Run|ValueTask|\.Result|\.Wait\(|GetAwaiter\(\)\.GetResult\(\)|Task\.WhenAll|SemaphoreSlim|lock \(' .
 
-### Patterns Requiring Manual Review
-
-- **Sync-over-async** (`.Result`, `.Wait()`): `.Result` matches any property named Result — needs type context to confirm it's `Task.Result`
+For each hit, trace the call path and establish workload evidence before reporting.

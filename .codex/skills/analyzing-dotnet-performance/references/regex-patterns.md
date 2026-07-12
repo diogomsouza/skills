@@ -1,95 +1,39 @@
-# Regex Patterns
+# Regex Performance Review
 
-### Choose the Right Regex Engine Mode
-🟡 **DO** use `[GeneratedRegex]` for all static regex patterns, but never remove `NonBacktracking` if present | .NET 7+
+Choose regex construction and engine mode from pattern features, input trust, call frequency, startup constraints, and target framework. No mode is universally fastest.
 
-❌
-```csharp
-var r = new Regex(dynamicPattern, RegexOptions.Compiled);
-```
-✅
-```csharp
-[GeneratedRegex("pattern")]
-private static partial Regex MyRegex();
+## Candidate patterns
 
-var safe = new Regex(untrustedPattern, RegexOptions.NonBacktracking);
+### Repeated construction
 
-var oneOff = new Regex("pattern");
-```
+new Regex inside a recurring method can repeatedly parse or compile a pattern. Confirm frequency and whether the pattern is static, dynamic, cached elsewhere, or intentionally short-lived.
 
-**Impact: Source generator is always beneficial for static patterns. NonBacktracking prevents O(2^N) worst case — never remove it if present.**
+### GeneratedRegex
 
-### Use IsMatch When You Only Need a Boolean Result
-🟡 **DO** use `IsMatch` instead of `Match(...).Success` | .NET 7+
+GeneratedRegex can improve startup, trimming, AOT compatibility, and repeated static-pattern use. Recommend it only for compile-time patterns on supported targets and after considering generated code, partial-type requirements, and project conventions.
 
-❌
-```csharp
-bool found = Regex.Match(input, pattern).Success;
-```
-✅
-```csharp
-bool found = Regex.IsMatch(input, pattern);
-```
+### Compiled regex
 
-**Impact: Avoids Match object allocation; with NonBacktracking, ~3x faster by skipping capture computation.**
+RegexOptions.Compiled trades startup and code-generation cost for potential steady-state throughput. Evaluate the number of patterns, instance lifetime, deployment mode, and actual match volume. Do not replace it mechanically.
 
-### Use Regex.Count/EnumerateMatches Instead of Matches
-🟡 **DO** use `Count()` and `EnumerateMatches()` for allocation-free match processing | .NET 7+
+### Non-backtracking engine
 
-❌
-```csharp
-int count = 0;
-Match m = regex.Match(text);
-while (m.Success) { count++; m = m.NextMatch(); }
-```
-✅
-```csharp
-int count = regex.Count(text);
+RegexOptions.NonBacktracking provides predictable execution but does not support every regex feature and can change capture behavior. Verify pattern compatibility and tests before recommending it.
 
-foreach (ValueMatch m in Regex.EnumerateMatches(text, @"\b\w+\b"))
-{
-    ReadOnlySpan<char> word = text.AsSpan(m.Index, m.Length);
-}
-```
+### Timeouts and untrusted input
 
-**Impact: ~3x faster than Match/NextMatch with NonBacktracking. Zero allocations for both Count and EnumerateMatches.**
+For backtracking regex applied to attacker-controlled or large input, inspect timeout configuration and worst-case behavior. A concrete catastrophic-backtracking or denial-of-service path is a critical finding.
 
-### Use Span-Based Regex APIs for Allocation-Free Matching
-🟡 **DO** use `ReadOnlySpan<char>` overloads for regex matching on spans | .NET 7+
+### Result shape
 
-❌
-```csharp
-string sub = largeBuffer.Substring(start, length);
-bool found = Regex.IsMatch(sub, pattern);
-```
-✅
-```csharp
-ReadOnlySpan<char> text = largeBuffer.AsSpan(start, length);
-foreach (ValueMatch m in Regex.EnumerateMatches(text, @"\b\w+\b"))
-{
-    ReadOnlySpan<char> word = text.Slice(m.Index, m.Length);
-}
-```
+Use IsMatch when only a boolean is needed. Count or EnumerateMatches may avoid Match object creation when captures and Match APIs are unnecessary. Confirm the target framework and that the alternative preserves semantics.
 
-**Impact: Eliminates string allocations when working with spans — particularly valuable in high-throughput parsing pipelines.**
+### Span-based input
 
-## Detection
+Span-oriented regex APIs can avoid substring allocation in synchronous parsing code. Confirm the source lifetime and API availability; spans cannot cross async boundaries or be stored on the heap.
 
-Scan recipes for regex anti-patterns. Run these and report exact counts.
+## Candidate searches
 
-```bash
-# Compiled regex count (startup cost budget — compare ratio to GeneratedRegex)
-grep -rn --include='*.cs' 'RegexOptions.Compiled' --exclude-dir=bin --exclude-dir=obj . | wc -l
+    rg -n --glob '*.cs' --glob '!**/bin/**' --glob '!**/obj/**' 'new Regex\(|GeneratedRegex|RegexOptions\.Compiled|RegexOptions\.NonBacktracking|Regex\.Match|\.Matches\(|\.Success' .
 
-# GeneratedRegex count (already optimized — verify the inverse)
-grep -rn --include='*.cs' 'GeneratedRegex' --exclude-dir=bin --exclude-dir=obj . | wc -l
-
-# Uncached new Regex() calls (construction cost per call)
-grep -rn --include='*.cs' 'new Regex(' --exclude-dir=bin --exclude-dir=obj . | wc -l
-```
-
-When `RegexOptions.Compiled` appears inside a class constructor or field initializer of an instantiated class (not a static singleton), count how many instances of that class are created at startup to determine total compiled regex budget. For example, if a `Rule` class compiles a regex in its constructor and 122 rules are registered, that is 122 compiled regexes at startup.
-
-### Patterns Requiring Manual Review
-
-- **`new Regex(` uncached**: Field assignment may span multiple lines — grep on one line is unreliable. Verify that matched instances are stored in `static readonly` fields or `[GeneratedRegex]`.
+Inspect pattern ownership, input boundary, captures, timeout, and call frequency before reporting.

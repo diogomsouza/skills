@@ -1,0 +1,7 @@
+interface:
+  display_name: ".NET Performance Analysis"
+  short_description: "Evidence-based .NET performance review"
+  default_prompt: "Use $analyzing-dotnet-performance to identify and validate the real bottlenecks in this .NET code."
+
+policy:
+  allow_implicit_invocation: true

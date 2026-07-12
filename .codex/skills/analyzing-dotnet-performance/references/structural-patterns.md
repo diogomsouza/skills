@@ -1,38 +1,42 @@
-# Structural Patterns
+# Structural Performance Review
 
-Patterns detected by the **absence** of a keyword or interface. These require codebase-wide counting scans, not single-file matching.
+Structural optimizations affect design and public contracts. Require stronger evidence than for a local allocation fix. Never infer severity from the number of classes or missing keywords.
 
-### Seal Classes for Devirtualization
-🟡 **DO** seal all leaf classes (those not subclassed) | .NET Core 3.0+
+## Sealing classes
 
-Sealing lets the JIT devirtualize/inline virtual calls and use pointer comparison for type checks. Every non-abstract, non-static class that is not subclassed should be sealed.
+Sealing a true leaf class can enable devirtualization and communicate design intent. Recommend it for performance only when:
 
-**Detection:** This is an absence pattern — scan for classes that are NOT sealed.
+- the class is not intended or required to be inherited;
+- the relevant virtual or interface dispatch is in a measured hot path;
+- the target runtime cannot already devirtualize the call adequately; and
+- the API compatibility cost is acceptable.
 
-```bash
-# Count unsealed (non-abstract, non-static) classes
-grep -rn --include='*.cs' -E '^\s*((public|internal|private|protected|file)\s+)?(partial\s+)?class ' --exclude-dir=bin --exclude-dir=obj . | grep -v 'sealed' | grep -v 'abstract' | grep -v 'static' | wc -l
+Do not scan a codebase and report every unsealed class. Framework proxies, tests, plugins, serializers, ORMs, mocking, and public extension points may require inheritance.
 
-# Count already-sealed classes (verify the inverse)
-grep -rn --include='*.cs' 'sealed class' --exclude-dir=bin --exclude-dir=obj . | wc -l
-```
+## Readonly fields and concrete types
 
-**Exclusions:** Do not seal classes that are subclassed elsewhere in the codebase. Identifying base classes requires manual review — grep for `: ClassName` patterns and cross-reference, but expect false positives from interface implementations and generic constraints.
+Readonly fields and stable concrete types can help optimization and reasoning, but runtime behavior depends on tiered compilation, PGO, call shape, and target runtime. Require disassembly, benchmark, or profiler evidence before proposing architecture changes for devirtualization.
 
-❌
-```csharp
-internal class MyHandler : Base
-{ public override int Run() => 42; }
-```
-✅
-```csharp
-internal sealed class MyHandler : Base
-{ public override int Run() => 42; }
-```
+## Struct equality and hashing
 
-**Impact: Virtual calls up to 500x faster; type checks ~25x faster. Severity scales with count.**
+IEquatable, readonly struct, and custom hashing can matter in collection-heavy workloads. Confirm boxing, comparer selection, copy size, mutation semantics, and lookup frequency. Large structs or incorrect equality implementations can make performance and correctness worse.
 
-**Scale-based severity:**
-- 1-10 unsealed leaf classes → ℹ️ Info
-- 11-50 unsealed leaf classes → 🟡 Moderate
-- 50+ unsealed leaf classes → 🟡 Moderate (elevated priority)
+## Interface and virtual dispatch
+
+Virtual dispatch is rarely the dominant cost outside very tight loops. Measure the call site and inspect runtime-generated code when possible. Prefer design clarity unless dispatch is demonstrated as material.
+
+## Data layout and false sharing
+
+Padding, explicit layout, vectorization, and cache-aware partitioning are specialized optimizations. Require representative multi-core benchmarks or hardware-counter evidence and review portability and memory-growth tradeoffs.
+
+## Static initialization
+
+Static constructors, field initialization, and generic static state can affect startup and beforefieldinit behavior. Change them only when startup traces identify the type initializer as material and semantic ordering remains correct.
+
+## Candidate searches
+
+Use searches only to locate types already implicated by measurements:
+
+    rg -n --glob '*.cs' --glob '!**/bin/**' --glob '!**/obj/**' 'sealed class|abstract class|virtual |override |interface |readonly struct|IEquatable|StructLayout|static .*\(' .
+
+Do not produce codebase-wide ratios or count-based findings.

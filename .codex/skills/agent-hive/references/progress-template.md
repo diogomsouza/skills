@@ -1,88 +1,65 @@
 # Agent Hive Progress Template
 
-Use this file as resumable execution state, not as a ceremonial report. A continuation should be able to read this progress file plus the repository and know what to do next without relying on chat history.
+Use this file as resumable execution state, not as a ceremonial report. A continuation must be able to read the populated progress file plus the repository and know what to do next without relying on chat history.
+
+Keep the current snapshot concise and the progress log append-only. Record only phase transitions, material decisions, agent results, ownership changes, validation, requested commits, blockers, and final accounting when reliable data exists. Do not copy raw command output or routine narration.
 
 Required sections:
 
-- `Source Request And Scope`: original request, scope, non-scope, and success definition.
-- `Current State`: durable snapshot of assumptions, tools, agents, decisions, and active status.
-- `Execution Plan`: authoritative phase list, status, owners, dependencies, acceptance criteria, validation, and verifier.
-- `Findings`: only plan-changing exploration or verifier findings; use `Not Applicable` when none exist.
-- `Progress`: append-only evidence log for completed work, commands, validation, commits, final accounting, and decisions.
-- `Next Actions`: concrete pending actions, not a fixed generic queue.
-- `Blockers And Risks`: unresolved blockers, accepted risks, and residual risks.
-
-When copying the template, replace `{progress-file-path}` with the actual file path. Record checkpoint commit attempts, runtime notes, and final accounting in `Progress` only when relevant. Keep `Next Actions` limited to real pending work; remove generic placeholders after startup.
+- `Objective`: exact request, scope, non-scope, and success definition.
+- `Current State`: current phase, working set, active agent IDs and ownership, assumptions, decisions, and durable plan-changing findings.
+- `Execution Plan`: authoritative phase status, owner, dependencies, and combined completion criteria.
+- `Progress Log`: durable evidence and decisions at meaningful checkpoints.
+- `Next Actions`: at most three concrete actions required to resume.
+- `Blockers And Risks`: unresolved blockers and current or accepted risks.
 
 ```markdown
-# Agent Plan Progress: {context-id}
+# Agent Hive Progress: {context-id}
 
+Goal: {goal-id or objective} - {goal-status}
 Task: {task}
-Generated: {timestamp}
+Created: {timestamp}
+Updated: {timestamp}
+Status: `Pending`, `In Progress`, `Blocked`, or `Ready For Final`
 
-## Source Request And Scope
+## Objective
 
-- User request:
-  - `{original user request}`
-- Prior user-approved plan or requested plan:
-  - Pending capture, no prior detailed plan, or `{plan item}`.
-- In scope:
-  - Pending scope confirmation.
-- Out of scope:
-  - Pending scope confirmation.
-- Success definition:
-  - Pending success definition.
+- Request: `{original user request}`
+- In scope: Pending definition.
+- Out of scope: Pending definition.
+- Done when: Pending success definition.
 
 ## Current State
 
-- Status:
-  - `Pending`, `In Progress`, `Blocked`, or `Ready For Final`.
-- Systems and files:
-  - Pending inventory.
-- Available agents/tools:
-  - Pending discovery.
-- Delegation plan:
-  - Pending batching plan, or `Not Applicable`.
-- Assumptions:
-  - Pending assumption review.
-- Decisions:
-  - Pending decisions.
-- Progress file:
-  - `{progress-file-path}`
+- Current phase: Pending selection.
+- Working set: Pending files, modules, systems, data sources, and relevant workspace state.
+- Active agents and ownership: `None`, or `{agent-id}: {role}, {owned scope}, {status}`.
+- Assumptions: Pending review, or `None`.
+- Decisions and durable findings: Pending review, or `None`.
 
 ## Execution Plan
 
-| Phase | Status | Scope | Owner | Dependencies | Acceptance Criteria | Validation | Verifier | Stop Condition |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Pending | Define concrete phases | Agent Hive | Source request | Plan is specific enough to resume without chat context | Progress file review | Agent Hive | `Execution Plan` and `Next Actions` are actionable. |
-
-Statuses: `Pending`, `In Progress`, `Done`, `Accepted`, `Rejected`, `Retry Required`, `Blocked`, `Not Applicable`.
-Use `Done` when work is complete but no required verifier/acceptance gate has passed. Use `Accepted` only after the required verifier or coordinator acceptance gate has passed and the evidence is recorded in `Progress`.
-
-## Findings
-
-| Time | Source | Scope | Finding | Plan Impact |
+| Phase | Status | Owner | Depends On | Done When |
 | --- | --- | --- | --- | --- |
-| Pending | TBD | TBD | Pending exploration, verification, or `Not Applicable`. | Pending. |
+| 1. Define executable phases | Pending | Agent Hive | Objective | Plan is specific enough to resume without chat context. |
 
-## Progress
+Statuses: `Pending`, `In Progress`, `Done`, `Accepted`, `Blocked`, `Not Applicable`.
+Use `Done` when execution is complete but its acceptance gate is pending. Use `Accepted` only when the `Done When` criteria and required coordinator or independent-verifier acceptance gate have passed. After failed acceptance, return the phase to `Pending` or `In Progress` and record the reason in `Progress Log`.
 
-| Time | Phase/Area | Agent/Tool | Evidence | Result |
-| --- | --- | --- | --- | --- |
-| {timestamp} | Initialization | Agent Hive | Progress file created. | Initial state captured. |
+## Progress Log
+
+| Time | Event | Evidence / Result |
+| --- | --- | --- |
+| {timestamp} | Initialization | Progress file created and initial state captured. |
 
 ## Next Actions
 
-| Status | Action | Owner | Depends On | Stop Condition |
-| --- | --- | --- | --- | --- |
-| Pending | Define the next concrete action. | Agent Hive | Current state | Action is clear enough to execute or delegate. |
+1. `{owner}`: {next action}; depends on {dependency}; complete when {stop condition}.
+
+Keep only the next one to three real actions. Use `None` when no action remains.
 
 ## Blockers And Risks
 
-- Blockers:
-  - Pending blocker review, or `None`.
-- Risks:
-  - Pending risk review, or `None`.
-- Residual risks:
-  - Pending final review, or `None`.
+- Blockers: `None`, or `{blocker and required resolution}`.
+- Risks: `None`, or `{current, accepted, or residual risk}`.
 ```
