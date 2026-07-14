@@ -35,12 +35,14 @@ After the Throughput Gate passes:
 3. Create or reuse a goal for the user-visible objective when goal tools are available.
 4. Create `.agent-hive/PLAN-PROGRESS-{context-id}.md` from `references/progress-template.md` before substantial work starts. Build `context-id` as `YYYY-MM-DD-{short-task-slug}` using local time when known, otherwise UTC. Use a lowercase kebab-case slug of three to six meaningful words, capped around 40 characters. If the filename exists, append `-2`, `-3`, and so on until unique.
 5. When creating `.agent-hive` on Windows, make a best-effort attempt to mark it hidden with `attrib +h .agent-hive` from the workspace root. Ignore failures.
-6. Populate the progress file with the objective, current state, execution plan, progress log, next actions, blockers, and risks. Include active agent IDs and owned scopes so a continuation can resume, wait, steer, or close them.
+6. Populate the progress file with exactly the six `##` sections defined by the template, once each and in order: `Objective`, `Current State`, `Execution Plan`, `Progress Log`, `Next Actions`, and `Blockers And Risks`. Include active agent IDs and owned scopes so a continuation can resume, wait, steer, or close them.
 7. If repository structure, requirements, or failure modes are unclear enough to affect the plan, delegate exploration first and record only durable plan-changing findings in `Current State`.
 
 ## Progress Contract
 
 Treat `.agent-hive/PLAN-PROGRESS-{context-id}.md` as the durable execution contract. A future continuation must be able to read only that file plus the repository and know what to do next.
+
+Preserve the template structure exactly: one document `#` heading followed by exactly the six required `##` sections, once each and in template order. Do not add any other headings at any level. In particular, do not create per-item or per-event sections such as `Historical Item Scope`, `Accepted Item Record`, `Current Follow-Up Scope`, `Committed Follow-Up Record`, exploration records, retry records, runtime records, or agent-report headings. Use bullets and table rows inside the required sections instead.
 
 The progress file must answer:
 
@@ -53,7 +55,13 @@ The progress file must answer:
 
 Keep `Execution Plan` authoritative for phase status and `Current State` authoritative for the resumable snapshot. Use `Progress Log` only as durable evidence. Use these statuses consistently: `Pending`, `In Progress`, `Done`, `Accepted`, `Blocked`, and `Not Applicable`. Mark execution `Done` only after work is complete; mark it `Accepted` only after its `Done When` criteria and required independent-verifier or coordinator acceptance gate pass. After failed acceptance, return the phase to `Pending` or `In Progress` and record the reason in `Progress Log`.
 
+Route information instead of creating new sections: keep only current resumable facts and active ownership in `Current State`; keep phase scope, status, dependencies, and completion gates in `Execution Plan`; summarize each material exploration result, worker result, verifier decision, retry, commit, runtime result, acceptance, or supersession as a concise `Progress Log` row; keep only immediate work in `Next Actions`; and keep only unresolved or accepted risks in `Blockers And Risks`. Do not paste a subagent report verbatim or duplicate the same item as current, historical, accepted, and follow-up records. Reference commits, files, or evidence artifacts from the log when full detail already exists outside the progress file.
+
+In `Execution Plan`, keep `Phase` as a short stable identifier, keep `Status` immediately after it, and put the descriptive title in the separate `Scope` column. Do not combine phase and scope; this order keeps status values visually aligned and scannable in long plans.
+
 Update the progress file after every meaningful phase transition, agent result, ownership change, verifier decision, validation result, scope change, retry decision, requested checkpoint commit, blocker/risk change, or reliable final-accounting update. Keep only the next one to three concrete actions in `Next Actions`; do not copy raw command output or routine narration.
+
+When resuming a progress file that violates the structure, repair it before the next substantial phase: retain the objective, reconstruct the latest resumable snapshot, preserve the authoritative execution plan, collapse material historical evidence into concise `Progress Log` rows, retain only current next actions and blockers/risks, and remove duplicate or superseded narrative after its durable result is preserved. Record the normalization itself as one `Progress Log` event. Completeness means sufficient durable state and evidence to resume safely, not an exhaustive transcript.
 
 ## Delegation And Batching
 
