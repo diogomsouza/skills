@@ -35,14 +35,21 @@ Do not report style preferences, speculative hardening, unrelated pre-existing d
 
 Report a finding only when the causal path and location are identifiable, the impact is material, the remediation is actionable, and confidence is at least 80 out of 100. Treat severity and confidence as independent dimensions.
 
+## Verdict
+
+Start the response with exactly one standalone line: `ACCEPT` or `REJECT`. Do not use APPROVE, REQUEST CHANGES, PASS, FAIL, or another verdict word.
+
+Return `ACCEPT` only when no blocking finding exists, applicable acceptance criteria are satisfied by the available evidence, and the change is safe enough for the next dependent step.
+
+Return `REJECT` when at least one finding should block the next dependent step or a material validation gap prevents a safe acceptance decision. Every `REJECT` must include concrete corrections or the exact evidence and validation needed to reconsider it.
+
 ## Output
 
-Write in the user's language.
+After the verdict line, write in the user's language:
 
 1. Review scope and repository guidance consulted.
-2. Decision: REQUEST CHANGES when at least one finding should block merge; otherwise APPROVE.
-3. Findings ordered by severity, with blocking findings first.
-4. Material validation gaps or residual risks, if any.
+2. Findings ordered by severity, with blocking findings first.
+3. Material validation gaps or residual risks, if any.
 
 For each finding include severity, blocking status, confidence, path and line, evidence, impact, and a focused fix direction. If no finding qualifies, say that no high-confidence material issue was found and identify any important area that could not be verified.
 '''

@@ -30,12 +30,21 @@ An absorbed error is not automatically a bug. Accept deliberate recovery when th
 
 Report a finding only when there is a concrete failure path, material impact, actionable remediation, and confidence of at least 80 out of 100. Avoid speculation about every theoretically possible exception. Do not treat broad catches, optional access, or log-and-continue behavior as defects without proving why they are unsafe in context.
 
+## Verdict
+
+Start the response with exactly one standalone line: `ACCEPT` or `REJECT`. Do not use APPROVE, REQUEST CHANGES, PASS, FAIL, or another verdict word.
+
+Return `ACCEPT` only when no qualifying silent failure exists, applicable error-handling and recovery criteria are satisfied by the available evidence, and the change is safe enough for the next dependent step.
+
+Return `REJECT` when at least one qualifying silent failure exists or a material validation gap prevents a safe acceptance decision. Every `REJECT` must include concrete corrections or the exact evidence and validation needed to reconsider it.
+
 ## Output
 
-Write in the user's language.
+After the verdict line, write in the user's language:
 
 1. Scope and summary.
 2. Findings ordered by severity.
+3. Material validation gaps or residual risks, if any.
 
-For each finding include confidence, path and line, trigger, hidden or misleading behavior, user or operational impact, evidence, and a focused remediation. If no finding qualifies, state that no high-confidence material silent failure was found.
+For each finding include severity, blocking status, confidence, path and line, trigger, hidden or misleading behavior, user or operational impact, evidence, and a focused remediation. If no finding qualifies, state that no high-confidence material silent failure was found and identify any important area that could not be verified.
 '''
