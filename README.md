@@ -1,45 +1,55 @@
 # IA Agents Skills
 
-A collection of Codex agents and skills. The project organizes reusable instructions under `.codex/agents` and `.codex/skills`, with global guidelines in `.codex/AGENTS.md`.
+A collection of active Codex agents and skills. Reusable definitions live under `.codex/agents` and `.codex/skills`, global coding guidance lives in `.codex/AGENTS.md`, and historical definitions under `deprecated/` are not loaded.
 
-## Agents
+## Active Custom Agents
 
-- `code-reviewer`: reviews changed code against project guidelines, style rules, relevant bugs, and quality concerns before commits or pull requests.
-- `code-reviewer-max`: reviews complex changes with an advanced focus on architecture, maintainability, branching, abstractions, contracts, and structural quality.
-- `code-reviewer-security`: reviews high-risk changes with a focus on security, authorization, privacy, data integrity, feature gates, and critical regressions.
-- `code-simplifier`: simplifies newly written or modified code while preserving behavior and prioritizing clarity, consistency, and maintainability.
-- `code-worker`: implements features, bug fixes, refactors, and migrations with a strict focus on clarity, architectural boundaries, and low incidental complexity.
-- `comment-analyzer`: analyzes comments, docstrings, and technical documentation for accuracy, completeness, and long-term maintainability.
-- `csharp-expert`: supports .NET/C# development with a focus on platform conventions, clean design, security, testing, performance, and maintainability.
-- `optimizing-dotnet-performance`: analyzes .NET code for bottlenecks, recommends concrete optimizations, and guides benchmark validation.
-- `pr-test-analyzer`: evaluates pull request test coverage quality, focusing on critical paths, edge cases, and tests that prevent real regressions.
-- `silent-failure-hunter`: audits error handling, fallbacks, and `catch` blocks to find silent failures, insufficient logging, and weak actionable feedback.
-- `type-design-analyzer`: reviews type design, invariants, encapsulation, and validation to improve model robustness and clarity.
-- `win-forms-expert`: supports creation and maintenance of Designer-compatible WinForms apps, including layout, binding, DPI, dark mode, and `.designer` file rules.
+- `reviewer`: general-purpose, read-only reviewer for material code changes when independent verification is useful and no narrower specialist is a better fit. Uses GPT-5.6 Sol with high reasoning and focuses on correctness, regressions, contracts, compatibility, and high-confidence maintainability concerns.
+- `code-reviewer-security`: reviews security-sensitive and high-risk changes involving authorization, privacy, cryptography, secrets, data integrity, feature gates, installers, drivers, or trust boundaries.
+- `pr-test-analyzer`: reviews behavioral test coverage and identifies concrete gaps in changed behavior, error paths, state transitions, concurrency, and integrations.
+- `silent-failure-hunter`: reviews error handling, retries, fallbacks, background work, cleanup, and recovery paths for silent or misleading failures.
+- `type-design-analyzer`: reviews materially changed domain types, public contracts, state models, serialization boundaries, and their invariants.
 
-## Skills
+## Native Roles Used by Workflows
 
-- `agent-hive`: coordinates larger work with persistent planning, subagent delegation, independent verifiers, conditional checkpoint commits, and a progress file.
-- `analyzing-dotnet-performance`: scans .NET code for performance anti-patterns in async, memory, strings, collections, LINQ, regex, serialization, and I/O.
-- `architecture-blueprint-generator`: generates an architecture blueprint from codebase analysis, documenting the stack, patterns, components, dependencies, and diagrams.
-- `angular-developer`: guides and generates Angular code using modern best practices for components, services, reactivity, forms, routing, accessibility, testing, and CLI usage.
-- `angular-new-app`: creates new Angular applications with the Angular CLI, including CLI checks, appropriate flags, and AI assistant configuration.
-- `code-planner`: runs a conversational planning mode for implementation work before editing code, with non-mutating exploration, required questions, and a complete final plan.
-- `dotnet-webapi`: guides creation and modification of ASP.NET Core Web API endpoints with HTTP semantics, OpenAPI metadata, DTOs, and error handling.
-- `gpt-image-2`: generates or edits bitmap images through the OpenAI Images API using `gpt-image-2`, saving project-ready assets.
-- `grill-code`: runs a technical interview about a plan using context, ADRs, and versioned documents, without implementing code until explicitly approved.
-- `grill-me`: interviews the user about a plan or design one question at a time until ambiguities and decision dependencies are resolved.
-- `optimizing-ef-core-queries`: guides Entity Framework Core query optimization, covering N+1 issues, tracking modes, compiled queries, and common database-load traps.
-- `thermo-nuclear-code-quality-review`: runs an extremely strict maintainability review focused on abstractions, large files, and complex conditional growth.
-- `thermo-nuclear-review`: runs a deep security and correctness audit of branch changes, focusing on bugs, breakages, developer-experience regressions, and feature-gate leaks.
+- `worker`: the default Codex role for delegated implementation and fixes. There is no active custom `code-worker.toml`.
+- `explorer`: the default Codex role for material read-only codebase exploration.
+
+Native-role availability is provided by the Codex runtime rather than this repository.
+
+## Active Skills
+
+- `agent-hive`: coordinates high-risk or parallelizable work through best-fit role selection, persistent progress, disjoint ownership, and risk-based independent verification.
+- `analyzing-dotnet-performance`: analyzes .NET performance using workload, profiling, benchmark, and targeted static evidence.
+- `angular-developer`: guides and generates Angular code using modern framework practices.
+- `angular-new-app`: creates modern Angular applications with the Angular CLI.
+- `code-planner`: produces a decision-complete implementation plan before editing.
+- `gpt-image-2`: generates or edits bitmap images through the OpenAI Images API.
+- `grill-code`: stress-tests a technical plan against the codebase and referenced documentation.
+- `grill-me`: interviews the user about a plan or design until material ambiguities are resolved.
+- `optimizing-ef-core-queries`: optimizes Entity Framework Core queries and common database access patterns.
+- `thermo-nuclear-code-quality-review`: performs an explicit, especially strict, read-only maintainability audit.
+
+## Deprecated Definitions
+
+Definitions under `deprecated/` are retained only as historical references and are not active:
+
+- `code-reviewer` was replaced by the leaner `reviewer`.
+- `code-reviewer-max` was replaced by `reviewer` for general independent verification and `$thermo-nuclear-code-quality-review` for an explicitly requested deep maintainability audit.
+- `code-worker` was replaced by the native `worker` role.
+
+Other archived agents and skills under `deprecated/` are likewise not part of the active inventory.
 
 ## Structure
 
 ```text
 .codex/
   AGENTS.md
-  agents/
-  skills/
+  agents/      # active custom agent profiles
+  skills/      # active skills
+deprecated/
+  agents/      # archived profiles; not loaded
+  skills/      # archived skills; not loaded
 ```
 
 ## Recommended Operational Flow
@@ -52,9 +62,9 @@ grill-code -> code-planner -> agent-hive
 
 - `grill-code`: validates understanding, terms, domain boundaries, and architectural decisions.
 - `code-planner`: turns the validated understanding into a closed implementation plan.
-- `agent-hive`: executes the plan with subagents, checkpoints, and independent verification.
+- `agent-hive`: executes the plan with best-fit native or custom roles, assignment-scoped ownership, and risk-based independent verification.
 
-Not every case needs all three. For simple changes, direct execution with review is usually enough. For complex changes, use the full flow.
+Not every case needs all three. For simple changes, direct execution, proportional validation, and coordinator review are usually enough. Use a separate `reviewer` only when independent verification materially reduces risk. For complex changes, use the full flow.
 
 ## code-planner
 
@@ -113,45 +123,53 @@ When not to use:
 
 ## agent-hive
 
-Use when work needs orchestration with subagents, persistent progress, and independent verification.
+Use when work benefits from parallel delegation, durable progress, or independent verification tied to concrete risk.
 
 Ideal cases:
 
 - long or multi-step implementation;
-- large migration;
-- refactor across several modules;
-- feature that crosses layers;
-- fix with high regression risk;
-- work that can be divided among agents;
-- when you want execution with checkpoints, review, and phase-by-phase validation.
+- migration or refactor across independent modules;
+- feature work that crosses layers;
+- security, data-integrity, public-API, build, migration, concurrency, or failure-handling risk;
+- work that can be divided into disjoint exploration, implementation, or verification assignments.
 
 Workflow:
 
-1. Create or reuse a goal.
-2. Create `.agent-hive/PLAN-PROGRESS-{context-id}.md`.
-3. Discover available agents.
-4. Record the original request, scope, risks, execution plan, validations, and activity queue.
-5. Delegate exploration when needed.
-6. Delegate execution to `code-worker`.
-7. Collect the result.
-8. Delegate verification to a separate reviewer.
-9. If approved, run validation.
-10. For multi-step work, attempt a checkpoint commit.
-11. Repeat until all phases are accepted.
-12. Record residual risks and finish.
+1. Create or reuse a verifiable goal and matching progress file.
+2. Discover visible roles and record the best-fit selection for each material assignment.
+3. Delegate standalone exploration to the native `explorer` or another exploration role when needed.
+4. Delegate implementation and fixes to the native `worker` or another role explicitly designed for implementation.
+5. Review returned work and validation evidence.
+6. When concrete risk requires independence, use a fresh verifier that did not implement the change.
+7. Select `reviewer` for general code verification or the narrow specialist matching the identified risk.
+8. Correct rejected work, run proportional integration validation, and accept the phase only when its recorded gate passes.
+9. Create checkpoint commits only when requested by the user or required by project instructions.
+10. Close assignment-bound agents after their evidence is integrated.
 
-Agent usage:
+Role selection:
 
-- `code-worker`: execution agent. Implements code, fixes bugs, performs refactors, and runs proportional validations.
-- `code-reviewer`: standard verification for small or medium changes, focused on guidelines, obvious bugs, and ordinary maintainability.
-- `code-reviewer-max`: advanced verification for architecture, complexity, branching, abstractions, contracts, and maintainability.
-- `code-reviewer-security`: verification focused on security, authorization, privacy, data integrity, feature gates, and critical regressions.
+- native `worker`: default delegated implementation and fixes;
+- native `explorer`: default standalone read-only codebase exploration;
+- `reviewer`: general independent code review;
+- `code-reviewer-security`: security and high-risk correctness;
+- `pr-test-analyzer`: behavioral test gaps;
+- `silent-failure-hunter`: error and recovery paths;
+- `type-design-analyzer`: domain types and invariants.
+
+For ordinary low-risk work, tests, builds, lint, reproducible checks, and coordinator review may be the complete acceptance gate. Do not spawn a reviewer merely because implementation occurred.
 
 ## Quick Choice
 
-- I want to think before coding: `code-planner`
-- I want to be questioned about the domain or plan: `grill-code`
-- I want to execute a complex plan with agents: `agent-hive`
+- I want to plan before coding: `code-planner`
+- I want to challenge a technical plan against the codebase: `grill-code`
+- I want to clarify a product or design decision tree: `grill-me`
+- I want to orchestrate parallel or high-risk work: `agent-hive`
+- I want a general independent code review: `reviewer`
+- I want a security-sensitive review: `code-reviewer-security`
+- I want a test-gap review: `pr-test-analyzer`
+- I want an error-recovery review: `silent-failure-hunter`
+- I want a domain-type review: `type-design-analyzer`
+- I explicitly want an especially strict maintainability audit: `$thermo-nuclear-code-quality-review`
 
 ## Recommended Flows
 
@@ -159,19 +177,20 @@ For a feature with uncertain domain:
 
 ```text
 grill-code
+-> code-planner when a decision-complete handoff is needed
 -> agent-hive
-   -> code-worker
-   -> code-reviewer-max
+   -> native explorer as needed
+   -> native worker
+   -> reviewer only when independent generic verification is justified
 ```
 
-For a change in authentication, authorization, billing, or feature flags:
+For authentication, authorization, billing, secrets, or feature-gate changes:
 
 ```text
 code-planner
 -> agent-hive
-   -> code-worker
+   -> native worker
    -> code-reviewer-security
-   -> code-reviewer-max if there is also structural risk
 ```
 
 For a large refactor:
@@ -179,8 +198,8 @@ For a large refactor:
 ```text
 code-planner
 -> agent-hive
-   -> multiple code-worker agents by module
-   -> code-reviewer-max by batch
+   -> native workers with disjoint module ownership
+   -> reviewer for material batches whose risk justifies independence
 ```
 
 For an already written but suspicious plan:
@@ -190,6 +209,8 @@ grill-code
 -> agent-hive if execution is large
 ```
 
+For targeted review risk, select the narrow specialist instead of stacking every reviewer. Use `$thermo-nuclear-code-quality-review` only when the user explicitly requests a deep maintainability audit.
+
 ## Usage
 
-Copy or keep the `.codex` folder at the root of a workspace that should load these agents and skills. Adjust the instructions as needed for each project.
+Copy or keep `.codex/` at the root of a workspace that should load these active agents and skills. The `deprecated/` directory is archival and should not be copied as active configuration. Native roles such as `worker` and `explorer` are supplied by Codex.
