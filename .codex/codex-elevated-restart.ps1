@@ -25,14 +25,36 @@ if ($null -eq $pkg) {
   throw 'OpenAI.Codex package was not found.'
 }
 
-$codexExe = Join-Path $pkg.InstallLocation 'app\Codex.exe'
-if (-not (Test-Path -LiteralPath $codexExe)) {
-  throw "Codex executable was not found: $codexExe"
+$manifest = Get-AppxPackageManifest -Package $pkg
+$application = $manifest.Package.Applications.Application |
+  Where-Object { $_.Id -eq 'App' } |
+  Select-Object -First 1
+
+if ($null -eq $application -or [string]::IsNullOrWhiteSpace($application.Executable)) {
+  throw 'The main application executable was not found in the OpenAI.Codex package manifest.'
 }
 
-Get-Process -Name Codex, codex, node_repl -ErrorAction SilentlyContinue |
+$appExe = Join-Path $pkg.InstallLocation ($application.Executable -replace '/', '\')
+if (-not (Test-Path -LiteralPath $appExe)) {
+  throw "ChatGPT executable was not found: $appExe"
+}
+
+if ([System.IO.Path]::GetFileName($appExe) -ne 'ChatGPT.exe') {
+  throw "The OpenAI.Codex package manifest points to an unexpected executable: $appExe"
+}
+
+if (-not (Get-Command Invoke-CommandInDesktopPackage -ErrorAction SilentlyContinue)) {
+  throw 'Invoke-CommandInDesktopPackage is not available on this Windows installation.'
+}
+
+Get-Process -Name ChatGPT, Codex, codex, node_repl, codex-code-mode-host -ErrorAction SilentlyContinue |
   Stop-Process -Force -ErrorAction SilentlyContinue
 
 Start-Sleep -Seconds 2
 
-Start-Process -FilePath $codexExe -ArgumentList '--do-not-de-elevate' -WorkingDirectory (Split-Path $codexExe)
+Invoke-CommandInDesktopPackage `
+  -PackageFamilyName $pkg.PackageFamilyName `
+  -AppId $application.Id `
+  -Command $appExe `
+  -Args '--do-not-de-elevate' `
+  -PreventBreakaway

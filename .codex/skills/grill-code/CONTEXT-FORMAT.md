@@ -1,64 +1,62 @@
-# docs/CONTEXT-{context-id}.md Format
+# `docs/CONTEXT-{context-id}.md` Format
 
-## Structure
+This file is the session-local glossary and relationship map for one grilling specification. It is not canonical across sessions. It may record confirmed relationship cardinalities and dialogue that clarifies vocabulary, but it must not contain lifecycle rules, eligibility rules, processing behavior, responsibilities, or implementation decisions.
+
+## Incremental structure
+
+Create the file when a new session starts with only the title, description, and link to its paired `SPEC`. Add the remaining sections only when confirmed content exists; never invent content or add empty placeholders to complete the template.
 
 ```md
-# {Context Name}
+# Order Cancellation Context
 
-{One or two sentence description of what this context is and why it exists.}
+Session-local language for the order cancellation specification.
+
+Specification: [SPEC-2026-06-17-order-cancellation-rules.md](./SPEC-2026-06-17-order-cancellation-rules.md)
 
 ## Language
 
 **Order**:
-{A concise description of the term}
-_Avoid_: Purchase, transaction
-
-**Invoice**:
-A request for payment sent to a customer after delivery.
-_Avoid_: Bill, payment request
+A customer request for one or more products.
+_Avoid in domain language_: Purchase, transaction
 
 **Customer**:
 A person or organization that places orders.
-_Avoid_: Client, buyer, account
+_Avoid in domain language_: Client, buyer, account
+
+**Partial Cancellation**:
+A cancellation that targets fewer than all items in an **Order**.
 
 ## Relationships
 
-- An **Order** produces one or more **Invoices**
-- An **Invoice** belongs to exactly one **Customer**
+- An **Order** belongs to exactly one **Customer**
+- A **Partial Cancellation** applies to exactly one **Order**
 
 ## Example dialogue
 
-> **Dev:** "When a **Customer** places an **Order**, do we create the **Invoice** immediately?"
-> **Domain expert:** "No — an **Invoice** is only generated once a **Fulfillment** is confirmed."
+> **Dev:** "What do we call a cancellation that affects only one item in an **Order**?"
+> **Domain expert:** "Use **Partial Cancellation** when fewer than all items in the **Order** are affected."
 
 ## Flagged ambiguities
 
-- "account" was used to mean both **Customer** and **User** — resolved: these are distinct concepts.
+- "account" was used for both **Customer** and **User** — resolved: they are distinct concepts in this specification.
 ```
 
 ## Rules
 
-- **Be opinionated.** When multiple words exist for the same concept, pick the best one and list the others as aliases to avoid.
-- **Flag conflicts explicitly.** If a term is used ambiguously, call it out in "Flagged ambiguities" with a clear resolution.
-- **Keep definitions tight.** One sentence max. Define what it IS, not what it does.
-- **Show relationships.** Use bold term names and express cardinality where obvious.
-- **Only include terms specific to this project's context.** General programming concepts (timeouts, error types, utility patterns) don't belong even if the project uses them extensively. Before adding a term, ask: is this a concept unique to this context, or a general programming concept? Only the former belongs.
-- **Group terms under subheadings** when natural clusters emerge. If all terms belong to a single cohesive area, a flat list is fine.
-- **Write an example dialogue.** A conversation between a dev and a domain expert that demonstrates how the terms interact naturally and clarifies boundaries between related concepts.
+- Include only terms and relationships confirmed in the active grilling session.
+- Define what a term is, not what it does, in one concise sentence.
+- Choose one preferred term and list misleading alternatives under `_Avoid in domain language_` when useful.
+- Record a relationship only when its meaning and any stated cardinality are confirmed.
+- Include only domain-specific concepts, not general programming concepts.
+- Group terms under subheadings only when natural clusters emerge.
+- Add an example dialogue only after enough related terms are confirmed. Use it to clarify vocabulary and relationships, not to introduce workflow or eligibility rules.
+- Record resolved language conflicts under `Flagged ambiguities`.
+- Put lifecycle invariants, responsibilities, workflows, eligibility, processing behavior, scope, and implementation decisions in the paired `SPEC`, never here.
 
-## Location and naming
+## Isolation and location
 
-Each grilling session writes to one context file at `docs/CONTEXT-{context-id}.md`.
+Each new grilling session creates a fresh `docs/CONTEXT-{context-id}.md` paired with `docs/SPEC-{context-id}.md`.
 
-Build `context-id` as `YYYY-MM-DD-{short-task-slug}` using local time when known, otherwise UTC. The slug must be lowercase kebab-case, derived from three to six meaningful words from the task, and capped around 40 characters.
+Do not read or reuse another session's context when starting a new session. Inspect existing context filenames only to select a unique pair of paths. Reopen a context only when explicitly resuming that exact session.
 
-If the target filename already exists before this grilling session creates its context file, append a sequential suffix such as `-2`, `-3`, continuing until the filename is unique. Do not include a time component or random suffix.
-
-```md
-/
-├── docs/
-│   └── CONTEXT-2026-06-17-order-cancellation-rules.md
-└── src/
-```
-
-Create the file lazily when the first term, boundary, invariant, responsibility, or domain relationship is resolved. After creating it, keep updating the same file for the rest of the grilling session.
+Use the naming and collision rules in [SKILL.md](./SKILL.md).

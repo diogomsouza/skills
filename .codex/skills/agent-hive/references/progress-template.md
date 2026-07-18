@@ -15,7 +15,7 @@ Required sections:
 - `Next Actions`: at most three concrete actions required to resume.
 - `Blockers And Risks`: unresolved blockers and current or accepted risks.
 
-Route current facts to `Current State`, phase status and scope to `Execution Plan`, and each material historical result to one concise `Progress Log` row. Put immediate work in `Next Actions` and unresolved or accepted risks in `Blockers And Risks`. Reference commits, files, and evidence artifacts instead of duplicating their full contents. When repairing a legacy file, collapse extra sections into these destinations, remove duplicate or superseded narrative after preserving its durable result, and record the normalization as one log event.
+Route current facts to `Current State`, phase status and scope to `Execution Plan`, and each material historical result to one concise `Progress Log` row. Put immediate work in `Next Actions` and unresolved or accepted risks in `Blockers And Risks`. Reference commits, files, and evidence artifacts instead of duplicating their full contents.
 
 ```markdown
 # Agent Hive Progress: {context-id}

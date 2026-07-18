@@ -26,6 +26,8 @@ Only include these when they add genuine value. Most ADRs won't need them.
 
 Scan `docs/adr/` for the highest existing number and increment by one.
 
+Inspect ADR filenames for numbering. Read an existing ADR only when it is explicitly referenced by the user, the active plan or specification, repository instructions, or relevant current code. Do not sweep historical ADR contents merely to reconstruct prior product intent.
+
 ## When to offer an ADR
 
 All three of these must be true:
