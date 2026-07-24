@@ -8,15 +8,29 @@ The populated file must preserve the template structure exactly: one document `#
 
 Required sections:
 
-- `Objective`: exact request, scope, non-scope, and success definition.
-- `Current State`: current phase, working set, active assignment-to-agent bindings and ownership, assumptions, decisions, and durable plan-changing findings.
-- `Agent Selection`: one current row per material delegated assignment with only relevant candidates, the selected role, decision status, and concise rationale.
-- `Execution Plan`: short phase ID, descriptive scope, authoritative status, owner, dependencies, and combined completion criteria.
-- `Progress Log`: durable evidence and decisions at meaningful checkpoints.
-- `Next Actions`: at most three concrete actions required to resume.
-- `Blockers And Risks`: unresolved blockers and current or accepted risks.
+- `Objective`: only the stable request, scope, non-scope, and success definition.
+- `Current State`: only the bounded present-tense snapshot: current phase, working set, runtime or external state, active assignment-to-agent bindings and ownership, assumptions and constraints, and at most five plan-changing durable findings.
+- `Agent Selection`: one current row per non-terminal material delegated assignment still required by an unaccepted phase, including each complementary verification assignment, with only relevant candidates, the selected role, decision status, and concise rationale; append newly introduced assignments at the bottom in first-spawn order and never reorder existing rows.
+- `Execution Plan`: only one authoritative row per phase with short ID, descriptive scope, current status, owner, dependencies, and combined completion criteria.
+- `Progress Log`: only concise append-only material events, superseded decisions, evidence references, lifecycle changes, validation, requested commits, blockers resolved, and final accounting.
+- `Next Actions`: only the next one to three concrete actions required to advance or resume.
+- `Blockers And Risks`: only unresolved blockers and current accepted or residual risks.
 
-Route current facts and active ownership to `Current State`, current role-selection decisions to `Agent Selection`, phase status and scope to `Execution Plan`, and each material historical result or superseded selection to one concise `Progress Log` row. Put immediate work in `Next Actions` and unresolved or accepted risks in `Blockers And Risks`. Reference commits, files, and evidence artifacts instead of duplicating their full contents.
+Apply a single-home rule: store each fact in exactly one authoritative section and use only a phase, assignment, commit, or evidence reference elsewhere. Route current facts and active ownership to `Current State`, current role-selection decisions to `Agent Selection`, phase status and scope to `Execution Plan`, and each material historical result or superseded selection to one concise `Progress Log` row. Put immediate work in `Next Actions` and unresolved or accepted risks in `Blockers And Risks`. Never duplicate full evidence or the same result across sections.
+
+For every new progress file, preserve the exact section shapes shown in the template: four labeled bullets in `Objective`; six labeled bullets in `Current State`; two metadata bullets plus one table in `Agent Selection`; one table in `Execution Plan`; one append-only table in `Progress Log`; `None` or a numbered list of one to three items in `Next Actions`; and exactly the two labeled bullets `Blockers` and `Risks` in `Blockers And Risks`. Do not add free-form narrative, auxiliary tables, or extra bullets to any section.
+
+For every new progress file, `Current State` must contain exactly the six labeled top-level bullets shown below, in that order. Use `None` or `Not Applicable` for an empty field. Do not add tables, nested lists, narrative, phase histories, accepted or superseded candidates, completed agents, old verdicts, evidence catalogs, resolved risks, or per-phase `Current ...` bullets. Keep each bullet to one compact paragraph of at most 200 words. Keep at most five concise facts in `Decisions and durable findings`, and only if they change the next decision or are required to resume safely. When a current fact changes, replace it and record the transition in `Progress Log`; never append history to `Current State`.
+
+For an existing progress file created before this schema, apply these content boundaries only to future writes. Do not compact or reorder old content automatically, do not block execution because the legacy section is oversized, and do not add another top-level `Current State` bullet. Update the best matching current field in place, replace superseded durable findings, and route new chronology to `Progress Log`.
+
+For `Agent Selection`, keep exactly one row per non-terminal material assignment still required by a phase that is not yet `Accepted`. Append a new row at the bottom immediately before its first spawn; never prepend, insert between rows, sort, group, or reposition existing rows. Update an unresolved row in place. A replacement stays in the same assignment row; its active agent ID belongs in `Current State` and its lifecycle event in `Progress Log`. When the phase becomes `Accepted`, record each assignment's selected role, terminal result, revision, and evidence in `Progress Log`, then remove all of that phase's rows in the same ordinary update. Retire a cancelled, abandoned, superseded, terminally failed, or no-longer-required assignment only after its evidence and risk disposition or replacement are logged; never remove a rejecting assignment to bypass its verdict. Do not automatically purge legacy rows from phases accepted before this rule, and do not refresh or reorder them. Use only `Exploration`, `Implementation`, `Verification`, or `Not Applicable` for `Task Type`, and only `Pending`, `Selected`, `Refresh Required`, or `Not Applicable` for `Decision Status`. Use the `Not Applicable` row only when no non-terminal material assignment is currently required.
+
+List only visible roles that could realistically perform the assignment and limit `Rationale` to one sentence explaining material fit. Do not add coordinator-local work, agent IDs, active status, ownership, inventories, outputs, reasoning, unrelated roles, or prior choices. Record superseded choices in `Progress Log`. Beyond the two fixed metadata bullets and the selection table, add no content to this section.
+
+For `Execution Plan`, keep `Phase` as a short stable identifier such as `P1`, `M-04`, or `F2`, keep `Status` immediately after it, and put the descriptive title only in `Scope`. Use only `Pending`, `In Progress`, `Done`, `Accepted`, `Blocked`, or `Not Applicable`. Use `Done` while execution is complete but integration validation or acceptance remains pending. Use `Accepted` only when `Done When`, integration validation, coordinator gates, and every current required verification assignment pass against the same frozen revision. Record verdicts, invalidations, retired assignments, risk dispositions, failures, and aggregated acceptance in `Progress Log`; after a failed gate, return the phase to `Pending` or `In Progress`.
+
+For `Next Actions`, keep only the next one to three real actions and replace the list when the dependency frontier changes. Use `None` when no action remains.
 
 ```markdown
 # Agent Hive Progress: {context-id}
@@ -38,9 +52,10 @@ Status: `Pending`, `In Progress`, `Blocked`, or `Ready For Final`
 
 - Current phase: Pending selection.
 - Working set: Pending files, modules, systems, data sources, and relevant workspace state.
+- Runtime or external state: `Not Applicable`, or current installed, deployed, environment, service, process, dataset, or external-system state required to resume safely.
 - Active agents and ownership: `None`, or `{assignment-id} -> {agent-id}: {role}, {owned scope}, {status}`. Bind each agent ID to exactly one assignment for its lifetime.
-- Assumptions: Pending review, or `None`.
-- Decisions and durable findings: Pending review, or `None`.
+- Assumptions and constraints: Pending review, or `None`.
+- Decisions and durable findings: Pending review, `None`, or at most five concise current plan-changing facts.
 
 ## Agent Selection
 
@@ -49,22 +64,13 @@ Status: `Pending`, `In Progress`, `Blocked`, or `Ready For Final`
 
 | Assignment | Task Type | Eligible Roles | Selected Role | Decision Status | Rationale |
 | --- | --- | --- | --- | --- | --- |
-| Not Applicable | Not Applicable | None | Not Applicable | Not Applicable | No material delegated assignment is currently planned. |
-
-Keep exactly one current row per material delegated assignment and tie its durable assignment identifier to an `Execution Plan` phase, for example `P2/exploration`, `P2/implementation`, or `P2/verification`. Keep checkpoints and directed retries for the same deliverable in that row. Create a new identifier and row when the task type, primary deliverable, material ownership scope, or acceptance boundary changes; never repurpose an identifier. Use only `Exploration`, `Implementation`, `Verification`, or `Not Applicable` for `Task Type`, and only `Pending`, `Selected`, `Refresh Required`, or `Not Applicable` for `Decision Status`. For `Selected`, list at least one eligible role and set `Selected Role` to exactly one of them. For `Pending` or `Refresh Required`, set both role fields to `Pending`. Use the placeholder `Not Applicable` row only when no material delegation is planned. Replace it as soon as delegation is planned.
-
-List only visible roles that could realistically perform the assignment and limit `Rationale` to one sentence explaining material fit. Do not add rows for coordinator-local work. Do not record agent IDs, active status, ownership, tool inventories, raw role descriptions, outputs, reasoning, unrelated roles, or prior choices here. Replace changed decisions in place and record the superseded choice in `Progress Log`. Refresh unresolved rows only after a material scope change, a different or uncertain runtime, or changed visible role metadata; preserve selections tied only to `Accepted` work. Beyond the two fixed metadata bullets, the selection table, and these fixed rules, add no other bullets, tables, notes, or narrative to this section.
+| Not Applicable | Not Applicable | None | Not Applicable | Not Applicable | No non-terminal material delegated assignment is currently required. |
 
 ## Execution Plan
 
 | Phase | Status | Scope | Owner | Depends On | Done When |
 | --- | --- | --- | --- | --- | --- |
 | P1 | Pending | Define executable phases | Agent Hive | Objective | Plan is specific enough to resume without chat context. |
-
-Keep `Phase` as a short stable identifier such as `P1`, `M-04`, or `F2`. Keep `Status` immediately after it, and put the descriptive title only in `Scope`, so status values remain visually aligned and easy to scan.
-
-Statuses: `Pending`, `In Progress`, `Done`, `Accepted`, `Blocked`, `Not Applicable`.
-Use `Done` when execution is complete but its acceptance gate is pending. Use `Accepted` only when the `Done When` criteria and required coordinator or independent-verifier acceptance gate have passed. After failed acceptance, return the phase to `Pending` or `In Progress` and record the reason in `Progress Log`.
 
 ## Progress Log
 
@@ -75,8 +81,6 @@ Use `Done` when execution is complete but its acceptance gate is pending. Use `A
 ## Next Actions
 
 1. `{owner}`: {next action}; depends on {dependency}; complete when {stop condition}.
-
-Keep only the next one to three real actions. Use `None` when no action remains.
 
 ## Blockers And Risks
 
