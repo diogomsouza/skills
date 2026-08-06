@@ -4,6 +4,8 @@ A collection of active Codex agents and skills. Reusable definitions live under 
 
 ## Active Custom Agents
 
+- `high-risk-code-worker`: implementation agent for bounded production-critical changes involving security, privacy, cryptography, persistence, recovery, concurrency, privileged operations, drivers, installers, release integrity, or public contracts. Requires an invariant and failure contract, adversarial self-audit, differentiated validation evidence, and a gap-free `DONE` handoff.
+- `state-machine-worker`: implementation agent for transition-heavy code where correctness depends on guarded states, ordering, atomicity, cancellation, concurrency, retry, persistence, rollback, replay, recovery, or cleanup. Requires an explicit transition and fault-cut matrix before a `DONE` handoff.
 - `reviewer`: general-purpose, read-only reviewer for material code changes when independent verification is useful and no narrower specialist is a better fit. Uses GPT-5.6 Sol with high reasoning and focuses on correctness, regressions, contracts, compatibility, and high-confidence maintainability concerns.
 - `code-reviewer-security`: reviews security-sensitive and high-risk changes involving authorization, privacy, cryptography, secrets, data integrity, feature gates, installers, drivers, or trust boundaries.
 - `pr-test-analyzer`: reviews behavioral test coverage and identifies concrete gaps in changed behavior, error paths, state transitions, concurrency, and integrations.
@@ -12,7 +14,7 @@ A collection of active Codex agents and skills. Reusable definitions live under 
 
 ## Native Roles Used by Workflows
 
-- `worker`: the default Codex role for delegated implementation and fixes. There is no active custom `code-worker.toml`.
+- `worker`: the default Codex role for delegated implementation and fixes. The active custom implementation agents add stricter capability profiles for bounded high-risk or state-machine work without replacing this native default.
 - `explorer`: the default Codex role for material read-only codebase exploration.
 
 Native-role availability is provided by the Codex runtime rather than this repository.
@@ -137,8 +139,8 @@ Workflow:
 
 1. Create or reuse a verifiable goal and matching progress file.
 2. Discover visible roles and record the best-fit selection for each material assignment.
-3. Delegate standalone exploration to the native `explorer` or another exploration role when needed.
-4. Delegate implementation and fixes to the native `worker` or another role explicitly designed for implementation.
+3. Delegate standalone exploration to the best available read-only exploration capability when needed.
+4. Delegate implementation and fixes to the best available implementation capability for the bounded risk contract.
 5. Review returned work and validation evidence.
 6. When concrete risk requires independence, use a fresh verifier that did not implement the change.
 7. Select `reviewer` for general code verification or the narrow specialist matching the identified risk.
@@ -150,6 +152,8 @@ Role selection:
 
 - native `worker`: default delegated implementation and fixes;
 - native `explorer`: default standalone read-only codebase exploration;
+- `high-risk-code-worker`: bounded implementation where security, integrity, recovery, concurrency, privileged operations, or production-critical contracts require an unusually strict first handoff;
+- `state-machine-worker`: bounded implementation where explicit states, transitions, failure cuts, ordering, atomicity, cancellation, or replay dominate correctness;
 - `reviewer`: general independent code review;
 - `code-reviewer-security`: security and high-risk correctness;
 - `pr-test-analyzer`: behavioral test gaps;
@@ -164,6 +168,8 @@ For ordinary low-risk work, tests, builds, lint, reproducible checks, and coordi
 - I want to challenge a technical plan against the codebase: `grill-code`
 - I want to clarify a product or design decision tree: `grill-me`
 - I want to orchestrate parallel or high-risk work: `agent-hive`
+- I want a production-critical implementation with a strict invariant and handoff gate: `high-risk-code-worker`
+- I want to implement a state machine, lifecycle, persistence, retry, or recovery flow: `state-machine-worker`
 - I want a general independent code review: `reviewer`
 - I want a security-sensitive review: `code-reviewer-security`
 - I want a test-gap review: `pr-test-analyzer`
