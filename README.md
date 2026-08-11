@@ -4,8 +4,8 @@ A collection of active Codex agents and skills. Reusable definitions live under 
 
 ## Active Custom Agents
 
-- `high-risk-code-worker`: implementation agent for bounded production-critical changes involving security, privacy, cryptography, persistence, recovery, concurrency, privileged operations, drivers, installers, release integrity, or public contracts. Requires an invariant and failure contract, adversarial self-audit, differentiated validation evidence, and a gap-free `DONE` handoff.
-- `state-machine-worker`: implementation agent for transition-heavy code where correctness depends on guarded states, ordering, atomicity, cancellation, concurrency, retry, persistence, rollback, replay, recovery, or cleanup. Requires an explicit transition and fault-cut matrix before a `DONE` handoff.
+- `high-risk-code-worker`: implementation agent only for bounded changes with a concrete material failure consequence that a general implementation role cannot cover adequately, such as security boundaries, non-disposable data loss, difficult privileged recovery, irreversible compatibility impact, or production-critical concurrency and durability. Domain labels alone do not qualify; reversible DDL, disposable objects, CRUD, and one-shot scripts stay with the general baseline.
+- `state-machine-worker`: implementation agent only when an explicit state owner, legal and forbidden transitions, ordering, durable cuts, retry, replay, rollback, recovery, or cancellation dominate correctness. Sequential scripts, ordinary schema changes, CRUD, and disposable-object rebuilds are not state machines.
 - `reviewer`: general-purpose, read-only reviewer for material code changes when independent verification is useful and no narrower specialist is a better fit. Uses GPT-5.6 Sol with high reasoning and focuses on correctness, regressions, contracts, compatibility, and high-confidence maintainability concerns.
 - `code-reviewer-security`: reviews security-sensitive and high-risk changes involving authorization, privacy, cryptography, secrets, data integrity, feature gates, installers, drivers, or trust boundaries.
 - `pr-test-analyzer`: reviews behavioral test coverage and identifies concrete gaps in changed behavior, error paths, state transitions, concurrency, and integrations.
@@ -152,8 +152,8 @@ Role selection:
 
 - native `worker`: default delegated implementation and fixes;
 - native `explorer`: default standalone read-only codebase exploration;
-- `high-risk-code-worker`: bounded implementation where security, integrity, recovery, concurrency, privileged operations, or production-critical contracts require an unusually strict first handoff;
-- `state-machine-worker`: bounded implementation where explicit states, transitions, failure cuts, ordering, atomicity, cancellation, or replay dominate correctness;
+- `high-risk-code-worker`: bounded implementation where a concrete material failure consequence makes the general implementation baseline insufficient and requires an unusually strict first handoff;
+- `state-machine-worker`: bounded implementation where explicit state authority, transitions, failure cuts, ordering, cancellation, replay, rollback, or recovery dominate correctness and the general baseline is materially less suitable;
 - `reviewer`: general independent code review;
 - `code-reviewer-security`: security and high-risk correctness;
 - `pr-test-analyzer`: behavioral test gaps;
@@ -168,8 +168,8 @@ For ordinary low-risk work, tests, builds, lint, reproducible checks, and coordi
 - I want to challenge a technical plan against the codebase: `grill-code`
 - I want to clarify a product or design decision tree: `grill-me`
 - I want to orchestrate parallel or high-risk work: `agent-hive`
-- I want a production-critical implementation with a strict invariant and handoff gate: `high-risk-code-worker`
-- I want to implement a state machine, lifecycle, persistence, retry, or recovery flow: `state-machine-worker`
+- I have a concrete production-critical failure consequence that the general implementation baseline cannot cover adequately: `high-risk-code-worker`
+- I need to implement an explicit state machine or lifecycle protocol whose transitions and failure cuts dominate correctness: `state-machine-worker`
 - I want a general independent code review: `reviewer`
 - I want a security-sensitive review: `code-reviewer-security`
 - I want a test-gap review: `pr-test-analyzer`

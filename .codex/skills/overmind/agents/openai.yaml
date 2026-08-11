@@ -1,0 +1,4 @@
+interface:
+  display_name: "Overmind"
+  short_description: "Design-first, runtime-aware orchestration"
+  default_prompt: "Use $overmind to choose justified serial or parallel orchestration, freeze the root-owned design, delegate precise work packages, integrate forward, and converge with risk-scaled verification."
