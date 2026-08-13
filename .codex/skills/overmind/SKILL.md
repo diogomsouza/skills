@@ -132,9 +132,12 @@ authoritative.
 
 ## Plan By Acceptance Boundaries
 
-Keep `Execution Plan` as the authoritative human view. Use one phase per independently acceptable capability or invariant cluster. Prefer behavior or capability slices, which may
-span technical layers, over phases named for an entire directory, subsystem, frontend, backend, platform, or available agent count. A broad product specification is context, not a
-bounded implementation contract.
+Keep `Execution Plan` as the authoritative human view. Use one phase per independently acceptable capability or invariant cluster. Technical boundaries such as frontend, backend,
+service, component, subsystem, directory, or platform may define phase boundaries when they improve ownership, dependency order, implementation coherence, or independent
+verification. A broad product specification is context, not a bounded implementation contract.
+
+Do not group all work from a broad technical layer into one phase merely because it belongs to the same frontend, backend, directory, subsystem, or platform. Split a layer into
+smaller coherent capabilities when they can be implemented, corrected, validated, or accepted independently.
 
 At the post-discovery checkpoint, apply this boundary test to every proposed phase:
 
@@ -148,8 +151,9 @@ Keep parts together when they share one atomic invariant, transaction, state mac
 and accepted together. Do not split merely by file, directory, entity, or line count, and do not target a fixed number of phases. Stop splitting when the remaining parts share the
 same acceptance evidence and correction fate.
 
-Each phase must have bounded ownership, explicit dependencies, a checkable `Done When`, and a proportional verification path. Materialize phases in dependency order and identify
-independent branches that can proceed in parallel after their prerequisites are accepted.
+Each phase must have bounded ownership, explicit dependencies, a checkable `Done When`, and a proportional verification path. Order phases by their actual dependencies. Establish a
+backend capability or stable public contract before dependent frontend work. Once the required interface is stable, allow independent backend and frontend phases to proceed in
+parallel when their ownership and validation remain separate.
 
 Keep only the preliminary discovery phase during initial exploration. After its evidence gate passes, materialize the decomposed phases in dependency order and keep future phases
 flexible as later evidence changes. Freeze only the affected assignment's objective, scope, inherited guarantees, quality contract, evidence, and stop condition immediately before
