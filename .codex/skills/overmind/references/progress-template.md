@@ -1,88 +1,99 @@
-# Overmind Progress Ledger Template
+# Overmind Progress Template
 
-Populate as `.overmind/{context-id}/PLAN-PROGRESS-{context-id}.md`. Keep one ledger per run and preserve its `context-id` on resume.
+Populate as `.overmind/PLAN-PROGRESS-{context-id}.md`. Use this file as concise resumable execution state, not as a ceremonial report or exhaustive transcript.
 
-Keep exactly the seven `##` sections below, in this order. Replace mutable current facts instead of duplicating them, and append material transitions to Progress Log. In Assignments, append one row per immutable assignment-instance binding; never repurpose or delete a historical row or overwrite its assignment ID, origin, package, runtime identity, or scope. Update its four state/disposition columns independently and log each material transition. Corrections and replacements always receive fresh IDs, rows, packages, and runtime identities.
+Preserve exactly the seven `##` sections below, once each and in this order. Store each current fact in one authoritative home: objective facts in `Objective`, current workspace/runtime/ownership/quality-contract facts in `Current State`, current non-terminal selection decisions in `Agent Selection`, phase progress in `Execution Plan`, material history in `Progress Log`, immediate work in `Next Actions`, and unresolved or accepted risk in `Blockers And Risks`.
 
-- Goal: [authoritative managed-run objective]
-- Context ID: `[context-id]`
-- Context root: `.overmind/[context-id]/`
-- Created: `[date and time]`
-- Updated: `[date and time]`
-- Throughput gate snapshot: `[timestamp; authoritative sources; usable/occupied/free capacity; lifecycle controls; topology; active agents and writers]`
-- Throughput decision: `[Managed-Serial|Managed-Parallel(N)]` - [net-value rationale]
-- Plan revision: `[positive integer]`
-- Plan status: `[Draft|DesignReady|Reopened]`
-- Phase: `[GoalDefined|Planning|DesignReady|Executing|RootChecked|Verifying|Correcting|Accepted]`
-- Risk: `[Standard|High-Risk]`
-- Circuit: `[Closed|Open]`
-- Status: `[Active|Accepted|Blocked]`
+Update current fields in place and append only material events. Never add tables or headings beyond the shapes below; never copy raw command output or an agent report; never retain completed candidates, terminal agents, old verdicts, or resolved blockers in current-state fields. Evidence references must be understandable after resume and point to a workspace path, command/result, immutable external result, or concise ledger event.
 
-## Goal And Completion Contract
+Use append time in monotonically nondecreasing order for `Progress Log`. If an observed event happened earlier, put its observed time inside `Evidence / Result`; never reorder or backdate appended rows.
 
-- Outcome: [user-visible result]
-- In scope: [included boundaries]
-- Out of scope: [excluded boundaries]
-- Required evidence: [tests, inspection, smoke, and independent verification]
-- User decision required when: [material choice that cannot be inferred]
-- Complete when: [acceptance, terminal assignments and instances, released ownership, recorded capacity disposition, no blockers, and no next actions]
+Header `Status` is `Pending`, `In Progress`, `Blocked`, or `Ready For Final`. `Ready For Final` means all acceptance prerequisites passed and the final handoff may be emitted or safely reemitted after current-state revalidation; it is not a second acceptance authority.
 
-## Frozen Plan
+```markdown
+# Overmind Progress: {context-id}
 
-- Sources inspected: [request, instructions, critical code, interfaces, tests, and consumers]
-- Artifact design: [candidate and persistent run artifacts]
-- Throughput decision: [why serial or parallel is expected to reduce net time or risk]
-- Risk decision: [classification and triggers]
-- Runtime constraints: [required capabilities, usable capacity, and lifecycle assumptions]
-- Topology and integration policy: [shared-live, isolated/forked, or unknown; ownership and forward-only rules]
-- Architecture and algorithm: [closed design and sequencing]
-- Interfaces and integration: [consumers, compatibility, and order]
-- State and failure behavior: [negative paths, cancellation, cleanup, and recovery]
-- Assignment boundaries: [ownership and dependencies]
-- Checkpoint plan: [High-Risk or planned vertical smoke, otherwise None]
-- Verification plan: [Standard baseline or High-Risk portfolio, one correction wave per Plan Revision, and circuit triggers]
-- Open material decisions: [None before DesignReady]
+Goal: `{authoritative goal identity or exact objective}` - `{authoritative status}`
+Task: {task}
+Created: {timestamp}
+Updated: {timestamp}
+Status: `Pending`, `In Progress`, `Blocked`, or `Ready For Final`
 
-| Requirement | Planned evidence | Disposition |
-| --- | --- | --- |
-| [requirement] | [command, inspection, or review] | [Required|Not Applicable] |
+## Objective
+
+- Request: `{original user request}`
+- In scope: `{included outcomes and boundaries}`
+- Out of scope: `{explicit exclusions}`
+- Done when: `{user-visible result and acceptance evidence}`
 
 ## Current State
 
-- Phase: [current phase and Plan Revision]
-- Candidate State: [Candidate ID; fingerprint and projection method; Mutable or Frozen; base revision; exact cumulative scope; candidate-bearing delta/hunk/symbol provenance to immutable authorized assignment records; mixed paths]
-- Operational State: [snapshot timestamp; authoritative source; topology; occupied/free capacity; active writers; operational artifact inventory; operational and preserved-user change units excluded from the candidate projection]
-- Assignment state: [current nonterminal assignment IDs and states; terminal history remains in Assignments]
-- Ownership state: [scope-to-assignment map, including unowned/released scopes and explicit transfer events]
-- Instance lifecycle: [runtime identity-to-lifecycle map]
-- Capacity disposition: [runtime identity-to-occupied/released/still-occupied map]
-- Validation: [latest commands and results, including unrun checks]
-- Last event: [latest material event]
-- Resume note: [next safe action and any freshness check needed]
+- Current phase: `{P0 bounded discovery until the post-discovery decomposition checkpoint, then the current concrete acceptance phase}`
+- Working set: `{authoritative workspace; shared-live, isolated/forked, or unknown topology; current cumulative candidate-version identity/fingerprint; exact root or immutable locator; phase canonicalization scheme; current complete manifest or complete unit set; exhaustive inclusion rule and explicit exclusions; executable-metadata and non-regular-unit policy; separately protected operational coordination state; relevant external state}`
+- Runtime or external state: `{captured-at; authoritative goal and delegation lifecycle capabilities; authoritative capability and visible-role metadata snapshot; supported none, bounded, or full-history context-transfer semantics and current selection policy; usable capacity; lifecycle/release behavior; required service, database, process, deployment, or environment state}`
+- Active agents and ownership: `None`, or `{assignment -> exact authoritative runtime identity; selected role; effective metadata or Unverified; owned/read-only scope; current state}`
+- Active implementation quality contracts: `None`, or `{implementation assignment -> selected downstream verification capabilities; cohesive invariant clusters; material fault/negative paths; evidence gate; correction/strategy threshold}`
+- Assumptions and constraints: `None`, or `{only current constraints needed to act safely}`
+- Decisions and durable findings: `None`, or `{at most five current plan-changing conclusions}`
 
-## Assignments
+## Agent Selection
 
-| Assignment ID | Origin / findings | Type/risk | Required capability | Selected agent | Runtime identity | Base candidate | Package | Owned scope | Assignment state | Ownership state | Instance lifecycle | Capacity disposition | Done when |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [id] | [initial or rejected candidate, finding IDs, and predecessor assignment] | [type/risk] | [declared capability] | [agent or pending] | [exact identity or pending] | [ID/fingerprint] | [path/version or N/A] | [paths] | [state] | [unassigned, reserved, owned, or released] | [pending, live, terminal, interrupted, or non-reusable] | [not acquired, occupied, released, or still occupied] | [evidence] |
+- Discovery snapshot: `{timestamp and compact capability/visible-role metadata fingerprint}`, `Pending`, or `Not Applicable`; status: `Current`, `Refresh Required`, `Pending`, or `Not Applicable`.
+- Refresh trigger: `None`, or `{runtime uncertainty, material capability change, or visible-role metadata change}`.
 
-## Verification Contract
+| Assignment | Task Type | Eligible Roles | Selected Role | Decision Status | Rationale |
+| --- | --- | --- | --- | --- | --- |
+| Not Applicable | Not Applicable | None | Not Applicable | Not Applicable | No non-terminal material delegated assignment is currently required. |
 
-| Contract | Reviewer capability | Runtime identity | Candidate | Scope | Required evidence | Native result | Verdict | Coverage | Unreviewed surface |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [contract] | [declared capability and independence] | [exact identity or pending] | [frozen ID/fingerprint] | [cumulative scope] | [evidence] | [native result or pending] | [Pending|Accept|Reject] | [Pending|Complete|Incomplete] | [None or gap] |
+## Execution Plan
 
-- Correction wave: `[0/1 for Plan Revision N]`; rejected candidate: `[ID/fingerprint or N/A]`; finding IDs: `[IDs or N/A]`; correction assignments: `[fresh IDs or N/A]`; ownership transfers: `[logged events or N/A]`.
-- Circuit: `[Closed|Open]`; reason: [None or trigger]; close when: [None or strategy completion condition].
+| ID | Status | Work Item | Owner | Depends On | Done When |
+| --- | --- | --- | --- | --- | --- |
+| P0 | In Progress | Discover the architecture, consumers, dependencies, current changes, topology, invariant and failure-domain boundaries, validation surfaces, and material risks needed to decompose implementation | Overmind | Objective | Authoritative evidence is sufficient to create bounded implementation phases with explicit ownership, dependencies, quality contracts, validation, and proportional verification paths. |
 
 ## Progress Log
 
-| Revision | Time | Event | Evidence |
-| --- | --- | --- | --- |
-| [revision] | [time] | [transition, runtime/topology refresh, acknowledgement, assignment/ownership/lifecycle/capacity change, handoff, candidate promotion, audit, verdict, correction, circuit, or decision] | [candidate ID/fingerprint, paths, checks, capacity, or result] |
+| Time | Event | Evidence / Result |
+| --- | --- | --- |
+| {timestamp} | Initialization | Goal created or reused; preliminary P0 discovery phase, known objective and working set, capability snapshot status, and next discovery decision recorded. |
 
-## Next Actions And Blockers
+## Next Actions
 
-- Next Actions: [None or up to three ordered actions]
-- Blockers: [None or owner, condition, and required decision]
-- Risks: [None or current accepted/residual risk and mitigation]
+1. `Overmind`: complete bounded P0 discovery and perform the post-discovery decomposition checkpoint; depends on `Objective`; complete when concrete acceptance phases are recorded and the ledger checkpoint is confirmed.
+
+## Blockers And Risks
+
+- Blockers: `None`, or `{blocking condition and required resolution}`.
+- Risks: `None`, or `{current accepted or residual risk}`.
+```
+
+**Field rules**
+
+`Current State` is present tense only. Keep exactly the seven labeled bullets shown above, in that order. Replace a value when it changes and record the material transition once in `Progress Log`.
+
+`Goal` records the authoritative runtime goal identity or exact objective and its current status. The goal owns durable objective lifecycle; it does not duplicate phase acceptance in `Execution Plan`. Apply the inspection and resume rules from `SKILL.md` before updating it.
+
+`Active implementation quality contracts` is the only durable current snapshot of verifier-informed executor obligations. Keep it compact and concrete. Name selected verification capabilities, not verifier conclusions. Remove a contract after its implementation phase no longer needs correction; retain its material outcome and evidence in `Progress Log`.
+
+`Runtime or external state` records authoritative runtime capabilities, topology, supported context-transfer modes, selected policy, capacity, lifecycle behavior, and relevant external state. Apply lifecycle, continuation, and contamination handling from `SKILL.md`.
+
+`Agent Selection` contains one row per non-terminal material assignment still required by an unaccepted phase. Use only `Exploration`, `Implementation`, `Verification`, or `Not Applicable` for `Task Type`; use only `Pending`, `Selected`, `Refresh Required`, or `Not Applicable` for `Decision Status`. List only realistically eligible roles and use one sentence for rationale. Runtime identities and ownership do not belong here.
+
+Use the `Not Applicable` row only when no current assignment remains. Runtime identities and ownership belong in `Current State`; terminal results, lifecycle disposition, evidence, and candidate impact belong in `Progress Log`. Apply assignment selection, spawn, reuse, and termination rules from `SKILL.md`.
+
+`Execution Plan` is the sole phase-acceptance view. A new run begins with only the P0 row shown in the template. After its evidence gate passes, replace catch-all placeholders with concrete phases using the decomposition, dependency, and acceptance rules from `SKILL.md`.
+
+Keep exactly one row per phase. `Work Item` names the independently acceptable capability or invariant cluster. Use only `Pending`, `In Progress`, `Done`, `In Review`, `Accepted`,
+`Blocked`, or `Not Applicable` as phase status; their transition and acceptance semantics are defined in `SKILL.md`.
+
+`Owner` is `Overmind` for a root-owned phase or a comma-separated set of durable assignment IDs. `Depends On` uses phase IDs or `Objective`. `Done When` remains a stable outcome and evidence gate, not a transcript.
+
+`Progress Log` is the single home for goal creation/reuse and lifecycle transitions, assignment spawns and exact identities, terminal handoffs, candidate freezes/promotions, readiness decisions, verification verdicts, correction findings, strategy reviews, phase acceptance/reopening, external validation, reliable quality metrics, lifecycle/capacity disposition, and resolved blockers. Use one concise row per material event. Candidate history and verification history live only here.
+
+`Next Actions` is either `None` or a numbered list of one to three immediately executable actions. Replace it when the dependency frontier changes; do not preserve completed actions.
+
+`Blockers And Risks` keeps exactly the two labeled bullets. Remove resolved blockers after their resolution is logged. Keep only current accepted or residual risk.
+
+`Blocked` records the affected phase, exact unresolved decision or authority, and safe next action after the blocking rules in `SKILL.md` apply.
+
+`Ready For Final` records that the final-readiness requirements in `SKILL.md` passed. Store the confirmed goal status, current candidate identity, absence of active ownership or blockers, and one `Goal complete; ready for final handoff` event with authoritative usage. There is no ledger `Completed` state without an authoritative delivery receipt.
