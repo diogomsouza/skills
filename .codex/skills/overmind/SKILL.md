@@ -165,8 +165,7 @@ Create one compact contract containing:
 - cohesive invariant clusters and legal or forbidden transitions;
 - applicable invalid, boundary, adversarial, partial-failure, cancellation, timeout, concurrency, exhaustion, cleanup, recovery, migration, and compatibility paths;
 - concrete implementer evidence required before handoff, distinguishing pre-existing checks, checks authored with the change, workflow or fault evidence, and unavailable evidence;
-- proportional integration or real-environment proof and a checkable stop condition;
-- one correction budget, normally a single coherent correction cycle before strategy review.
+- proportional integration or real-environment proof and a checkable stop condition.
 
 Mark a dimension irrelevant only after checking it; do not silently omit an applicable one. Avoid generic checklists and role-name-only instructions. Each obligation should
 identify a concrete invariant, relevant failure path, and evidence. If the contract contains independently acceptable risk domains or cannot be reviewed coherently, split the
@@ -201,7 +200,10 @@ disposition once in `Progress Log`.
 Descendant delegation is forbidden unless root preauthorizes each child assignment, scope, capability, maximum depth, concurrency, and exact spawn. Each child has its own identity,
 bounded task-local context, and disjoint writer scope; it cannot edit the ledger, redefine the plan, promote candidates, or verify its implementation ancestry.
 
-While agents run, root works only outside active ownership and waits only at dependency barriers. Wakeups and timeouts are synchronization, not evidence or verdicts.
+While agents run, root works only outside active ownership and waits at dependency barriers. Treat a recent coherent checkpoint, including bounded analysis, contract formation, or
+validation setup, as progress; lack of file changes alone is not inactivity. When progress becomes unclear, request a checkpoint stating the current activity, completed result,
+blocker, and next concrete action, then allow a response window proportional to task risk and tool latency. Interrupt or replace only when the agent reports a blocker or misroute,
+exceeds that window without observable activity, or continued execution threatens scope, ownership, or safety. Wakeups and timeouts are synchronization, not evidence or verdicts.
 
 The execution gate passes only when every scope and quality-contract obligation has evidence and the complete owned diff was adversarially self-audited. Applicable fault and
 regression paths must be addressed, and no known in-scope gap may remain. Executor-authored tests support, but cannot override, that evidence.
@@ -272,7 +274,7 @@ replace this variance-reducing pass.
 
 For lower-risk work, use only the independent portfolio justified by the concrete risk; do not add ceremony for its own sake.
 
-## Converge Without Patch Loops
+## Converge Corrections
 
 After a rejection, classify each finding as:
 
@@ -284,19 +286,13 @@ After a rejection, classify each finding as:
 Keep the phase `In Review` while root aggregates and classifies rejecting findings. Change it to `In Progress` immediately before authorizing a candidate-bearing correction. A
 review-only rerun, replacement verifier, or evidence reproduction that requires no candidate write remains `In Review`.
 
-Resolve planning and new-risk issues before more writes. Run one aggregated correction wave when scope and strategy remain coherent. Reuse the same assignment and eligible instance
-only while its boundary is stable; otherwise create a new assignment and fresh instance.
+Resolve planning and new-risk issues by updating the plan, boundary, verification portfolio, and quality contract before more writes. Aggregate compatible findings into one
+coherent correction wave. Reuse the same assignment and eligible instance only while its boundary remains stable; otherwise create a new assignment and fresh instance.
 
-Stop incremental patching and perform a recorded strategy review when any occurs:
-
-- the corrected candidate is rejected again in the same boundary;
-- more than three material blockers accumulate in the phase;
-- reliable rework time exceeds initial implementation time;
-- correction churn materially exceeds the intended delta;
-- an accepted phase reopens because an in-scope runtime, consumer, or invariant was missed.
-
-Choose one evidence-backed response: split or narrow the boundary, revisit the design or invariant model, establish missing independent evidence, replace the executor, create a new
-assignment, or request a material user decision. Record the strategy in `Progress Log`; do not maintain a separate circuit or plan-revision state.
+Continue the correction and review cycle while each next wave has coherent scope, authority, and checkable evidence. Do not stop or change execution merely because a candidate is
+rejected again or a finding count is reached. If the same finding persists, rework materially exceeds the initial implementation, correction churn outgrows the intended delta, or
+an accepted phase reopens, revise the design, contract, boundary, evidence, or executor before the next wave. Split the work or request a material user decision only when the
+resulting boundary or authority requires it. Record material plan, contract, assignment, and evidence changes in `Progress Log`; create no separate correction or strategy state.
 
 ## Accept And Complete
 
