@@ -180,8 +180,12 @@ assignment boundary when needed.
 
 ## Delegate And Execute
 
-Before writes, the executor inspects the relevant implementation, consumers, patterns, and validation. Proceed in the same turn when the assignment is coherent and its evidence is
-feasible; otherwise return:
+Before writes, the executor inspects the relevant implementation, consumers, patterns, and validation. Resolve material task-local uncertainty against the strongest authoritative
+source available: project contracts first, then official documentation or primary source. This is required when correctness depends on version-specific or ambiguous behavior of a
+framework, library, protocol, runtime, or external system and local evidence does not already settle it. Apply the confirmed behavior to implementation and validation, and report
+only source-backed decisions that materially affected either; do not inventory routine research.
+
+Proceed in the same turn when the assignment is coherent, material uncertainties are resolved, and its evidence is feasible; otherwise return:
 
 - `SPEC_GAP` for an undecided material behavior or invariant;
 - `NEEDS_SPLIT` for independently reviewable work or failure domains combined in one assignment;
