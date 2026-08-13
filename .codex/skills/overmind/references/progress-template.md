@@ -29,7 +29,8 @@ Status: `Pending`, `In Progress`, `Blocked`, or `Ready For Final`
 ## Current State
 
 - Current phase: `{P0 bounded discovery until the post-discovery decomposition checkpoint, then the current concrete acceptance phase}`
-- Working set: `{authoritative workspace; shared-live, isolated/forked, or unknown topology; current cumulative candidate-version identity/fingerprint; exact root or immutable locator; phase canonicalization scheme; current complete manifest or complete unit set; exhaustive inclusion rule and explicit exclusions; executable-metadata and non-regular-unit policy; separately protected operational coordination state; relevant external state}`
+- Working set: `{authoritative workspace and topology; current cumulative candidate identity/fingerprint; root or immutable locator; reproducibility recipe or evidence reference;
+  protected operational coordination state; relevant external state}`
 - Runtime or external state: `{captured-at; authoritative goal and delegation lifecycle capabilities; authoritative capability and visible-role metadata snapshot; supported none, bounded, or full-history context-transfer semantics and current selection policy; usable capacity; lifecycle/release behavior; required service, database, process, deployment, or environment state}`
 - Active agents and ownership: `None`, or `{assignment -> exact authoritative runtime identity; selected role; effective metadata or Unverified; owned/read-only scope; current state}`
 - Active implementation quality contracts: `None`, or `{implementation assignment -> selected downstream verification capabilities; cohesive invariant clusters; material fault/negative paths; evidence gate; correction/strategy threshold}`
