@@ -50,7 +50,7 @@ Status: `Pending`, `In Progress`, `Blocked`, or `Ready For Final`
 
 | ID | Status | Work Item | Owner | Depends On | Done When |
 | --- | --- | --- | --- | --- | --- |
-| P0 | In Progress | Discover the architecture, consumers, dependencies, current changes, topology, invariant and failure-domain boundaries, validation surfaces, and material risks needed to decompose implementation | Overmind | Objective | Authoritative evidence is sufficient to create bounded implementation phases with explicit ownership, dependencies, quality contracts, validation, and proportional verification paths. |
+| P0 | In Progress | Discover facts and decompose acceptance phases | Overmind | Objective | Required outcomes map to cohesive phases with earliest dependencies and evidence gates. |
 
 ## Progress Log
 
@@ -78,16 +78,23 @@ Status: `Pending`, `In Progress`, `Blocked`, or `Ready For Final`
 
 `Runtime or external state` records authoritative runtime capabilities, topology, supported context-transfer modes, selected policy, capacity, lifecycle behavior, and relevant external state. Apply lifecycle, continuation, and contamination handling from `SKILL.md`.
 
-`Agent Selection` contains one row per non-terminal material assignment still required by an unaccepted phase. Use only `Exploration`, `Implementation`, `Verification`, or `Not Applicable` for `Task Type`; use only `Pending`, `Selected`, `Refresh Required`, or `Not Applicable` for `Decision Status`. List only realistically eligible roles and use one sentence for rationale. Runtime identities and ownership do not belong here.
+`Agent Selection` contains only non-terminal material assignments at the current dependency frontier whose capability decision is pending, selected, or requires refresh. A future
+phase is not an assignment and receives no row until its dependencies are satisfied and selection actually begins. Use only `Exploration`, `Implementation`, `Verification`, or
+`Not Applicable` for `Task Type`; use only `Pending`, `Selected`, `Refresh Required`, or `Not Applicable` for `Decision Status`. List only realistically eligible roles and use one
+sentence for rationale. Runtime identities and ownership do not belong here.
 
-Use the `Not Applicable` row only when no current assignment remains. Runtime identities and ownership belong in `Current State`; terminal results, lifecycle disposition, evidence, and candidate impact belong in `Progress Log`. Apply assignment selection, spawn, reuse, and termination rules from `SKILL.md`.
+Use the `Not Applicable` row when no current selection or non-terminal assignment remains. During P0 review, do not add implementation or verification rows. Anticipated verifier
+capabilities for the current implementation belong in its quality contract, not in speculative verifier rows. Runtime identities and ownership belong in `Current State`; terminal
+results, lifecycle disposition, evidence, and candidate impact belong in `Progress Log`.
 
 `Execution Plan` is the sole phase-acceptance view. A new run begins with only the P0 row shown in the template. After its evidence gate passes, replace catch-all placeholders with concrete phases using the decomposition, dependency, and acceptance rules from `SKILL.md`.
 
 Keep exactly one row per phase. `Work Item` names the independently acceptable capability or invariant cluster. Use only `Pending`, `In Progress`, `Done`, `In Review`, `Accepted`,
 `Blocked`, or `Not Applicable` as phase status; their transition and acceptance semantics are defined in `SKILL.md`.
 
-`Owner` is `Overmind` for a root-owned phase or a comma-separated set of durable assignment IDs. `Depends On` uses phase IDs or `Objective`. `Done When` remains a stable outcome and evidence gate, not a transcript.
+`Owner` is `Overmind` for root-owned work, `Unassigned` for a future delegated phase, or assignment IDs selected at the current dependency frontier.
+Never create speculative assignment IDs or owners for future phases. `Depends On` uses phase IDs or `Objective`. `Done When` remains a stable outcome and evidence gate, not a
+transcript.
 
 `Progress Log` is the single home for goal creation/reuse and lifecycle transitions, assignment spawns and exact identities, terminal handoffs, candidate freezes/promotions, readiness decisions, verification verdicts, correction findings, strategy reviews, phase acceptance/reopening, external validation, reliable quality metrics, lifecycle/capacity disposition, and resolved blockers. Use one concise row per material event. Candidate history and verification history live only here.
 
