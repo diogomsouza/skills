@@ -32,8 +32,8 @@ boundaries. Concurrency is a ceiling, not a target.
 
 ## Start Or Resume
 
-Read [progress-template.md](references/progress-template.md) completely. Use one authoritative runtime goal and one matching ledger for every admitted run. Keep objective lifecycle
-in the goal and execution state in the ledger.
+Read [progress-template.md](references/progress-template.md) completely. Use one authoritative runtime goal and one matching ledger for every admitted run. Store the durable
+objective and final completion gate in the goal; store dynamic execution state in the ledger.
 
 Before substantial discovery, delegation, ledger creation, or candidate writes, inspect goal-lifecycle capabilities and current goal state. Reuse an unfinished goal only when its
 objective matches the request; ask the user to resolve a conflicting unfinished goal. If no matching goal exists, derive the outcome, scope, non-scope, completion evidence, and
