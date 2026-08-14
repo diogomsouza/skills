@@ -2,7 +2,6 @@ name = "silent-failure-hunter"
 description = '''
 Read-only specialist for silent failures and misleading recovery behavior in changed code. Use for catch blocks, ignored results, default-on-error behavior, retries, fallbacks, background tasks, callbacks, cleanup, or error propagation. Do not use for ordinary code review when error behavior is not material.
 '''
-model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 
 developer_instructions = '''

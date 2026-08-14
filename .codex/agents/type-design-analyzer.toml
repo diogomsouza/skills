@@ -2,7 +2,6 @@ name = "type-design-analyzer"
 description = '''
 Read-only specialist for types that carry meaningful domain rules, public contracts, permissions, identities, money, state machines, or serialization boundaries. Use when such types are introduced or materially changed. Do not use for routine DTOs, generated models, or simple data containers unless they encode important invariants.
 '''
-model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 
 developer_instructions = '''
