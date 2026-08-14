@@ -5,8 +5,7 @@ Populate as `.overmind/PLAN-PROGRESS-{context-id}.md`. Use this file as concise 
 Preserve exactly the seven `##` sections below, once each and in this order. Store each current fact in one authoritative home: objective facts in `Objective`, current workspace/runtime/ownership/quality-contract facts in `Current State`, current non-terminal selection decisions in `Agent Selection`, phase progress in `Execution Plan`, material history in `Progress Log`, immediate work in `Next Actions`, and unresolved or accepted risk in `Blockers And Risks`.
 
 Write the ledger only for material decisions, ownership changes, phase transitions, candidate promotions, blockers, and terminal evidence. In one atomic edit, use one authoritative
-timestamp for `Updated` and the new `Progress Log` row, then refresh `Current State`, `Agent Selection`, `Execution Plan`, `Next Actions`, and `Blockers And Risks` wherever
-affected.
+timestamp for `Updated` and the new `Progress Log` row, refresh every affected section, and validate all `Execution Plan` statuses against its durable vocabulary.
 Keep routine checkpoints in commentary.
 
 Update current facts in place and append only material events. Never add tables or headings beyond the shapes below; never copy raw command output or an agent report; never retain
@@ -55,6 +54,8 @@ Status: `Pending`, `In Progress`, `Blocked`, or `Ready For Final`
 
 ## Execution Plan
 
+Phase status: `Pending` | `In Progress` | `Done` | `In Review` | `Accepted` | `Blocked` | `Not Applicable`
+
 | ID | Status | Work Item | Source Coverage | Owner | Depends On | Done When |
 | --- | --- | --- | --- | --- | --- | --- |
 | P0 | In Progress | Discover/decompose phases | Request/source IDs | Overmind | Objective | Outcomes map to cohesive phases with earliest dependencies and evidence. |
@@ -94,11 +95,10 @@ Use the `Not Applicable` row when no current selection or non-terminal assignmen
 capabilities for the current implementation belong in its quality contract, not in speculative verifier rows. Runtime identities and ownership belong in `Current State`; terminal
 results, lifecycle disposition, evidence, and candidate impact belong in `Progress Log`.
 
-`Execution Plan` is the sole phase-acceptance view. A new run begins with only the P0 row shown in the template. After its evidence gate passes, replace catch-all placeholders with
-concrete phases using the decomposition, dependency, coverage, and acceptance rules from `SKILL.md`.
+`Execution Plan` is the sole phase-acceptance view. Keep exactly one row per phase and validate its `Status` against the durable vocabulary above the table before each ledger write.
+A new run begins with only P0; after its evidence gate passes, materialize concrete phases using the decomposition, dependency, coverage, and acceptance rules from `SKILL.md`.
 
-Keep exactly one row per phase. `Work Item` names the independently acceptable capability or invariant cluster. Use only `Pending`, `In Progress`, `Done`, `In Review`, `Accepted`,
-`Blocked`, or `Not Applicable` as phase status; their transition and acceptance semantics are defined in `SKILL.md`.
+`Work Item` names the independently acceptable capability or invariant cluster. Phase transition and acceptance semantics are defined in `SKILL.md`.
 
 `Source Coverage` lists only compact identifiers or headings for required behaviors, inherited guarantees, and cross-phase invariants owned primarily by that phase; do not restate
 requirements. Before P0 acceptance, every required item has exactly one primary phase. `Owner` is `Overmind` for root-owned work, `Unassigned` for a future delegated phase, or an
