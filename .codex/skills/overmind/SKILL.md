@@ -42,7 +42,7 @@ and create the goal. If goal lifecycle is unavailable or fails, stop; preserve a
 
 For a new run, create `.overmind/PLAN-PROGRESS-{context-id}.md` from the template after the goal is active. Use `YYYY-MM-DD-{short-kebab-slug}` and add a suffix only on collision.
 
-When creating `.overmind` on Windows, make a best-effort attempt to mark it hidden with `attrib +h .agent-hive` from the workspace root. Ignore failures.
+When creating `.overmind` on Windows, make a best-effort attempt to mark it hidden with `attrib +h .overmind` from the workspace root. Ignore failures.
 
 Initialize only the template's root-owned P0 discovery phase.
 
