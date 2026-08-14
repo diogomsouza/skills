@@ -4,7 +4,14 @@ Populate as `.overmind/PLAN-PROGRESS-{context-id}.md`. Use this file as concise 
 
 Preserve exactly the seven `##` sections below, once each and in this order. Store each current fact in one authoritative home: objective facts in `Objective`, current workspace/runtime/ownership/quality-contract facts in `Current State`, current non-terminal selection decisions in `Agent Selection`, phase progress in `Execution Plan`, material history in `Progress Log`, immediate work in `Next Actions`, and unresolved or accepted risk in `Blockers And Risks`.
 
-Update current fields in place and append only material events. Never add tables or headings beyond the shapes below; never copy raw command output or an agent report; never retain completed candidates, terminal agents, old verdicts, or resolved blockers in current-state fields. Evidence references must be understandable after resume and point to a workspace path, command/result, immutable external result, or concise ledger event.
+Write the ledger only for material decisions, ownership changes, phase transitions, candidate promotions, blockers, and terminal evidence. In one atomic edit, use one authoritative
+timestamp for `Updated` and the new `Progress Log` row, then refresh `Current State`, `Agent Selection`, `Execution Plan`, `Next Actions`, and `Blockers And Risks` wherever
+affected.
+Keep routine checkpoints in commentary.
+
+Update current facts in place and append only material events. Never add tables or headings beyond the shapes below; never copy raw command output or an agent report; never retain
+completed candidates, terminal agents, old verdicts, or resolved blockers in current-state fields. Evidence references must remain understandable after resume and point to a
+workspace path, command/result, immutable external result, or concise ledger event.
 
 Use append time in monotonically nondecreasing order for `Progress Log`. If an observed event happened earlier, put its observed time inside `Evidence / Result`; never reorder or backdate appended rows.
 
@@ -48,9 +55,9 @@ Status: `Pending`, `In Progress`, `Blocked`, or `Ready For Final`
 
 ## Execution Plan
 
-| ID | Status | Work Item | Owner | Depends On | Done When |
-| --- | --- | --- | --- | --- | --- |
-| P0 | In Progress | Discover facts and decompose acceptance phases | Overmind | Objective | Required outcomes map to cohesive phases with earliest dependencies and evidence gates. |
+| ID | Status | Work Item | Source Coverage | Owner | Depends On | Done When |
+| --- | --- | --- | --- | --- | --- | --- |
+| P0 | In Progress | Discover/decompose phases | Request/source IDs | Overmind | Objective | Outcomes map to cohesive phases with earliest dependencies and evidence. |
 
 ## Progress Log
 
@@ -87,14 +94,18 @@ Use the `Not Applicable` row when no current selection or non-terminal assignmen
 capabilities for the current implementation belong in its quality contract, not in speculative verifier rows. Runtime identities and ownership belong in `Current State`; terminal
 results, lifecycle disposition, evidence, and candidate impact belong in `Progress Log`.
 
-`Execution Plan` is the sole phase-acceptance view. A new run begins with only the P0 row shown in the template. After its evidence gate passes, replace catch-all placeholders with concrete phases using the decomposition, dependency, and acceptance rules from `SKILL.md`.
+`Execution Plan` is the sole phase-acceptance view. A new run begins with only the P0 row shown in the template. After its evidence gate passes, replace catch-all placeholders with
+concrete phases using the decomposition, dependency, coverage, and acceptance rules from `SKILL.md`.
 
 Keep exactly one row per phase. `Work Item` names the independently acceptable capability or invariant cluster. Use only `Pending`, `In Progress`, `Done`, `In Review`, `Accepted`,
 `Blocked`, or `Not Applicable` as phase status; their transition and acceptance semantics are defined in `SKILL.md`.
 
-`Owner` is `Overmind` for root-owned work, `Unassigned` for a future delegated phase, or assignment IDs selected at the current dependency frontier.
-Never create speculative assignment IDs or owners for future phases. `Depends On` uses phase IDs or `Objective`. `Done When` remains a stable outcome and evidence gate, not a
-transcript.
+`Source Coverage` lists only compact identifiers or headings for required behaviors, inherited guarantees, and cross-phase invariants owned primarily by that phase; do not restate
+requirements. Before P0 acceptance, every required item has exactly one primary phase. `Owner` is `Overmind` for root-owned work, `Unassigned` for a future delegated phase, or an
+assignment ID selected at the current dependency frontier.
+
+Never create speculative assignment IDs or owners for future phases. `Depends On` uses phase IDs or `Objective`. `Done When` remains an observable, stable outcome and evidence
+gate, not a transcript.
 
 `Progress Log` is the single home for goal creation/reuse and lifecycle transitions, assignment spawns and exact identities, terminal handoffs, candidate freezes/promotions, readiness decisions, verification verdicts, correction findings, strategy reviews, phase acceptance/reopening, external validation, reliable quality metrics, lifecycle/capacity disposition, and resolved blockers. Use one concise row per material event. Candidate history and verification history live only here.
 
