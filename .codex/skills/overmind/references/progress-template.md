@@ -130,5 +130,7 @@ Use one concise row per material event. Candidate and verification history live 
 
 `Blocked` records the affected phase, exact unresolved decision or authority, and safe next action after the blocking rules in `SKILL.md` apply.
 
-`Ready For Final` records that the final-readiness requirements in `SKILL.md` passed. Store confirmed goal status, current candidate identity, absence of active ownership or
-blockers, and one `Goal complete; ready for final handoff` event with authoritative usage. There is no ledger `Completed` state without an authoritative delivery receipt.
+`Ready For Final` records that the final-readiness requirements in `SKILL.md` passed. In one atomic update, set `Current phase` to `Complete`,
+`Working set`, active agents, and active quality contracts to `None`, normalize `Agent Selection` to `Not Applicable`, require every phase to be `Accepted` or `Not Applicable`, and
+set `Next Actions` and blockers to `None`. Preserve the final candidate identity, validation, residual risks, and authoritative goal usage in one `Goal complete; ready for final
+handoff` event. There is no ledger `Completed` state without an authoritative delivery receipt.

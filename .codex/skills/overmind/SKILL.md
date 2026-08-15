@@ -1,10 +1,11 @@
 ---
 name: overmind
 description: >-
-  Coordinate complex, high-risk, parallelizable, or long-running work through a durable goal, proportional admission, risk-boundary decomposition, capability-selected agents,
-  verifier-informed implementation contracts, staged evidence, forward-only integration, concise resumable progress, risk-based independent verification, and fresh final assurance
-  for high-risk work. Use when the user explicitly invokes Overmind, requests design-first multi-agent orchestration, or needs resumable coordinated work across agents or turns.
-  Skip the managed protocol for an implicitly selected small, low-risk, reversible root-local task when its coordination cost would not improve the outcome.
+  Coordinate complex, high-risk, parallelizable, or long-running work through a durable goal, proportional admission, bounded ownership, forward-only integration, and risk-based
+  independent verification. Use when the user explicitly invokes Overmind or requests orchestration, agents, subagents, delegation, or parallel work; when two or more independent
+  material workstreams can reduce elapsed time; or when consequential work benefits from durable coordination, provenance, controlled integration, or independent verification.
+  When selected and its admission gate passes, treat that as standing authorization to use available delegation capabilities without requiring an explicit orchestration request.
+  Avoid the managed protocol for small, low-risk, localized, reversible, or inherently single-threaded work whose coordination cost would exceed its benefit.
 ---
 
 # Overmind
@@ -289,8 +290,10 @@ Begin acceptance only through the canonical status gate in `Accept And Complete`
 root acceptance validation, candidate freeze, or verifier creation. A root-owned read-only discovery phase may enter from `In Progress` under the same rules. Keep the phase
 `In Review` while validation, verdicts, aggregation, identity checks, or closure evidence remain pending.
 
-A verification batch is every independent contract required by the selected mode for one frozen candidate, whether they run concurrently or serially. `Root Evidence` has no
-verification batch. Before an independent batch, root must:
+A verification batch is every independent contract required by one phase's selected mode on one frozen candidate, whether they run concurrently or serially. `Root Evidence` has
+no verification batch. A shared candidate does not create shared phase acceptance: aggregate contracts separately for each phase and, as soon as one phase's verification mode
+passes, move only that phase to `Accepted`; other phases using the candidate remain unchanged. Reopen an accepted phase after a later correction only under the affected-phase rule
+in `Accept And Complete`. Before an independent batch, root must:
 
 - confirm implementation ownership ended and root integration validation passed;
 - establish and reproduce the complete candidate identity as root-owned evidence, preferring an immutable or read-only snapshot and otherwise quiescing writers;
@@ -367,7 +370,9 @@ Apply these transitions:
 5. Return `In Review` to `In Progress` before authorizing a candidate write. After correction, pass through `Done` and `In Review` again.
 6. Keep `In Review` for evidence reproduction, verifier replacement, or closure work that does not modify the candidate.
 7. A root-owned read-only discovery phase may move from `In Progress` directly to `In Review` after its evidence gate.
-8. Reopen `Accepted` to `In Progress` for candidate writes or to `In Review` for acceptance-only work.
+8. Before any candidate-bearing write, move every `Accepted` phase whose accepted behavior, guarantees, consumers, or evidence can be affected to `In Progress`; leave unaffected
+   phases unchanged. Each reopened phase must pass through `Done` and `In Review` before becoming `Accepted` again. Carry forward only verifier contracts proven unaffected under
+   `Verify In Stages`. Move an `Accepted` phase to `In Review` for acceptance-only work.
 
 After a blocker resolves, reconstruct the authoritative required activity and transition to its corresponding state; never move directly from `Blocked` to `Accepted`. Before a
 checkpoint commit or later dependency frontier, read `Execution Plan` and require the current phase and every dependency to be `Accepted` or `Not Applicable`. Before final
@@ -404,10 +409,12 @@ Track reliable quality signals when available: first-handoff result, material fi
 real-environment validation, and fresh-final verdicts. Never estimate unavailable timing. Optimize for trustworthy final acceptance, not for an easy first-pass green verdict.
 
 Prepare the user handoff with the outcome, changed files, validation, residual risks, ledger path, and authoritative goal usage returned at completion; do not replay routine agent
-activity. After every prerequisite passes, mark the goal complete. If goal completion fails, keep or set the ledger `Blocked` and do not claim completion. After it succeeds,
-perform and confirm the `Ready For Final` ledger transition defined in `progress-template.md`, then emit the prepared response. On resume from that state, revalidate goal
-completion, current candidate identity, ownership, blockers, and final evidence; if unchanged, reemit the handoff without rerunning accepted work. The goal owns durable objective
-lifecycle, and `Execution Plan` remains the sole phase-acceptance authority.
+activity. After every prerequisite passes, mark the goal complete. If goal completion fails, keep or set the ledger `Blocked` and do not claim completion. After it succeeds, use
+one atomic ledger update to set `Goal` to complete, `Status` to `Ready For Final`, `Current phase` to `Complete`, `Working set`, active agents, and active quality contracts to `None`,
+`Agent Selection` to `Not Applicable`, `Next Actions` and blockers to `None`, and confirm every phase is `Accepted` or `Not Applicable`. Record the final candidate identity,
+validation, residual risks, and authoritative goal usage in one terminal `Progress Log` event. Read the ledger back and emit the prepared response only when this state is coherent.
+On resume, revalidate goal completion, the terminal candidate identity recorded in `Progress Log`, ownership, blockers, and final evidence; if unchanged, reemit the handoff without
+rerunning accepted work. The goal owns durable objective lifecycle, and `Execution Plan` remains the sole phase-acceptance authority.
 
 ## Prompt Patterns
 
