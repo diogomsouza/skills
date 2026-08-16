@@ -17,8 +17,8 @@ workspace path, command/result, immutable external result, or concise ledger eve
 Use append time in monotonically nondecreasing order for `Progress Log`. If an event happened earlier, put its observed time inside `Evidence / Result`; never reorder or backdate
 appended rows.
 
-Header `Status` is `Pending`, `In Progress`, `Blocked`, or `Ready For Final`. `Ready For Final` means all acceptance prerequisites passed and the final handoff may be emitted or
-safely reemitted after current-state revalidation; it is not a second acceptance authority.
+Header `Status` is `Pending`, `In Progress`, `Blocked`, or `Ready For Final`. `Ready For Final` means the authoritative goal is complete, the terminal ledger is normalized, and the
+final handoff may be emitted or safely reemitted after revalidation; it is not a second acceptance authority.
 
 ```markdown
 # Overmind Progress: {context-id}
@@ -130,7 +130,7 @@ Use one concise row per material event. Candidate and verification history live 
 
 `Blocked` records the affected phase, exact unresolved decision or authority, and safe next action after the blocking rules in `SKILL.md` apply.
 
-`Ready For Final` records that the final-readiness requirements in `SKILL.md` passed. In one atomic update, set `Current phase` to `Complete`,
+`Ready For Final` records that the final-readiness requirements in `SKILL.md` passed and the authoritative goal is complete. In one atomic update, set `Current phase` to `Complete`,
 `Working set`, active agents, and active quality contracts to `None`, normalize `Agent Selection` to `Not Applicable`, require every phase to be `Accepted` or `Not Applicable`, and
 set `Next Actions` and blockers to `None`. Preserve the final candidate identity, validation, residual risks, and authoritative goal usage in one `Goal complete; ready for final
 handoff` event. There is no ledger `Completed` state without an authoritative delivery receipt.
