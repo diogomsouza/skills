@@ -6,8 +6,9 @@ Preserve exactly the seven `##` sections below, once each and in this order. Sto
 ownership, and quality-contract facts in `Current State`; current non-terminal selection decisions in `Agent Selection`; phase progress in `Execution Plan`; material history in
 `Progress Log`; immediate work in `Next Actions`; and unresolved or accepted risk in `Blockers And Risks`.
 
-Write the ledger only for material decisions, ownership changes, phase transitions, candidate promotions, blockers, and terminal evidence. In one atomic edit, use one authoritative
-timestamp for `Updated` and the new `Progress Log` row, refresh every affected section, and validate all `Execution Plan` statuses against its durable vocabulary.
+Write the ledger only for material decisions, ownership changes, phase transitions, checkpoint dispositions, candidate promotions, blockers, and terminal evidence. In one atomic
+edit, use one authoritative timestamp for `Updated` and the new `Progress Log` row, refresh every affected section, and validate all `Execution Plan` statuses against its durable
+vocabulary.
 Keep routine checkpoints in commentary.
 
 Update current facts in place and append only material events. Never add tables or headings beyond the shapes below; never copy raw command output or an agent report; never retain
@@ -120,9 +121,9 @@ assignment ID selected at the current dependency frontier.
 Never create speculative assignment IDs or owners for future phases. `Depends On` uses phase IDs or `Objective`. `Done When` remains an observable, stable outcome and evidence
 gate, not a transcript.
 
-`Progress Log` is the single home for goal and lifecycle transitions, assignment spawns and identities, terminal handoffs, candidate freezes or promotions, readiness decisions,
-verification verdicts, correction findings, strategy reviews, phase acceptance or reopening, external validation, quality metrics, lifecycle disposition, and resolved blockers.
-Use one concise row per material event. Candidate and verification history live only here.
+`Progress Log` is the single home for goal and lifecycle transitions, assignment spawns and identities, terminal handoffs, candidate freezes or promotions, checkpoint dispositions,
+readiness decisions, verification verdicts, correction findings, strategy reviews, phase acceptance or reopening, external validation, quality metrics, lifecycle disposition, and
+resolved blockers. Use one concise row per material event. Candidate and verification history live only here.
 
 `Next Actions` is either `None` or one to three immediately executable actions. Replace it when the dependency frontier changes; do not preserve completed actions.
 
@@ -130,7 +131,8 @@ Use one concise row per material event. Candidate and verification history live 
 
 `Blocked` records the affected phase, exact unresolved decision or authority, and safe next action after the blocking rules in `SKILL.md` apply.
 
-`Ready For Final` records that the final-readiness requirements in `SKILL.md` passed and the authoritative goal is complete. In one atomic update, set `Current phase` to `Complete`,
-`Working set`, active agents, and active quality contracts to `None`, normalize `Agent Selection` to `Not Applicable`, require every phase to be `Accepted` or `Not Applicable`, and
-set `Next Actions` and blockers to `None`. Preserve the final candidate identity, validation, residual risks, and authoritative goal usage in one `Goal complete; ready for final
-handoff` event. There is no ledger `Completed` state without an authoritative delivery receipt.
+`Ready For Final` records that the final-readiness requirements in `SKILL.md` passed and the authoritative goal is complete. Terminal normalization must not advance phase statuses,
+create missing transitions, or invent checkpoint dispositions. In one atomic update, set `Current phase` to `Complete`, `Working set`, active agents, and active quality contracts to
+`None`, normalize `Agent Selection` to `Not Applicable`, require every phase to be `Accepted` or `Not Applicable`, require one recorded checkpoint disposition for each
+candidate-bearing phase's current acceptance, and set `Next Actions` and blockers to `None`. Preserve the final candidate identity, validation, residual risks, and authoritative
+goal usage in one `Goal complete; ready for final handoff` event. There is no ledger `Completed` state without an authoritative delivery receipt.

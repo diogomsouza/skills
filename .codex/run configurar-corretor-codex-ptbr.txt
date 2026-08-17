@@ -1,1 +1,3 @@
+pwsh -NoLogo -NoProfile -File .\configurar-corretor-codex-ptbr.ps1
+
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\configurar-corretor-codex-ptbr.ps1"
