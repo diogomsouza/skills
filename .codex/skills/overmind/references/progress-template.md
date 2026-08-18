@@ -42,9 +42,9 @@ Status: `Pending`, `In Progress`, `Blocked`, or `Ready For Final`
 - Current phase: `{P0 bounded discovery until the post-discovery decomposition checkpoint, then the current concrete acceptance phase}`
 - Working set: `{authoritative workspace and topology; current cumulative candidate identity/fingerprint; root or immutable locator; reproducibility recipe or evidence reference;
   protected operational coordination state; relevant external state}`
-- Runtime or external state: `{captured-at; authoritative goal and delegation lifecycle capabilities; role and execution-configuration metadata snapshot; root configuration ceiling;
-  context-transfer and selection policy; usable capacity; lifecycle/release behavior; required service, database, process, deployment, or environment state}`
-- Active agents and ownership: `None`, or `{assignment -> authoritative runtime identity; selected role; requested configuration; effective configuration or Unverified;
+- Runtime or external state: `{captured-at; authoritative goal and delegation lifecycle capabilities; role and execution-configuration metadata snapshot; context-transfer and
+  selection policy; usable capacity; lifecycle/release behavior; required service, database, process, deployment, or environment state}`
+- Active agents and ownership: `None`, or `{assignment -> authoritative runtime identity; selected role; selected model and effort; effective configuration or Unverified;
   owned/read-only scope; current state}`
 - Active implementation quality contracts: `None`, or `{assignment -> verification mode and rationale; activated specialists and material consequence; invariant clusters; fault
   paths; evidence gate; correction threshold}`
@@ -53,9 +53,9 @@ Status: `Pending`, `In Progress`, `Blocked`, or `Ready For Final`
 
 ## Agent Selection
 
-- Discovery snapshot: `{timestamp and compact role, model, effort, override, fixed-configuration, ordering, and root-ceiling metadata fingerprint}`, `Pending`, or `Not Applicable`;
+- Discovery snapshot: `{timestamp and compact role, model, effort, override, fixed-configuration, ordering, and selection-metadata fingerprint}`, `Pending`, or `Not Applicable`;
   status: `Current`, `Refresh Required`, `Pending`, or `Not Applicable`.
-- Refresh trigger: `None`, or `{runtime uncertainty or material host, capability, configuration availability, ordering, override, or root-ceiling change}`.
+- Refresh trigger: `None`, or `{runtime uncertainty or material host, capability, configuration availability, ordering, override, or fixed-configuration change}`.
 
 | Assignment | Task Type | Eligible Roles | Selected Role | Execution Configuration | Decision Status | Rationale |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -98,15 +98,15 @@ Phase status: `Pending` | `In Progress` | `Done` | `In Review` | `Accepted` | `B
 specialists that passed the selection gates, each with its changed boundary and material consequence. Keep obligations compact and concrete; never store verdicts here. Remove a
 contract after its phase no longer needs correction and retain its material outcome and evidence in `Progress Log`.
 
-`Runtime or external state` records authoritative runtime capabilities, topology, context-transfer modes, model and effort availability and ordering, fixed configurations, root
-ceiling, selection policy, capacity, lifecycle behavior, and relevant external state. Apply lifecycle, continuation, and contamination handling from `SKILL.md`.
+`Runtime or external state` records authoritative runtime capabilities, topology, context-transfer modes, model and effort availability and ordering, fixed configurations, selection
+policy, capacity, lifecycle behavior, and relevant external state. Apply lifecycle, continuation, and contamination handling from `SKILL.md`.
 
 `Agent Selection` contains only non-terminal material assignments at the current dependency frontier whose capability or execution-configuration decision is pending, selected, or
 requires refresh. A future phase is not an assignment and receives no row until its dependencies are satisfied and selection begins. Use only `Exploration`, `Implementation`,
-`Verification`, or `Not Applicable` for `Task Type`; use only `Pending`, `Selected`, `Refresh Required`, or `Not Applicable` for `Decision Status`. `Execution Configuration` is
-`inherit`, a capability-fixed configuration, or a requested model and effort; record effective metadata only in `Current State` and `Progress Log` when the runtime confirms it.
-List only realistically eligible roles and use one sentence to justify capability fit, configuration sufficiency, and compliance with the root ceiling. Runtime identities and
-ownership do not belong here.
+`Verification`, or `Not Applicable` for `Task Type`; use only `Pending`, `Selected`, `Refresh Required`, or `Not Applicable` for `Decision Status`. `Execution Configuration` is always
+the concrete selected runtime model and reasoning effort, including capability-fixed pairs; `inherit` is invalid. Record effective metadata only in `Current State` and `Progress Log`
+when the runtime confirms it. List only realistically eligible roles and use one sentence to justify capability fit and configuration sufficiency. Runtime identities and ownership
+do not belong here.
 
 Use the `Not Applicable` row when no current selection or non-terminal assignment remains. During P0 review, do not add implementation or verification rows. The current phase's
 verification mode and anticipated capabilities belong in its quality contract, not speculative verifier rows. Runtime identities and ownership belong in `Current State`;

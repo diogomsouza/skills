@@ -69,9 +69,9 @@ Run P0 as bounded read-only discovery. Inspect the request, authoritative projec
 Explore only unknowns that could change scope, phase boundaries, dependencies, invariants, failure domains, capability eligibility, or acceptance evidence. Stop when the remaining
 uncertainty cannot change those decisions. Authorize no candidate writes before P0 is accepted.
 
-Capture one authoritative orchestration snapshot: topology, lifecycle, capacity, context transfer, eligible roles, model and effort overrides, fixed configurations, runtime-declared
-ordering, and the root's authoritative current configuration as a strict ceiling. Compare only through runtime metadata or explicit user policy, never names; revalidate after resume
-or material host, runtime, availability, or ceiling change. Mark unavailable current or effective metadata `Unverified`; never use agent self-report as runtime authority.
+Capture one authoritative orchestration snapshot: topology, lifecycle, capacity, context transfer, eligible roles, runtime-declared models, efforts, ordering, explicit overrides, and
+fixed configurations. Use only runtime metadata or explicit user policy to compare configurations; never infer capability from names or use agent self-report as runtime authority.
+Revalidate after resume or a material host, runtime, availability, or configuration change. Do not delegate until the assignment has a concrete selectable model and effort pair.
 
 Prefer `none` or `bounded` context transfer; use `full-history` only when material history cannot be summarized safely. Give every agent a complete bounded contract and never pass
 one agent's conversation to another. If delivered context violates the selected policy, stop the instance and discard its evidence. Reconcile possible writes against the last
@@ -145,11 +145,12 @@ Use a general implementation capability as the baseline. Select a specialized im
 
 Technology labels alone do not qualify. If selection reveals independently acceptable outcomes or dominant risk domains, return to `Plan By Acceptance Boundaries` before assignment.
 
-After capability selection, choose a runtime-declared model and effort proportionate to the task and no higher than the root ceiling, including fixed ones. Consider a lower
-configuration only if the reduction gate proves it sufficient; do not optimize for minimum. If comparison or override support is unavailable, inherit; cost and latency are secondary.
-
-Reduce only for a complete known contract, no material uncertainty, local reversible failure, and decisive evidence. Use ceiling for novel design or material cross-boundary, security,
-privacy, state, concurrency, recovery, integration, or weak-evidence risk. Apply per agent; independence is not model strength. Never exceed ceiling or infer capability from names.
+After capability selection, choose one concrete runtime-declared model and effort for the assignment, including capability-fixed configurations. Judge suitability from contract
+complexity, uncertainty, risk, failure impact, required context, tool use, and acceptance evidence. Compare only realistic candidates, select sufficient capability rather than the
+minimum or strongest by default, and record the selected model, effort, and one compact rationale. Never select or record `inherit`; cost and latency are secondary to suitability.
+Favor a more efficient configuration for a complete known contract, no material uncertainty, local reversible failure, and decisive evidence. Favor greater capability or effort for
+novel design or material cross-boundary, security, privacy, state, concurrency, recovery, integration, or weak-evidence risk. Apply the decision per agent; independence is not model
+strength. If no concrete pair can be selected or requested, keep the delegated assignment unstarted and choose another eligible execution path instead of silently inheriting.
 
 Before the phase's first material write, select one provisional verification mode from concrete consequence, coupling, reversibility, uncertainty, and available evidence. Record
 `Root Evidence`, `Independent General`, or `Independent Portfolio` with one compact rationale. Re-evaluate after handoff and before acceptance; after material writes, the mode may
@@ -236,13 +237,12 @@ Send each agent one compact bounded contract through the applicable prompt patte
 task-local facts that are unavailable there. State each obligation once and include topology, exact ownership, dependencies, relevant base or candidate identity, validation, and
 stop condition. Agents preserve unrelated edits, leave the ledger untouched, and accept only same-assignment follow-ups.
 
-Pass contracts and execution configuration as structured runtime data; never interpolate unescaped contract text into executable source, and serialize the prompt as data when
-composition is unavoidable. Override model or effort only when authoritatively at or below the root ceiling; otherwise inherit. A spawn requires a stable runtime identity. Correct
-and retry one call-construction failure without assigning ownership or changing phase state; treat repetition as a blocker.
-
-Bind each exact runtime identity to one durable assignment and record its requested configuration plus runtime-confirmed effective configuration or `Unverified`; never infer it from
-the request or agent. If the runtime reports a configuration above the ceiling, stop before ownership or writes and refresh selection. Give replacements a fresh bounded prompt;
-keep active bindings and configurations in `Current State`, and log spawn, terminal evidence, ownership release, and capacity disposition once in `Progress Log`.
+Pass contracts and execution configuration as structured runtime data, serializing the prompt as data when composition is unavoidable. For a generic role, request the selected model
+and effort explicitly; for a capability-fixed role, confirm the pair against runtime metadata. Never omit the pair from selection or record `inherit`. A spawn requires a stable
+runtime identity. Correct and retry one call-construction failure before assigning ownership or changing phase state; treat repetition as a blocker.
+Bind each exact runtime identity to one durable assignment and record its selected model and effort plus runtime-confirmed effective configuration or `Unverified`; never infer the
+effective configuration from the request or agent. If the runtime reports a mismatch, stop before ownership or writes and refresh selection. Give replacements a fresh bounded
+prompt; keep active bindings and configurations in `Current State`, and log spawn, terminal evidence, ownership release, and capacity disposition once in `Progress Log`.
 
 Descendant delegation is forbidden unless root preauthorizes each child assignment, scope, capability, maximum depth, concurrency, and exact spawn. Each child has its own identity,
 bounded task-local context, and disjoint writer scope; it cannot edit the ledger, redefine the plan, promote candidates, or verify its implementation ancestry.
@@ -357,8 +357,8 @@ review-only rerun, replacement verifier, or evidence reproduction that requires 
 
 Resolve planning issues by updating the affected plan, boundary, mode, and quality contract before writes. For `new risk`, decide whether failure is reachable, material, authorized,
 and inadequately covered; escalate or add a specialist only through the selection gates. Aggregate compatible findings into one correction wave and reuse the same assignment,
-eligible instance, and configuration while its boundary remains stable. An ordinary rejection never justifies more compute; replace the instance at a stronger configuration no
-higher than the root ceiling only when material evidence proves the prior configuration insufficient. Create a new assignment only when the boundary changes.
+eligible instance, and configuration while its boundary remains stable. An ordinary rejection never justifies more compute; select and record a stronger runtime-declared model or
+effort only when material evidence proves the prior configuration insufficient. Create a new assignment only when the boundary changes.
 
 Continue the correction and review cycle while each next wave has coherent scope, authority, and checkable evidence. Do not stop or change execution merely because a candidate is
 rejected again or a finding count is reached. If the same finding persists, rework materially exceeds the initial implementation, correction churn outgrows the intended delta, or
