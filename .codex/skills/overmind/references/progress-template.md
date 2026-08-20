@@ -39,12 +39,12 @@ Status: `Pending`, `In Progress`, `Blocked`, or `Ready For Final`
 
 ## Current State
 
-- Current phase: `{P0 bounded discovery until the post-discovery decomposition checkpoint, then the current concrete acceptance phase}`
+- Current phase and gate: `{current concrete phase; exact pending gate or condition; governing SKILL.md section; next legal transition}`
 - Working set: `{authoritative workspace and topology; current cumulative candidate identity/fingerprint; root or immutable locator; reproducibility recipe or evidence reference;
   protected operational coordination state; relevant external state}`
 - Runtime or external state: `{captured-at; authoritative goal and delegation lifecycle capabilities; role and execution-configuration metadata snapshot; context-transfer and
   selection policy; usable capacity; lifecycle/release behavior; required service, database, process, deployment, or environment state}`
-- Active agents and ownership: `None`, or `{assignment -> authoritative runtime identity; selected role; selected model and effort; effective configuration or Unverified;
+- Active agents and ownership: `None`, or `{assignment -> runtime identity; selected role; selected model, effort, and context mode; effective configuration or Unverified;
   owned/read-only scope; current state}`
 - Active implementation quality contracts: `None`, or `{assignment -> verification mode and rationale; activated specialists and material consequence; invariant clusters; fault
   paths; evidence gate; correction threshold}`
@@ -88,8 +88,8 @@ Phase status: `Pending` | `In Progress` | `Done` | `In Review` | `Accepted` | `B
 
 **Field rules**
 
-`Current State` is present tense only. Keep exactly the seven labeled bullets above, in that order. Replace changed values and record each material transition once in
-`Progress Log`.
+`Current State` is present tense only. Keep exactly the seven labeled bullets above, in that order. `Current phase and gate` must identify the exact pending condition, governing
+`SKILL.md` section, and next legal transition clearly enough to resume without conversation history. Replace changed values and record each material transition once in `Progress Log`.
 
 `Goal` records the authoritative runtime goal identity or exact objective and its current status. It owns durable objective lifecycle and does not duplicate phase acceptance in
 `Execution Plan`. Apply the inspection and resume rules from `SKILL.md` before updating it.
@@ -104,9 +104,9 @@ policy, capacity, lifecycle behavior, and relevant external state. Apply lifecyc
 `Agent Selection` contains only non-terminal material assignments at the current dependency frontier whose capability or execution-configuration decision is pending, selected, or
 requires refresh. A future phase is not an assignment and receives no row until its dependencies are satisfied and selection begins. Use only `Exploration`, `Implementation`,
 `Verification`, or `Not Applicable` for `Task Type`; use only `Pending`, `Selected`, `Refresh Required`, or `Not Applicable` for `Decision Status`. `Execution Configuration` is always
-the concrete selected runtime model and reasoning effort, including capability-fixed pairs; `inherit` is invalid. Record effective metadata only in `Current State` and `Progress Log`
-when the runtime confirms it. List only realistically eligible roles and use one sentence to justify capability fit and configuration sufficiency. Runtime identities and ownership
-do not belong here.
+the concrete selected runtime model, reasoning effort, and context-transfer mode, including capability-fixed pairs; `inherit` is invalid and independent verification requires
+`none`. A `Selected` row becomes spawn authority only after root reads it back; the call must match its assignment, role, model, effort, and context exactly. Record effective metadata
+only in `Current State` and `Progress Log`. List only realistic roles and justify capability, configuration, and context in one sentence; identities and ownership do not belong here.
 
 Use the `Not Applicable` row when no current selection or non-terminal assignment remains. During P0 review, do not add implementation or verification rows. The current phase's
 verification mode and anticipated capabilities belong in its quality contract, not speculative verifier rows. Runtime identities and ownership belong in `Current State`;
@@ -128,14 +128,17 @@ gate, not a transcript.
 readiness decisions, verification verdicts, correction findings, strategy reviews, phase acceptance or reopening, external validation, quality metrics, lifecycle disposition, and
 resolved blockers. Use one concise row per material event. Candidate and verification history live only here.
 
-`Next Actions` is either `None` or one to three immediately executable actions. Replace it when the dependency frontier changes; do not preserve completed actions.
+`Next Actions` is either `None` or one to three immediately executable actions, each naming its governing `SKILL.md` section and required ledger evidence. It is the authorization
+gate for spawning, authorizing writes, freezing or promoting a candidate, applying a verdict, transitioning, accepting, or reopening a phase, committing, and completing the goal.
+After ledger creation, perform none of these unless the exact action is listed and its evidence exists; reconcile the ledger first when needed. Replace the list when the dependency
+frontier changes and never preserve completed actions.
 
 `Blockers And Risks` keeps exactly the two labeled bullets. Remove resolved blockers after their resolution is logged. Keep only current accepted or residual risk.
 
 `Blocked` records the affected phase, exact unresolved decision or authority, and safe next action after the blocking rules in `SKILL.md` apply.
 
 `Ready For Final` records that the final-readiness requirements in `SKILL.md` passed and the authoritative goal is complete. Terminal normalization must not advance phase statuses,
-create missing transitions, or invent checkpoint dispositions. In one atomic update, set `Current phase` to `Complete`, `Working set`, active agents, and active quality contracts to
-`None`, normalize `Agent Selection` to `Not Applicable`, require every phase to be `Accepted` or `Not Applicable`, require one recorded checkpoint disposition for each
+create missing transitions, or invent checkpoint dispositions. In one atomic update, set `Current phase and gate` to `Complete`, `Working set`, active agents, and active quality
+contracts to `None`, normalize `Agent Selection` to `Not Applicable`, require every phase to be `Accepted` or `Not Applicable`, require one recorded checkpoint disposition for each
 candidate-bearing phase's current acceptance, and set `Next Actions` and blockers to `None`. Preserve the final candidate identity, validation, residual risks, and authoritative
 goal usage in one `Goal complete; ready for final handoff` event. There is no ledger `Completed` state without an authoritative delivery receipt.
