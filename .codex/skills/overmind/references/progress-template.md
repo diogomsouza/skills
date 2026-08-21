@@ -32,7 +32,7 @@ Status: `Pending`, `In Progress`, `Blocked`, or `Ready For Final`
 
 ## Objective
 
-- Request: `{original user request}`
+- Request: `{original user request}`{when applicable: ` According to {exact accessible plan or specification file}.`}
 - In scope: `{included outcomes and boundaries}`
 - Out of scope: `{explicit exclusions}`
 - Done when: `{user-visible result and acceptance evidence}`
@@ -90,6 +90,9 @@ Phase status: `Pending` | `In Progress` | `Done` | `In Review` | `Accepted` | `B
 
 `Current State` is present tense only. Keep exactly the seven labeled bullets above, in that order. `Current phase and gate` must identify the exact pending condition, governing
 `SKILL.md` section, and next legal transition clearly enough to resume without conversation history. Replace changed values and record each material transition once in `Progress Log`.
+
+`Request` preserves the original user request verbatim. Append ` Conforme {exact accessible plan or specification file}.` only if the user referenced an accessible plan
+or specification file or this run created PLAN-SPECS; use the referenced file when present, otherwise the generated workspace-relative path, and append nothing when neither exists.
 
 `Goal` records the authoritative runtime goal identity or exact objective and its current status. It owns durable objective lifecycle and does not duplicate phase acceptance in
 `Execution Plan`. Apply the inspection and resume rules from `SKILL.md` before updating it.

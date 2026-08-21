@@ -49,8 +49,14 @@ and create the goal. If goal lifecycle is unavailable or fails, stop; preserve a
 For a new run, choose `{context-id}` as `YYYY-MM-DD-{short-kebab-slug}` with a suffix only on collision. After goal activation, if the complete implementation plan or detailed
 implementation specification exists only in the active conversation and no accessible user-referenced file preserves it, write it to `docs/PLAN-SPECS-{context-id}.md`, creating
 `docs` when needed. Preserve its wording, structure, ordering, lists, examples, and decisions without imposing a template, summarizing, normalizing, or inventing content.
-Thereafter treat it exactly as a user-referenced authoritative source and never modify it. Then create `.overmind/PLAN-PROGRESS-{context-id}.md` from the template. On Windows, try
-to mark `.overmind` hidden with `attrib +h .overmind` from the workspace root, ignore failures, and initialize only the template's root-owned P0 discovery phase.
+Thereafter treat it exactly as a user-referenced authoritative source and never modify it. Then create `.overmind/PLAN-PROGRESS-{context-id}.md` from the template. 
+
+In its `Request`, preserve the original user request verbatim and append ` According to {exact accessible plan or specification file}.` only when an accessible plan or specification file was 
+referenced by the user or this run successfully created PLAN-SPECS; use the referenced file when present, otherwise the generated workspace-relative path, and append nothing when neither exists.
+
+When creating `.overmind` on Windows, make a best-effort attempt to mark it hidden with `attrib +h .overmind` from the workspace root. Ignore failures.
+
+Initialize only the template's root-owned P0 discovery phase.
 
 For a resume or context rehydration:
 
