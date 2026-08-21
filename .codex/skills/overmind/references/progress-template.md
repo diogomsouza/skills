@@ -32,10 +32,11 @@ Status: `Pending`, `In Progress`, `Blocked`, or `Ready For Final`
 
 ## Objective
 
-- Request: `{original user request}`{when applicable: ` According to {exact accessible plan or specification file}.`}
+- Request: `{original user request}`
+- Specification: `None`, or `{exact accessible plan or specification locator}`; origin: `User Referenced` or `Generated`
 - In scope: `{included outcomes and boundaries}`
 - Out of scope: `{explicit exclusions}`
-- Done when: `{user-visible result and acceptance evidence}`
+- Done when: `{user-visible result and acceptance evidence; when Specification is not None, complete mapped-requirement acceptance evidence and explicit justification for every exclusion}`
 
 ## Current State
 
@@ -67,7 +68,7 @@ Phase status: `Pending` | `In Progress` | `Done` | `In Review` | `Accepted` | `B
 
 | ID | Status | Work Item | Source Coverage | Owner | Depends On | Done When |
 | --- | --- | --- | --- | --- | --- | --- |
-| P0 | In Progress | Discover/decompose phases | Request/source IDs | Overmind | Objective | Outcomes map to cohesive phases with earliest dependencies and evidence. |
+| P0 | In Progress | Discover/decompose phases | Request; Specification locator and headings when present; project-instruction locators | Overmind | Objective | Outcomes map to cohesive phases with earliest dependencies and evidence. |
 
 ## Progress Log
 
@@ -91,8 +92,12 @@ Phase status: `Pending` | `In Progress` | `Done` | `In Review` | `Accepted` | `B
 `Current State` is present tense only. Keep exactly the seven labeled bullets above, in that order. `Current phase and gate` must identify the exact pending condition, governing
 `SKILL.md` section, and next legal transition clearly enough to resume without conversation history. Replace changed values and record each material transition once in `Progress Log`.
 
-`Request` preserves the original user request verbatim. Append ` Conforme {exact accessible plan or specification file}.` only if the user referenced an accessible plan
-or specification file or this run created PLAN-SPECS; use the referenced file when present, otherwise the generated workspace-relative path, and append nothing when neither exists.
+`Request` preserves the original user request verbatim and never appends source text. `Specification` is the authoritative home for the implementation plan or specification locator.
+Use the exact accessible user-referenced locator with origin `User Referenced`; otherwise use the generated workspace-relative PLAN-SPECS path with origin `Generated` when creation
+succeeded; otherwise use `None`. Prefer a workspace-relative locator when the user-referenced source is inside the workspace.
+
+When `Specification` is not `None`, `Done when` includes complete specification conformance: every applicable requirement mapped through `Source Coverage` has acceptance evidence in
+an `Accepted` phase, and every exclusion has an explicit justification. Keep the locator only in `Specification`; do not repeat it in `Done when`.
 
 `Goal` records the authoritative runtime goal identity or exact objective and its current status. It owns durable objective lifecycle and does not duplicate phase acceptance in
 `Execution Plan`. Apply the inspection and resume rules from `SKILL.md` before updating it.
@@ -120,9 +125,11 @@ A new run begins with only P0; after its evidence gate passes, materialize concr
 
 `Work Item` names the independently acceptable capability or invariant cluster. Phase transition and acceptance semantics are defined in `SKILL.md`.
 
-`Source Coverage` lists only compact identifiers or headings for required behaviors, inherited guarantees, and cross-phase invariants owned primarily by that phase; do not restate
-requirements. Before P0 acceptance, every required item has exactly one primary phase. `Owner` is `Overmind` for root-owned work, `Unassigned` for a future delegated phase, or an
-assignment ID selected at the current dependency frontier.
+`Source Coverage` lists compact, resolvable source locators and relevant headings for required behaviors, inherited guarantees, and cross-phase invariants owned primarily by that
+phase; do not restate requirements. When `Specification` is not `None`, every affected phase cites its exact locator and relevant heading. All `Specification` entries are root-only
+inputs for building and rechecking self-contained implementation and verification contracts regardless of origin; never carry their locators into agent prompts. Before P0
+acceptance, every required item has exactly one primary phase. `Owner` is `Overmind` for root-owned work, `Unassigned` for a future delegated phase, or an assignment ID selected at
+the current dependency frontier.
 
 Never create speculative assignment IDs or owners for future phases. `Depends On` uses phase IDs or `Objective`. `Done When` remains an observable, stable outcome and evidence
 gate, not a transcript.
