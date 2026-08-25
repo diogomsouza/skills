@@ -1,4 +1,4 @@
 interface:
   display_name: "Agent Hive"
-  short_description: "Coordinate agents for faster or safer delivery"
-  default_prompt: "Use $agent-hive to coordinate this high-risk or parallelizable task with a verifiable goal, capability-based subagent selection, risk-based independent verification, and a durable resumable .agent-hive/PLAN-PROGRESS file."
+  short_description: "Verifier-informed, evidence-driven orchestration"
+  default_prompt: "Use $agent-hive to coordinate this work through a durable goal, risk-boundary decomposition, verifier-informed implementation contracts, concise resumable progress, staged validation, and fresh final assurance where risk justifies it."

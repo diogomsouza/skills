@@ -1,10 +1,8 @@
 ---
 name: overmind
 description: >-
-  Coordinate complex, high-risk, parallelizable, or long-running work through a durable goal, proportional admission, bounded ownership, forward-only integration, and risk-based
-  independent verification. Use when the user explicitly invokes Overmind or requests orchestration, agents, subagents, delegation, or parallel work; when two or more independent
-  material workstreams can reduce elapsed time; or when consequential work benefits from durable coordination, provenance, controlled integration, or independent verification.
-  Avoid the managed protocol for small, low-risk, localized, reversible, or inherently single-threaded work whose coordination cost would exceed its benefit.
+  Coordinate complex, high-risk, parallelizable, or long-running work through durable goals, bounded ownership, controlled integration, and independent verification. Use for 
+  orchestration, delegation, parallel work, or consequential changes; avoid small, low-risk, single-threaded tasks.
 ---
 
 # Overmind
