@@ -249,12 +249,16 @@ requirements regardless of origin; never pass their locators or instruct agents 
 them, and inline only task-local facts unavailable there. State each obligation once and include topology, exact ownership, dependencies, relevant base or candidate identity,
 validation, and stop condition. Agents preserve unrelated edits, leave the ledger untouched, and accept only same-assignment follow-ups.
 
-Pass contracts and launch configuration as structured runtime data, serializing the prompt as data when composition is unavoidable. Immediately before each spawn, read its current
-`Selected` Agent Selection row and construct the call from its exact role, model, effort, and context mode. For a generic role, request the pair explicitly; for a capability-fixed
-role, confirm it against runtime metadata. Missing, pending, stale, mismatched, or context-incompatible data invalidates the call; correct and retry once before identity, ownership,
-or phase change, and treat repetition as a blocker. Never record `inherit`. Bind each exact runtime identity to one assignment and record its selected pair and context plus the
-runtime-confirmed effective configuration or `Unverified`; never infer it from the request or agent. If runtime reports a mismatch, stop before ownership or writes, invalidate its
-evidence, refresh selection, and use a fresh bounded prompt. Keep active bindings in `Current State`; log spawn, terminal evidence, release, and capacity disposition once.
+Pass contracts and launch configuration as structured runtime data, serializing the prompt as data when composition is unavoidable. Immediately before each spawn or continuation,
+read the assignment's current `Selected` Agent Selection row and require its exact role, model, effort, and context mode. For a generic role, request the pair explicitly; for a
+capability-fixed role, confirm it against runtime metadata. Missing, pending, stale, mismatched, or context-incompatible data invalidates the action; correct it once before identity,
+ownership, or phase change, and treat repetition as a blocker. Never record `inherit`.
+
+Bind each runtime identity permanently to its first assignment in the run. Reuse it only for continuation or correction of that same assignment within the same phase. A different
+assignment or phase requires a newly spawned identity, even when the role and configuration remain eligible or prior context would be useful. Release or terminal state never permits
+rebinding. A continuation mechanism that preserves identity or history cannot satisfy `none` for a new assignment. Record the selected pair, context, runtime-confirmed effective
+configuration or `Unverified`, spawn, terminal evidence, ownership release, and capacity disposition in their authoritative ledger sections. If runtime reports a mismatch, stop
+before ownership or writes, invalidate its evidence, refresh selection, and use a fresh bounded prompt; never infer effective configuration from the request or agent.
 
 Descendant delegation is forbidden unless root preauthorizes each child assignment, scope, capability, maximum depth, concurrency, and exact spawn. Each child has its own identity,
 bounded task-local context, and disjoint writer scope; it cannot edit the ledger, redefine the plan, promote candidates, or verify its implementation ancestry.
@@ -347,8 +351,9 @@ For a corrected candidate, rerun each rejecting contract and every accepted cont
 accepted contract merely because candidate identity changed. Root may carry its evidence forward only after proving the delta cannot affect that contract; otherwise rerun it.
 A verdict remains bound to its original candidate and is never relabeled for a corrected identity.
 
-Use the same eligible verifier for correction closure. Require a fresh instance only when the verification boundary or strategy materially changes, independence was compromised,
-or fresh final assurance is required.
+Reuse a verifier identity only for correction closure of the same verification assignment within the same phase. A different phase or verification assignment, a materially changed
+boundary or strategy, compromised independence, or fresh final assurance requires a newly spawned identity. A continued identity retains its verification history and cannot satisfy
+`none` for a new contract; treat any resulting evidence as `CONTAMINATED`.
 
 Fresh final assurance requires an independent general review when the cumulative candidate is high-risk or cross-phase integration leaves a material interaction not fully decided
 by phase evidence. Otherwise root reruns applicable cumulative evidence without a fresh verifier. Add a fresh specialist only when its boundary changed after its last independent

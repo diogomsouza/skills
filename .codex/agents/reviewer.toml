@@ -1,6 +1,6 @@
 name = "reviewer"
 description = '''
-Independent read-only baseline reviewer for every non-trivial code change. Always use for a fresh general pass over correctness, regressions, contracts, state transitions, compatibility, and maintainability of changed behavior. Pair it with one or more available review specialists when the diff presents a material risk that benefits from focused independent analysis, such as security, silent failures, behavioral test coverage, domain-type design, or another specialized concern. Specialists complement rather than replace the baseline review. Do not use for trivial edits or style-only review.
+Independent read-only reviewer for every non-trivial code change. Reviews correctness, regressions, contracts, state transitions, compatibility, maintainability, error handling, recovery behavior, observability, retries, fallbacks, background work, cleanup, and error propagation. Produces one verdict and one deduplicated output. Do not use for trivial edits or style-only review.
 '''
 sandbox_mode = "read-only"
 
