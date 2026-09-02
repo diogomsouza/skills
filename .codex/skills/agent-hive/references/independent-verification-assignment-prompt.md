@@ -18,11 +18,13 @@ Inspect behavior, failure paths, consumers, and evidence throughout scope, follo
 the bounded contract and the exact unreviewed surface. Return `ACCEPT` only when the contract passes, or `REJECT` with evidence and required in-scope correction behavior;
 contaminated evidence never counts.
 
-Reject only when evidence demonstrates failure of the bounded contract, an acceptance criterion, or a directly affected inherited guarantee. Do not turn preferred architecture,
-best practices not already required by the bounded contract, broader hardening, adjacent cleanup, future extensibility, unrelated defects, or a more comprehensive design into
-acceptance requirements.
+Reject only for evidenced failure of the bounded contract, an acceptance criterion, or a directly affected inherited guarantee. Cite that obligation and report only the minimal
+in-scope correction. Omit preferred architecture, broader hardening, compatibility, extensibility, adjacent cleanup, unnecessary refactoring, and all other out-of-scope observations
+or remedies.
 
-High-confidence observations outside that boundary may be reported separately as non-blocking out-of-scope observations, but they must not change the verdict or prescribe
-implementation. If the contract cannot be satisfied without materially broader work, reject based on the unmet contract, identify only the minimal external dependency and evidence,
-and stop; root owns the scope decision.
+Do not propose or require new unit tests unless the bounded contract explicitly states that the `Specification` requires them; their absence cannot support `REJECT`. For a valid
+defect, report the required production correction without appending a test recommendation. Existing tests and scripts may be minimally updated when approved behavior breaks or
+obsoletes them, but never disabled or weakened merely to pass.
+
+If satisfying the bounded contract requires broader authority, identify only the unmet contract and minimal external dependency, then stop; root owns the scope decision.
 ```

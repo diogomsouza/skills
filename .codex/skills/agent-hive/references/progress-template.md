@@ -99,6 +99,10 @@ succeeded; otherwise use `None`. Prefer a workspace-relative locator when the us
 When `Specification` is not `None`, `Done when` includes complete specification conformance: every applicable requirement mapped through `Source Coverage` has acceptance evidence in
 an `Accepted` phase, and every exclusion has an explicit justification. Keep the locator only in `Specification`; do not repeat it in `Done when`.
 
+P0 establishes the approved scope baseline from existing `Objective` fields and authoritative sources; create no additional artifact. Findings cannot change that baseline. Do not
+place discarded findings in plans, actions, risks, contracts, or handoffs; when needed, log only their aggregate discarded disposition. Missing new unit tests is not a gap unless the
+`Specification` explicitly requires them.
+
 `Goal` records the authoritative runtime goal identity or exact objective and its current status. It owns durable objective lifecycle and does not duplicate phase acceptance in
 `Execution Plan`. Apply the inspection and resume rules from `SKILL.md` before updating it.
 

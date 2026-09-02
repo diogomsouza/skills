@@ -102,6 +102,20 @@ At the post-discovery checkpoint:
 
 Continue discovery or block when material uncertainty remains; never hide it inside a broad phase or speculative future assignment.
 
+## Enforce Scope Admissibility
+
+At P0 acceptance, the approved scope baseline is the authoritative request, `Specification` when present, project instructions, and the ledger's `In scope` and `Out of scope`
+fields; create no separate scope artifact. Later evidence may refine implementation, planning, and validation, but only an explicit user-approved amendment may change approved
+outcomes or exclusions.
+
+Before acting on a finding or proposed remedy, root must map it to an approved requirement, acceptance criterion, or directly affected inherited guarantee; confirm evidence of an
+in-scope correctness, security, recovery, portability, or conformance failure; and confirm that the minimal correction adds no unapproved functionality, profile, mechanism, product
+behavior, legacy compatibility, new unit test, or unnecessary refactor.
+
+Otherwise discard it as out of scope: it creates no phase, assignment, correction, candidate write, documentation, blocker, risk, or final recommendation. Preserve an admissible
+defect separately from an inadmissible remedy. Missing evidence may authorize evidence-only work, never scope expansion or unauthorized tests. A `REJECT` supported only by discarded
+findings is nonconforming evidence: keep the candidate unchanged and request a corrected verdict or replace the verifier.
+
 ## Plan By Acceptance Boundaries
 
 Use `Execution Plan` as the sole phase-acceptance view. A phase is one meaningful independently acceptable capability or one invariant cluster whose outcomes normally pass, fail,
@@ -138,7 +152,8 @@ when material.
 Each phase also defines bounded scope, earliest dependencies, and proportional verification needs. Future delegated phases remain `Unassigned`. Create a durable assignment only
 when its phase reaches the current dependency frontier and capability selection is required; `Delegate And Execute` governs its runtime lifecycle.
 
-Revise unstarted phases as evidence changes. Revise an active phase only through the planning-gap or strategy-review rules. Log each non-obvious split or grouping decision once.
+Revise unstarted phases as evidence changes. Revise an active phase only through the planning-gap or strategy-review rules. Evidence may revise how approved outcomes are decomposed,
+implemented, and verified, but must not add outcomes or remove exclusions from the approved scope baseline. Log each non-obvious split or grouping decision once.
 
 ## Select Implementation And Verification Capabilities
 
@@ -191,8 +206,9 @@ exposed dependency risk, and production trust configuration.
 Technology, directory, implementation role, available capacity, or broad labels such as frontend, backend, API, database, upload, authentication, persistence, or infrastructure
 do not activate a specialist. Neither does consuming an unchanged accepted boundary. State the changed boundary and material consequence in one sentence; otherwise omit it.
 
-After handoff, any material defect, missing evidence, scope growth, unexpected consumer impact, or newly recognized risk boundary withdraws `Root Evidence` and requires the
-appropriate independent mode. A green test suite alone never justifies de-escalation. High-risk work never loses a required contract because of capacity; serialize instead.
+After handoff, any material defect, missing evidence, unexpected consumer impact, or newly recognized risk boundary withdraws `Root Evidence` and requires the appropriate independent
+mode. Remove unauthorized scope growth already present in the candidate as an execution or integration defect; discard reviewer-proposed scope growth. Neither expands the baseline.
+A green test suite alone never justifies de-escalation. High-risk work never loses a required contract because of capacity; serialize instead.
 
 Preselect verifier capabilities, not identities. Once the candidate and bounded contracts are ready, atomically create one `Agent Selection` row per verifier with assignment, role,
 model, effort, `none`, and rationale, then read it back. An absent, pending, stale, or mismatched row forbids spawn; executor lineage is never independent.
@@ -217,8 +233,12 @@ Create one compact, self-contained contract containing:
 - inherited guarantees and interfaces that must remain true;
 - cohesive invariant clusters and legal or forbidden transitions;
 - applicable invalid, boundary, adversarial, partial-failure, cancellation, timeout, concurrency, exhaustion, cleanup, recovery, migration, and compatibility paths;
-- concrete implementer evidence required before handoff, distinguishing pre-existing checks, checks authored with the change, workflow or fault evidence, and unavailable evidence;
+- concrete implementer evidence required before handoff, distinguishing pre-existing checks, checks explicitly authorized by the `Specification`, workflow or fault evidence, and
+  unavailable evidence;
 - proportional integration or real-environment proof and a checkable stop condition.
+
+Migration, compatibility, and newly authored test obligations are applicable only when required by mapped scope or a directly affected inherited guarantee; never infer them from
+artifacts, best practices, or reviewer preference.
 
 Mark a dimension irrelevant only after checking it; do not silently omit an applicable one. Avoid generic checklists and role-name-only instructions. Each obligation should
 identify a concrete invariant, relevant failure path, and evidence. If the contract contains independently acceptable risk domains or cannot be reviewed coherently, split the
@@ -361,6 +381,8 @@ acceptance, later integration created a new material interaction, prior evidence
 the last delta; do not add a specialist merely because the system contains that domain or it reviewed an earlier phase.
 
 ## Converge Corrections
+
+Apply `Enforce Scope Admissibility` to each finding and remedy first. Classify and correct only what passes; a verifier verdict does not grant scope authority.
 
 After a rejection, classify each finding as:
 
