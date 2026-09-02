@@ -70,6 +70,32 @@ For a resume or context rehydration:
 Before dependent actions, reconcile goal and ledger. Once it exists, apply its `Next Actions` gate and reread the governing skill section before each material action. Only root
 writes it under the template's material-event and atomic-update rules. Keep checkpoints in commentary; block work until conflicting or unexpected changes are reconciled.
 
+After reconciling the ledger, compact any eligible closed history under `Keep Progress History Bounded` before the next material action. Compaction changes coordination history
+only and grants no execution or transition authority.
+
+## Keep Progress History Bounded
+
+Treat `Progress Log` as bounded coordination memory, not an exhaustive transcript. Only root may compact it, and only for closed phase history or a closed correction or verification
+wave. Phase history is closed when the phase is `Accepted` or `Not Applicable`, its required checkpoint disposition exists, every associated identity is terminal and released, and
+no verdict, blocker, evidence gate, or dependent action remains unresolved. A wave is closed when its candidate was superseded or accepted and its findings, verdicts, and
+carry-forward consequences are resolved.
+
+Never compact facts required to reconstruct the current gate or candidate, active selection, ownership, quality contract or verification batch, an unresolved blocker or risk, the
+checkpoint for a phase's current acceptance, or the terminal handoff event.
+
+Compact phase history as soon as it closes, in the same authorized ledger update that records its required checkpoint disposition or `Not Applicable` transition. Compact a closed
+correction or verification wave on the next authorized ledger update once no pending action depends on its row-level chronology; do not wait for a size or event-count threshold.
+Treat one phase as the maximum compaction boundary: preserve at least one `History compacted: <phase>` row for every phase whose history is removed, and never combine different
+phases in one summary. Within the same phase, closed correction or verification waves may share one phase-specific summary when their consequences remain attributable. Use at most
+three summary rows for one phase only when one cannot preserve the required facts. Preserve the covered range and row count, final disposition and candidate, verification result,
+each affected identity and its terminal disposition, checkpoint, resolvable evidence, material correction or strategy conclusions, and carried guarantees or risks.
+
+Keep compacted phase summaries as a prefix of `Progress Log` in `Execution Plan` order. For the active phase, place its closed-wave summary before its uncompacted current events.
+Use the current update timestamp for each summary and record its covered historical range in `Evidence / Result`. Keep the uncompacted event tail in monotonically nondecreasing
+append-time order. Delete covered rows and update the summary prefix in the same atomic edit. Read the ledger back and confirm that current state, protected facts, section structure,
+and ordering remain coherent. On failure, retain the prior ledger and do not advance. Do not create a separate history archive or reconstruct removed detail from conversation
+memory.
+
 ## Discover Only What Changes Decisions
 
 Run P0 as bounded read-only discovery. Inspect the request, authoritative project instructions, relevant implementation and tests, current changes, and required external systems.
@@ -330,8 +356,9 @@ Before freezing or promoting a candidate:
 3. review the complete cumulative diff and confirm that affected accepted guarantees remain true;
 4. derive the identity and fingerprint from the complete candidate-bearing content.
 
-Keep the current candidate identity and reproducibility evidence in `Current State`; log superseded candidates in `Progress Log`. Exclude the live `.agent-hive` ledger and other
-operational artifacts unless an immutable snapshot is itself a deliverable.
+Keep the current candidate identity and reproducibility evidence in `Current State`; record each superseded candidate's material outcome in `Progress Log`. After its correction or
+verification wave is closed, replace its raw history only under `Keep Progress History Bounded`. Exclude the live `.agent-hive` ledger and other operational artifacts unless an
+immutable snapshot is itself a deliverable.
 
 Root may make a small immediate integration correction only when it is the single tightly coupled action blocking the next decision, its boundary and quality obligations are
 recorded, and no agent owns the scope. Delegate material corrections.
@@ -411,7 +438,8 @@ reconstruct omitted transitions during later work or terminal normalization. A t
 of one phase immediately updates only that phase, regardless of other phases running or reviewed against the same candidate snapshot.
 
 For every transition, atomically update `Updated`, the affected `Execution Plan` row or rows, `Current phase and gate`, active ownership and quality contracts, `Next Actions`, and one
-`Progress Log` event. Read the ledger back and validate the recorded state before beginning the gated activity. If the write, readback, or validation fails, do not advance.
+`Progress Log` event. The same edit may compact eligible closed history under `Keep Progress History Bounded`; append its summaries before the transition event with the same
+timestamp. Read the ledger back and validate the recorded state and any compaction before beginning the gated activity. If the write, readback, or validation fails, do not advance.
 
 Use phase status as follows:
 
@@ -449,10 +477,11 @@ After a candidate-bearing phase becomes `Accepted`, confirm that state by ledger
 When the workspace is a Git worktree and local commits are authorized, commit only that phase's accepted candidate changes not already in `HEAD`; exclude `.agent-hive`, unrelated or
 pre-existing work, pre-existing staged changes, and files under active ownership. Follow project conventions or use a concise phase-based message, and never push.
 
-Record exactly one checkpoint disposition for that transition to `Accepted` in `Progress Log`: `Committed: <identity>`, `Skipped: <reason>`, or `Failed: <error>`. No repository, no
-candidate delta, insufficient permission, unsafe or non-isolatable changes, missing Git identity, hook failure, lock, or another commit problem is non-blocking and does not change
-`Accepted`. Do not change Git configuration, weaken hooks, broaden the staged scope, or retry the checkpoint. Reconcile the candidate after the attempt; content drift follows the
-existing identity and affected-phase rules.
+Record exactly one checkpoint disposition for that transition to `Accepted` in `Progress Log`: `Committed: <identity>`, `Skipped: <reason>`, or `Failed: <error>`. When that
+disposition closes the phase history, preserve it directly in the phase's compacted summary in the same atomic ledger update; otherwise keep it raw until the remaining closure
+conditions pass. The disposition for the phase's current acceptance must remain exact and unique. No repository, no candidate delta, insufficient permission, unsafe or
+non-isolatable changes, missing Git identity, hook failure, lock, or another commit problem is non-blocking and does not change `Accepted`. Do not change Git configuration, weaken
+hooks, broaden the staged scope, or retry the checkpoint. Reconcile the candidate after the attempt; content drift follows the existing identity and affected-phase rules.
 
 Parallel phases close independently. Accept and checkpoint a phase without waiting for or changing an independent sibling; a dependent phase may start only after each dependency
 is `Accepted` or `Not Applicable` and the current acceptance of every candidate-bearing dependency has a recorded checkpoint disposition. Before final assurance, goal completion,
@@ -476,16 +505,19 @@ Do not require a duplicate `Accepted` state for assignments, attempts, candidate
 Track reliable quality signals when available: first-handoff result, material findings, correction rounds, strategy changes, phase reopenings, implementation and rework time,
 real-environment validation, and fresh-final verdicts. Never estimate unavailable timing. Optimize for trustworthy final acceptance, not for an easy first-pass green verdict.
 
-Prepare the user handoff with the outcome, changed files, validation, residual risks, ledger path, and authoritative goal usage returned at completion; do not replay routine agent
-activity. Terminal normalization may clear current-state fields only after every gate passes; it must not advance phase statuses, create missing transitions, or invent checkpoint
+Prepare the user handoff with the outcome, changed files, validation, residual risks, ledger path, and the goal's authoritative total token usage and human-friendly elapsed time when available, 
+regardless of whether a token budget was configured; never estimate unavailable metrics; do not replay routine agent activity.
+
+Terminal normalization may clear current-state fields only after every gate passes; it must not advance phase statuses, create missing transitions, or invent checkpoint
 dispositions. Mark the goal complete only after the prerequisites pass. If goal completion fails, keep or set the ledger `Blocked` and do not claim completion.
 
 After goal completion succeeds, atomically set `Goal` to complete, `Status` to `Ready For Final`, `Current phase and gate` to `Complete`, and `Working set`, active agents, and
 active quality contracts to `None`. Set `Agent Selection` to `Not Applicable` and `Next Actions` and blockers to `None`; confirm every phase and checkpoint disposition still
-satisfies the final gate. Record the final candidate identity, validation, residual risks, and authoritative goal usage in one terminal `Progress Log` event. Read the ledger
-back and emit the prepared response only when this state is coherent.
+satisfies the final gate. Record the final candidate identity, validation, residual risks, and authoritative goal usage in one terminal `Progress Log` event. Keep that event
+uncompressed while the ledger is `Ready For Final`. Read the ledger back and emit the prepared response only when this state is coherent.
 On resume, revalidate goal completion, the terminal candidate identity recorded in `Progress Log`, ownership, blockers, and final evidence; if unchanged, reemit the handoff without
 rerunning accepted work. The goal owns durable objective lifecycle, and `Execution Plan` remains the sole phase-acceptance authority.
+
 
 ## Prompt Patterns
 

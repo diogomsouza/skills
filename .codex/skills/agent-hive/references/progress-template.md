@@ -6,17 +6,17 @@ Preserve exactly the seven `##` sections below, once each and in this order. Sto
 ownership, and quality-contract facts in `Current State`; current non-terminal selection decisions in `Agent Selection`; phase progress in `Execution Plan`; material history in
 `Progress Log`; immediate work in `Next Actions`; and unresolved or accepted risk in `Blockers And Risks`.
 
-Write the ledger only for material decisions, ownership changes, phase transitions, checkpoint dispositions, candidate promotions, blockers, and terminal evidence. In one atomic
-edit, use one authoritative timestamp for `Updated` and the new `Progress Log` row, refresh every affected section, and validate all `Execution Plan` statuses against its durable
-vocabulary.
+Write the ledger only for material decisions, ownership changes, phase transitions, checkpoint dispositions, candidate promotions, blockers, terminal evidence, and bounded-history
+summaries. In one atomic edit, use one authoritative timestamp for `Updated` and all new `Progress Log` rows, refresh every affected section, and validate all `Execution Plan`
+statuses against its durable vocabulary.
 Keep routine checkpoints in commentary.
 
-Update current facts in place and append only material events. Never add tables or headings beyond the shapes below; never copy raw command output or an agent report; never retain
-completed candidates, terminal agents, old verdicts, or resolved blockers in current-state fields. Evidence references must remain understandable after resume and point to a
-workspace path, command/result, immutable external result, or concise ledger event.
+Update current facts in place and append material events; replace closed history only under `Keep Progress History Bounded` in `SKILL.md`. Never add tables or headings beyond the
+shapes below; never copy raw command output or an agent report; never retain completed candidates, terminal agents, old verdicts, or resolved blockers in current-state fields.
+Evidence references must remain understandable after resume and point to a workspace path, command/result, immutable external result, or concise ledger event.
 
-Use append time in monotonically nondecreasing order for `Progress Log`. If an event happened earlier, put its observed time inside `Evidence / Result`; never reorder or backdate
-appended rows.
+Order compacted phase summaries first in `Execution Plan` order, followed by uncompacted events in monotonically nondecreasing append-time order. A compaction summary uses its update
+time and records the covered historical range in `Evidence / Result`; never reorder or backdate the uncompacted event tail or separately archive ledger events.
 
 Header `Status` is `Pending`, `In Progress`, `Blocked`, or `Ready For Final`. `Ready For Final` means the authoritative goal is complete, the terminal ledger is normalized, and the
 final handoff may be emitted or safely reemitted after revalidation; it is not a second acceptance authority.
@@ -138,9 +138,9 @@ the current dependency frontier.
 Never create speculative assignment IDs or owners for future phases. `Depends On` uses phase IDs or `Objective`. `Done When` remains an observable, stable outcome and evidence
 gate, not a transcript.
 
-`Progress Log` is the single home for goal and lifecycle transitions, assignment spawns and identities, terminal handoffs, candidate freezes or promotions, checkpoint dispositions,
-readiness decisions, verification verdicts, correction findings, strategy reviews, phase acceptance or reopening, external validation, quality metrics, lifecycle disposition, and
-resolved blockers. Use one concise row per material event. Candidate and verification history live only here.
+`Progress Log` is the single home for goal and lifecycle transitions, assignment identities and dispositions, candidate history, checkpoints, verdicts, corrections, strategy
+changes, acceptance, validation, quality signals, and resolved blockers. Use one concise row per material event while its detail remains operationally relevant. Replace eligible
+closed history only under `Keep Progress History Bounded` in `SKILL.md`; its summary becomes the ledger record for the removed events.
 
 `Next Actions` is either `None` or one to three immediately executable actions, each naming its governing `SKILL.md` section and required ledger evidence. It is the authorization
 gate for spawning, authorizing writes, freezing or promoting a candidate, applying a verdict, transitioning, accepting, or reopening a phase, committing, and completing the goal.
@@ -155,4 +155,5 @@ frontier changes and never preserve completed actions.
 create missing transitions, or invent checkpoint dispositions. In one atomic update, set `Current phase and gate` to `Complete`, `Working set`, active agents, and active quality
 contracts to `None`, normalize `Agent Selection` to `Not Applicable`, require every phase to be `Accepted` or `Not Applicable`, require one recorded checkpoint disposition for each
 candidate-bearing phase's current acceptance, and set `Next Actions` and blockers to `None`. Preserve the final candidate identity, validation, residual risks, and authoritative
-goal usage in one `Goal complete; ready for final handoff` event. There is no ledger `Completed` state without an authoritative delivery receipt.
+goal usage in one `Goal complete; ready for final handoff` event. Keep that event uncompressed while the ledger is `Ready For Final`. There is no ledger `Completed` state without
+an authoritative delivery receipt.
