@@ -42,12 +42,18 @@ legal action from durable sources. Do not continue while those facts are incompl
 
 Before substantial discovery, delegation, ledger creation, or candidate writes, inspect goal-lifecycle capabilities and current goal state. Reuse an unfinished goal only when its
 objective matches the request; ask the user to resolve a conflicting unfinished goal. If no matching goal exists, derive the outcome, scope, non-scope, completion evidence, and
-user-decision blockers from the request and authoritative sources. Fill only technical gaps through bounded read-only inspection, ask only for material product or scope decisions,
-and create the goal. If goal lifecycle is unavailable or fails, stop; preserve an existing matching ledger and record the blocker only when safe.
+user-decision blockers from the request and authoritative sources. Fill technical gaps through bounded read-only inspection. When neither an accessible user-referenced
+specification nor a complete implementation plan exists in the active conversation, resolve every ambiguity that could materially change scope or implementation by asking the
+user one question at a time; create the goal only when none remains. Otherwise ask only for material product or scope decisions, then create the goal. If goal lifecycle is
+unavailable or fails, stop; preserve an existing matching ledger and record the blocker only when safe.
 
 For a new run, choose `{context-id}` as `YYYY-MM-DD-{short-kebab-slug}` with a suffix only on collision. After goal activation, if the complete implementation plan or detailed
 implementation specification exists only in the active conversation and no accessible user-referenced file preserves it, write it to `docs/PLAN-SPECS-{context-id}.md`, creating
 `docs` when needed. Preserve its wording, structure, ordering, lists, examples, and decisions without imposing a template, summarizing, normalizing, or inventing content.
+If neither an accessible user-referenced specification nor a complete conversational plan exists, create the same file with `## Initial User Request` containing the original user
+request verbatim and `## Implementation Plan` containing a detailed, implementation-ready plan derived from the resolved request and authoritative project evidence. Include scope
+and exclusions, affected components, ordered implementation changes, material decisions and constraints, relevant failure and edge cases, validation, and observable acceptance
+evidence. Incorporate the user's clarification answers as decisions in the plan; do not invent unresolved product behavior.
 Thereafter treat it exactly as a user-referenced authoritative source and never modify it. Then create `.agent-hive/PLAN-PROGRESS-{context-id}.md` from the template. 
 
 In the ledger's `Objective`, preserve `Request` as the original user request verbatim with no appended source text. Set `Specification` by precedence: the exact accessible locator
