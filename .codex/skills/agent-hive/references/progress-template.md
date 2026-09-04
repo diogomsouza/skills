@@ -126,6 +126,7 @@ terminal results, lifecycle disposition, evidence, and candidate impact belong i
 
 `Execution Plan` is the sole phase-acceptance view. Keep exactly one row per phase and validate its `Status` against the durable vocabulary before each ledger write.
 A new run begins with only P0; after its evidence gate passes, materialize concrete phases using the decomposition, dependency, coverage, and acceptance rules from `SKILL.md`.
+An `Accepted` or `Not Applicable` row is invalid unless its complete phase-closure gate passed.
 
 `Work Item` names the independently acceptable capability or invariant cluster. Phase transition and acceptance semantics are defined in `SKILL.md`.
 
@@ -141,11 +142,14 @@ gate, not a transcript.
 `Progress Log` is the single home for goal and lifecycle transitions, assignment identities and dispositions, candidate history, checkpoints, verdicts, corrections, strategy
 changes, acceptance, validation, quality signals, and resolved blockers. Use one concise row per material event while its detail remains operationally relevant. Replace eligible
 closed history only under `Keep Progress History Bounded` in `SKILL.md`; its summary becomes the ledger record for the removed events.
+For an `Accepted` or `Not Applicable` phase, its current phase-specific summary is mandatory and replaces its eligible raw history. A closing status without that summary is an
+invalid partial transition.
 
 `Next Actions` is either `None` or one to three immediately executable actions, each naming its governing `SKILL.md` section and required ledger evidence. It is the authorization
 gate for spawning, authorizing writes, freezing or promoting a candidate, applying a verdict, transitioning, accepting, or reopening a phase, committing, and completing the goal.
 After ledger creation, perform none of these unless the exact action is listed and its evidence exists; reconcile the ledger first when needed. Replace the list when the dependency
 frontier changes and never preserve completed actions.
+Represent phase closure as one action covering checkpoint, compacted summary, status transition, and readback; never list or execute them as independent optional follow-ups.
 
 `Blockers And Risks` keeps exactly the two labeled bullets. Remove resolved blockers after their resolution is logged. Keep only current accepted or residual risk.
 
@@ -153,7 +157,7 @@ frontier changes and never preserve completed actions.
 
 `Ready For Final` records that the final-readiness requirements in `SKILL.md` passed and the authoritative goal is complete. Terminal normalization must not advance phase statuses,
 create missing transitions, or invent checkpoint dispositions. In one atomic update, set `Current phase and gate` to `Complete`, `Working set`, active agents, and active quality
-contracts to `None`, normalize `Agent Selection` to `Not Applicable`, require every phase to be `Accepted` or `Not Applicable`, require one recorded checkpoint disposition for each
-candidate-bearing phase's current acceptance, and set `Next Actions` and blockers to `None`. Preserve the final candidate identity, validation, residual risks, and authoritative
-goal usage in one `Goal complete; ready for final handoff` event. Keep that event uncompressed while the ledger is `Ready For Final`. There is no ledger `Completed` state without
-an authoritative delivery receipt.
+contracts to `None`, normalize `Agent Selection` to `Not Applicable`, require every phase to be `Accepted` or `Not Applicable`, require one current compacted summary for every phase,
+no eligible raw closed-phase history, and an acceptance-satisfying checkpoint disposition for every candidate-bearing phase, then set `Next Actions` and blockers to `None`.
+Preserve the final candidate identity, validation, residual risks, and authoritative goal usage in one `Goal complete; ready for final handoff` event. Keep that event uncompressed
+while the ledger is `Ready For Final`. There is no ledger `Completed` state without an authoritative delivery receipt.

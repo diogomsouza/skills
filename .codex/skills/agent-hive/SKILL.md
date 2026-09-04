@@ -12,6 +12,9 @@ When selected and its admission gate passes, treat that as standing authorizatio
 Keep the root authoritative for goal lifecycle, objective, constraints, phase and assignment boundaries, candidate promotion, finding classification, verification mode and
 contracts, final acceptance, and user report. Give executors broad local design authority inside bounded ownership.
 
+Treat phase closure as one root-owned gate: acceptance evidence passes, the checkpoint requirement is satisfied, eligible phase history is compacted, and the resulting `Accepted`
+or `Not Applicable` state is confirmed by ledger readback. None of those steps alone closes a phase or releases dependent work.
+
 The defining Agent Hive behavior is preventive: select the phase's verification mode and any downstream capabilities before implementation, read every authoritative declared
 contract detail the runtime exposes, and convert applicable review lenses into concrete implementation and self-audit obligations. Preserve verifier independence by passing
 dimensions, invariants, fault paths, and evidence expectations—not predicted findings, private reasoning, prior verdicts, or personality-specific instructions.
@@ -35,6 +38,10 @@ boundaries. Concurrency is a ceiling, not a target.
 Read [progress-template.md](references/progress-template.md) completely. Use one authoritative runtime goal and one matching ledger for every admitted run. Store the durable
 objective and final completion gate in the goal; store dynamic execution state in the ledger. The current user request and authoritative sources retain authority; treat compacted
 or summarized conversation history only as coordination memory, never as authority for procedural rules or execution state.
+
+For an admitted run with candidate writes in a Git worktree, authorization to perform the requested changes includes local phase checkpoint commits unless the user, authoritative
+project instructions, or environment policy explicitly prohibits them. The absence of a separate request to commit is not a prohibition and never justifies `Skipped`. This
+authorization is local only; never push.
 
 On resume, detected or suspected compaction, or inability to state the exact current gate, reread this file and the progress template completely before any material action. Then
 inspect the goal and complete ledger and reconstruct the objective, current phase and gate, candidate, active assignments, selection decisions, verification obligations, and next
@@ -81,26 +88,24 @@ only and grants no execution or transition authority.
 
 ## Keep Progress History Bounded
 
-Treat `Progress Log` as bounded coordination memory, not an exhaustive transcript. Only root may compact it, and only for closed phase history or a closed correction or verification
-wave. Phase history is closed when the phase is `Accepted` or `Not Applicable`, its required checkpoint disposition exists, every associated identity is terminal and released, and
-no verdict, blocker, evidence gate, or dependent action remains unresolved. A wave is closed when its candidate was superseded or accepted and its findings, verdicts, and
-carry-forward consequences are resolved.
+Treat `Progress Log` as bounded coordination memory, not an exhaustive transcript. A phase is ready for closing compaction when its acceptance evidence has passed, every associated
+identity is terminal and released, its checkpoint requirement has an acceptance-satisfying disposition, and no verdict, blocker, evidence gate, or dependent action remains
+unresolved. A correction or verification wave is closed when its candidate was superseded or accepted and its findings, verdicts, and carry-forward consequences are resolved.
 
-Never compact facts required to reconstruct the current gate or candidate, active selection, ownership, quality contract or verification batch, an unresolved blocker or risk, the
-checkpoint for a phase's current acceptance, or the terminal handoff event.
+Never compact facts required for the current gate or candidate, active selection, ownership, quality contract or verification batch, an unresolved blocker or risk, or the terminal
+handoff event.
 
-Compact phase history as soon as it closes, in the same authorized ledger update that records its required checkpoint disposition or `Not Applicable` transition. Compact a closed
-correction or verification wave on the next authorized ledger update once no pending action depends on its row-level chronology; do not wait for a size or event-count threshold.
-Treat one phase as the maximum compaction boundary: preserve at least one `History compacted: <phase>` row for every phase whose history is removed, and never combine different
-phases in one summary. Within the same phase, closed correction or verification waves may share one phase-specific summary when their consequences remain attributable. Use at most
-three summary rows for one phase only when one cannot preserve the required facts. Preserve the covered range and row count, final disposition and candidate, verification result,
-each affected identity and its terminal disposition, checkpoint, resolvable evidence, material correction or strategy conclusions, and carried guarantees or risks.
+Every transition to `Accepted` or `Not Applicable` must compact that phase's eligible history in the same atomic ledger update. Preserve at least one
+`History compacted: <phase>` row per phase and never combine phases. The summary is the transition's required `Progress Log` event; do not retain a separate raw acceptance event.
+Within an active phase, compact a closed correction or verification wave on the next authorized ledger update.
+
+Preserve the covered range and row count, final disposition and candidate, verification result, each affected identity and its terminal disposition, checkpoint, resolvable evidence,
+material correction or strategy conclusions, and carried guarantees or risks. Use at most three rows only when one cannot preserve those facts.
 
 Keep compacted phase summaries as a prefix of `Progress Log` in `Execution Plan` order. For the active phase, place its closed-wave summary before its uncompacted current events.
 Use the current update timestamp for each summary and record its covered historical range in `Evidence / Result`. Keep the uncompacted event tail in monotonically nondecreasing
-append-time order. Delete covered rows and update the summary prefix in the same atomic edit. Read the ledger back and confirm that current state, protected facts, section structure,
-and ordering remain coherent. On failure, retain the prior ledger and do not advance. Do not create a separate history archive or reconstruct removed detail from conversation
-memory.
+append-time order. Read the ledger back and require one current summary and no eligible raw history for every accepted or not-applicable phase. On failure, retain the prior state
+and do not accept the phase or start dependent work. Do not create a separate archive or reconstruct removed detail from conversation memory.
 
 ## Discover Only What Changes Decisions
 
@@ -130,7 +135,8 @@ At the post-discovery checkpoint:
 3. Leave every future delegated phase `Unassigned`. Do not create an assignment, select a role, or reserve capacity for implementation or verification while P0 is in review.
 4. Confirm that the source-coverage, decomposition, dependency, and final-phase gates in `Plan By Acceptance Boundaries` pass. Log one compact rationale for each non-obvious
    grouping.
-5. Mark P0 `Accepted` only after its evidence and decomposition gates pass and the ledger is confirmed. Then select only assignments at the current dependency frontier.
+5. Close P0 through `Accept And Complete` only after its evidence and decomposition gates pass. Record the applicable checkpoint disposition, compact P0 history, and confirm its
+   `Accepted` state by readback before selecting any assignment at the dependency frontier.
 
 Continue discovery or block when material uncertainty remains; never hide it inside a broad phase or speculative future assignment.
 
@@ -410,8 +416,8 @@ root acceptance validation, candidate freeze, or verifier creation. A root-owned
 
 A verification batch is every independent contract required by one phase's selected mode on one frozen candidate, whether they run concurrently or serially. `Root Evidence` has
 no verification batch. A shared candidate does not create shared phase acceptance: aggregate contracts separately for each phase and, as soon as one phase's verification mode
-passes, move only that phase to `Accepted`; other phases using the candidate remain unchanged. Reopen an accepted phase after a later correction only under the affected-phase rule
-in `Accept And Complete`. Before an independent batch, root must:
+passes, move only that phase to the phase-closure gate in `Accept And Complete`; verification success alone never sets `Accepted`, and other phases using the candidate remain
+unchanged. Reopen an accepted phase after a later correction only under the affected-phase rule in `Accept And Complete`. Before an independent batch, root must:
 
 - end implementation ownership, pass root integration validation, and reproduce the candidate identity from an immutable or read-only snapshot or quiesced writers;
 - atomically record and read back one `Selected` row per verifier with its assignment, role, concrete model, effort, `none`, and rationale;
@@ -473,9 +479,10 @@ Treat phase status as an execution gate, not a retrospective report. Persist eac
 reconstruct omitted transitions during later work or terminal normalization. A transition updates only the phase or explicitly affected phases justified by that event. Acceptance
 of one phase immediately updates only that phase, regardless of other phases running or reviewed against the same candidate snapshot.
 
-For every transition, atomically update `Updated`, the affected `Execution Plan` row or rows, `Current phase and gate`, active ownership and quality contracts, `Next Actions`, and one
-`Progress Log` event. The same edit may compact eligible closed history under `Keep Progress History Bounded`; append its summaries before the transition event with the same
-timestamp. Read the ledger back and validate the recorded state and any compaction before beginning the gated activity. If the write, readback, or validation fails, do not advance.
+For every transition, atomically update `Updated`, the affected `Execution Plan` rows, `Current phase and gate`, active ownership and quality contracts, `Next Actions`, and
+`Progress Log`. Use one raw event for a non-closing transition. For `Accepted` or `Not Applicable`, use the required compacted phase summary as the transition event; status change
+and compaction must occur together and neither may succeed alone. Read the ledger back before beginning any gated activity. If the write, readback, or validation fails, do not
+advance.
 
 Use phase status as follows:
 
@@ -483,7 +490,7 @@ Use phase status as follows:
 - `In Progress`: discovery, implementation, or candidate-bearing correction is active;
 - `Done`: the execution gate passed and candidate writers released ownership, but acceptance has not started;
 - `In Review`: acceptance evaluation is active, including root validation, candidate freeze, independent verification, verdict aggregation, or evidence closure;
-- `Accepted`: `Done When` and every obligation of the selected verification mode passed;
+- `Accepted`: `Done When`, the selected verification mode, the checkpoint gate, closing compaction, and ledger readback all passed;
 - `Blocked`: an external condition or missing authority prevents the activity required by the current state;
 - `Not Applicable`: authoritative planning determined that the phase is unnecessary.
 
@@ -492,7 +499,8 @@ Apply these transitions:
 1. Set `Pending` to `In Progress` before starting phase work.
 2. Set a candidate-bearing phase from `In Progress` to `Done` immediately after its execution gate and ownership release pass.
 3. Set `Done` to `In Review` and confirm the ledger before root acceptance validation, candidate freeze, or verifier creation.
-4. Set `In Review` to `Accepted` immediately after every acceptance obligation passes; do not wait for another phase, a shared snapshot, checkpoint work, or terminal cleanup.
+4. After implementation and verification obligations pass, keep the phase `In Review` while completing its checkpoint gate. Then atomically set it to `Accepted`, record the
+   checkpoint disposition in its compacted summary, remove eligible raw phase history, and confirm readback. Do not start dependent work between these operations.
 5. Return `In Review` to `In Progress` before authorizing a candidate write. After correction, pass through `Done` and `In Review` again.
 6. Keep `In Review` for evidence reproduction, verifier replacement, or closure work that does not modify the candidate.
 7. A root-owned read-only discovery phase may move from `In Progress` directly to `In Review` after its evidence gate.
@@ -509,26 +517,29 @@ gate. `Root Evidence` requires root review and reproducible evidence for the cur
 prior evidence may support an unaffected contract only under the correction carry-forward rule. Preliminary read-only discovery requires authoritative evidence, root reconciliation,
 and a durable decomposition checkpoint; it needs no candidate or independent review unless a concrete discovered risk separately justifies one.
 
-After a candidate-bearing phase becomes `Accepted`, confirm that state by ledger readback and attempt one local checkpoint commit before selecting or starting any dependent phase.
-When the workspace is a Git worktree and local commits are authorized, commit only that phase's accepted candidate changes not already in `HEAD`; exclude `.agent-hive`, unrelated or
-pre-existing work, pre-existing staged changes, and files under active ownership. Follow project conventions or use a concise phase-based message, and never push.
+Before any phase may become `Accepted`, satisfy its checkpoint gate. In a Git worktree with an uncommitted phase-local candidate delta, create one local commit
+containing exactly that phase's accepted changes. Exclude `.agent-hive`, unrelated or pre-existing work, pre-existing staged changes, and files owned by active phases. Follow project
+conventions or use a concise phase-based message. An existing commit satisfies the gate only when root proves that it contains the exact accepted phase-local candidate. Never push.
 
-Record exactly one checkpoint disposition for that transition to `Accepted` in `Progress Log`: `Committed: <identity>`, `Skipped: <reason>`, or `Failed: <error>`. When that
-disposition closes the phase history, preserve it directly in the phase's compacted summary in the same atomic ledger update; otherwise keep it raw until the remaining closure
-conditions pass. The disposition for the phase's current acceptance must remain exact and unique. No repository, no candidate delta, insufficient permission, unsafe or
-non-isolatable changes, missing Git identity, hook failure, lock, or another commit problem is non-blocking and does not change `Accepted`. Do not change Git configuration, weaken
-hooks, broaden the staged scope, or retry the checkpoint. Reconcile the candidate after the attempt; content drift follows the existing identity and affected-phase rules.
+Record exactly one acceptance-satisfying disposition: `Committed: <identity>`, or `Skipped: <reason>` only when there is no Git worktree, no phase-local candidate delta, or commits
+are explicitly prohibited by the user, authoritative project instructions, or environment policy. Absence of a separate user request is never a valid `Skipped` reason.
+`Failed: <error>` never satisfies the gate.
 
-Parallel phases close independently. Accept and checkpoint a phase without waiting for or changing an independent sibling; a dependent phase may start only after each dependency
-is `Accepted` or `Not Applicable` and the current acceptance of every candidate-bearing dependency has a recorded checkpoint disposition. Before final assurance, goal completion,
-or final handoff, require every phase to be `Accepted` or `Not Applicable` and every candidate-bearing phase's current acceptance to have that disposition.
+A commit failure, missing Git identity, hook failure, lock, permission failure, or unsafe or non-isolatable phase boundary keeps the phase `In Review` or moves it to `Blocked`.
+Do not change Git configuration, weaken hooks, include active or unrelated work, or proceed to `Accepted`. If a commit succeeds but ledger closure fails, retain `In Review`; on
+resume, revalidate that exact commit and retry only the ledger closure.
+
+Parallel phases close independently. A dependent phase may start only after every dependency is `Accepted` or `Not Applicable`; those statuses are valid only after the complete
+phase-closure gate. Never use a verdict, commit, checkpoint disposition, compacted summary, or partially updated ledger alone as dependency authority. Before final assurance, goal
+completion, or final handoff, require every phase to be `Accepted` or `Not Applicable`.
 
 The run is ready for final handoff only when:
 
 - the matching goal remains authoritative and is ready to mark complete;
 - every phase is `Accepted` or `Not Applicable`;
 - when `Specification` is not `None`, every applicable mapped requirement has acceptance evidence in an `Accepted` phase and every exclusion has an explicit justification;
-- every candidate-bearing `Accepted` phase's current acceptance has exactly one recorded checkpoint disposition;
+- every `Accepted` or `Not Applicable` phase has one current phase-specific compacted summary and no eligible raw phase history;
+- every candidate-bearing Git phase has an exact `Committed` disposition unless one of the bounded `Skipped` conditions applies; no `Failed` disposition satisfies readiness;
 - the final cumulative candidate and fingerprint are current and reproducible;
 - every final assurance contract required by `Verify In Stages` accepted that candidate;
 - no candidate writer or required verifier remains active;
@@ -548,8 +559,8 @@ Terminal normalization may clear current-state fields only after every gate pass
 dispositions. Mark the goal complete only after the prerequisites pass. If goal completion fails, keep or set the ledger `Blocked` and do not claim completion.
 
 After goal completion succeeds, atomically set `Goal` to complete, `Status` to `Ready For Final`, `Current phase and gate` to `Complete`, and `Working set`, active agents, and
-active quality contracts to `None`. Set `Agent Selection` to `Not Applicable` and `Next Actions` and blockers to `None`; confirm every phase and checkpoint disposition still
-satisfies the final gate. Record the final candidate identity, validation, residual risks, and authoritative goal usage in one terminal `Progress Log` event. Keep that event
+active quality contracts to `None`. Set `Agent Selection` to `Not Applicable` and `Next Actions` and blockers to `None`; confirm every phase closure still satisfies the final gate.
+Record the final candidate identity, validation, residual risks, and authoritative goal usage in one terminal `Progress Log` event. Keep that event
 uncompressed while the ledger is `Ready For Final`. Read the ledger back and emit the prepared response only when this state is coherent.
 On resume, revalidate goal completion, the terminal candidate identity recorded in `Progress Log`, ownership, blockers, and final evidence; if unchanged, reemit the handoff without
 rerunning accepted work. The goal owns durable objective lifecycle, and `Execution Plan` remains the sole phase-acceptance authority.
