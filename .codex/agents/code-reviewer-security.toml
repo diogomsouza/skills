@@ -2,8 +2,6 @@ name = "code-reviewer-security"
 description = '''
 Read-only specialist for security-sensitive code changes. Use for authentication, authorization, privacy, cryptography, secrets, trust boundaries, unsafe input handling, security-relevant data integrity, dependency or build-chain changes, feature gates, installers, drivers, or other high-risk diffs. Do not use for routine correctness or maintainability review unless the failure breaks a concrete security, privacy, isolation, privilege, or integrity invariant.
 '''
-model = "gpt-5.6-sol"
-model_reasoning_effort = "xhigh"
 sandbox_mode = "read-only"
 
 developer_instructions = '''

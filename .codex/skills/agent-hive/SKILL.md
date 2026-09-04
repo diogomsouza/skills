@@ -201,12 +201,42 @@ Use a general implementation capability as the baseline. Select a specialized im
 
 Technology labels alone do not qualify. If selection reveals independently acceptable outcomes or dominant risk domains, return to `Plan By Acceptance Boundaries` before assignment.
 
-After capability selection, choose one concrete runtime-declared model and effort for the assignment, including capability-fixed configurations. Judge suitability from contract
-complexity, uncertainty, risk, failure impact, required context, tool use, and acceptance evidence. Compare only realistic candidates, select sufficient capability rather than the
-minimum or strongest by default, and record the selected model, effort, and one compact rationale. Never select or record `inherit`; cost and latency are secondary to suitability.
-Favor a more efficient configuration for a complete known contract, no material uncertainty, local reversible failure, and decisive evidence. Favor greater capability or effort for
-novel design or material cross-boundary, security, privacy, state, concurrency, recovery, integration, or weak-evidence risk. Apply the decision per agent; independence is not model
-strength. If no concrete pair can be selected or requested, keep the delegated assignment unstarted and choose another eligible execution path instead of silently inheriting.
+After capability selection, choose a concrete runtime-declared model and effort per assignment, including capability-fixed configurations. Compare candidates only through
+runtime metadata or explicit user policy; never infer capability from model names or agent self-report.
+
+- **Efficiency tier:** use the most cost-efficient suitable model for clear, specific, repeatable, or high-volume work with a well-defined result, including extraction, classification,
+  transformation, structured summaries, focused code edits, inspection, build or script execution, bounded search or comparison, and straightforward verification. Favor it when
+  ambiguity is low, failure is local and reversible, and decisive evidence is available.
+
+- **Balanced tier:** use the model that balances capability and cost for everyday, bounded work requiring solid reasoning and tool use without the depth of the `Advanced tier`,
+  including exploration, code review, conventional implementation and integration, routine debugging, validations, and ordinary tests.
+
+- **Advanced tier:** use the most capable suitable non-Premium general-purpose model for complex, open-ended, ambiguous, difficult, or high-value work requiring deeper analysis,
+  judgment, planning, follow-through, or polish, including architecture, complex code changes or debugging, difficult algorithms, deep research, or work with material cross-boundary,
+  security, privacy, durable-state, concurrency, recovery, integration, or weak-evidence risk.
+
+- **Premium tier (restricted):** use `gpt-6-astra`, or any runtime alias confirmed to resolve to it, only when the user explicitly requests or authorizes Astra for the bounded scope, 
+  or when the root's runtime-confirmed effective model is Astra and root explicitly selects it as suitable for that assignment. Premium is not an escalation or fallback from Advanced. 
+  Never infer, broaden, or carry authorization beyond its recorded scope. Availability, retries, defaults, inheritance, or a fixed role configuration never authorize Astra. Select and 
+  record it explicitly; otherwise exclude it.
+
+
+Select reasoning effort independently of model tier, then validate the concrete model-and-effort pair. Higher effort never makes an unsuitable model suitable, and model strength
+never substitutes for the reasoning depth required by the contract. Choose only a runtime-declared supported value from `low`, `medium`, `high`, or `xhigh`.
+
+Use `medium` as the default for most assignments. Use `low` only when the work is straightforward and tightly bounded, failure is local and reversible, speed materially matters,
+and decisive evidence leaves little need to trace alternatives, assumptions, or edge cases. Use `high` when correctness requires tracing complex logic, checking assumptions, or
+resolving nontrivial edge and failure paths. Use `xhigh` only for especially demanding reasoning where ambiguity, interacting constraints, or weak evidence make depth beyond `high`
+materially likely to improve the result.
+
+Select effort from the reasoning needed to satisfy the complete contract and produce its acceptance evidence, not from model tier, role, specialization, context size, tool count, or
+failure impact alone. Record the selected effort and one compact rationale; any departure from `medium` must state why `medium` is unnecessary or insufficient. Use no other effort
+value.
+
+For mixed work, use the existing phase or sequential-assignment split rules and select the model tier and reasoning effort independently per assignment. Choose a sufficient concrete
+model-and-effort pair, not the minimum or strongest by default; cost and latency are secondary to suitability; Premium eligibility remains a fixed constraint. Record the concrete model, 
+effort, and one compact rationale; never `inherit`. Independence is not model strength. If no concrete supported pair is selectable, leave the assignment unstarted and choose another 
+eligible path.
 
 Before the phase's first material write, select one provisional verification mode from concrete consequence, coupling, reversibility, uncertainty, and available evidence. Record
 `Root Evidence`, `Independent General`, or `Independent Portfolio` with one compact rationale. Re-evaluate after handoff and before acceptance; after material writes, the mode may
