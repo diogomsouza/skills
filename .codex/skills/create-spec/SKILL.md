@@ -1,11 +1,11 @@
 ---
 name: create-spec
-description: Create and persist a decision-complete implementation specification in `docs/PLAN-SPECS-{context-id}.md`. Use when the user asks for a saved implementation plan or a detailed technical specification that another engineer or agent can execute without redesigning it. Do not use for implementation-only requests or brief, answer-only planning advice.
+description: Create and persist a decision-complete implementation specification in `docs/PLAN-SPECS-{context-id}.md` as direct instructions for a downstream implementation task. Use when the user asks for a saved implementation plan or a detailed technical specification that an implementation agent or harness can execute without redesigning it. Do not use for implementation-only requests or brief, answer-only planning advice.
 ---
 
 # Create Spec
 
-Create a repository-grounded specification for the user's requested implementation, save it in the required location, and stop after handing off the completed plan. The specification is the implementation contract, not a brainstorming document.
+Create a repository-grounded specification for the user's requested implementation, save it in the required location, and stop after handing off the completed plan. The specification is an execution contract for the downstream implementation task, not a user-facing explanation or a brainstorming document.
 
 ## Operating Contract
 
@@ -14,12 +14,14 @@ Create a repository-grounded specification for the user's requested implementati
 - If the request combines planning and implementation, complete and hand off the specification first. Implementation requires a subsequent explicit request.
 - Preserve the requested scope. Do not add features, refactors, abstractions, migrations, or cleanup that are not required for the stated outcome.
 - A final specification must be decision-complete. It must not leave material choices, alternatives, TODOs, or unresolved questions for the implementer.
+- Optimize the document for implementation execution. Include only context, evidence, decisions, boundaries, concrete changes, dependencies, and gates that affect implementation.
+- Avoid executive framing, pedagogical background, persuasive prose, repeated rationale, and explanations whose only purpose is to help a non-implementing reader understand the project.
 
 ## Workflow
 
 ### 1. Understand the request
 
-Identify the intended outcome, users or callers affected, in-scope behavior, constraints, acceptance signals, and explicit exclusions. Read applicable repository instructions before investigating the solution.
+Identify the intended outcome, users or callers affected, in-scope behavior, constraints, terminal completion conditions, and explicit exclusions. Read applicable repository instructions before investigating the solution.
 
 Treat an existing-system change differently from greenfield work: current code establishes the implementation context and constraints, but it does not override the user's desired behavior.
 
@@ -73,13 +75,33 @@ docs/PLAN-SPECS-{context-id}.md
 
 Create `docs/` when it does not exist. For an explicit revision of the same active plan, update that file. For a new request whose candidate filename already exists, preserve the existing file and append the smallest available numeric suffix to the slug, such as `-2`.
 
-## Required Specification Structure
+## Core Structure and Dynamic Sections
 
 Write the entire specification in the user's language unless they request another language. Translate every heading, label, status, instruction, and fixed constraint in the template into the document language. The English text below defines the required structure and semantics; copy it literally only when the document language is English.
 
 Use direct, practical technical writing rather than the tone of a formal standards document. Do not introduce identifier catalogs, cross-reference matrices, or bookkeeping sections disconnected from the implementation phases.
 
-Use this complete Markdown template. Replace every bracketed placeholder with concrete specification content and do not include the outer code fence in the saved file.
+Write for the downstream implementation task, regardless of which agent or harness will execute it. Prefer exact paths, symbols, contracts, state changes, constraints, and executable gates over narrative written for a user or stakeholder. Include background only when omitting it would cause an implementation mistake.
+
+The template below is a core scaffold, not a closed document schema. Derive any additional sections from the current request, the explored system, and the decisions needed for implementation:
+
+- Create zero or more dynamic sections when a cohesive subject is shared by multiple phases, establishes a contract those phases depend on, or is too complex to repeat safely inside phase descriptions.
+- Name dynamic sections using the language and concepts of the current problem. There is no predefined catalog of allowed or expected dynamic section names.
+- Use whatever Markdown structure best communicates that subject, including nested headings, tables, diagrams, formulas, code blocks, state descriptions, or protocol details when they materially improve implementation clarity.
+- Do not create a dynamic section when the content belongs naturally in one phase or when a short specification does not need it.
+- Never copy the section tree, headings, ordering, depth, or level of detail from an example or reference document merely because it was inspected. Reference documents provide evidence and constraints, not a template, unless the user explicitly asks to reproduce their structure.
+
+### Content Ownership
+
+Assign every implementation rule, decision, or constraint to one canonical location.
+
+- Dynamic sections own contracts, invariants, protocols, schemas, or behavior shared by multiple phases.
+- Implementation phases must reference the owning dynamic section by heading and describe only where and how that contract is implemented, including affected paths, symbols, dependencies, and phase-local boundaries.
+- `Advance only when` blocks contain observable proof that the contract was implemented; they must not restate the contract.
+- Content used by only one phase belongs directly in that phase and does not justify a dynamic section.
+- Never repeat or paraphrase a rule in multiple sections. Use a short reference to its canonical section instead.
+
+Use this core Markdown scaffold and extend it only where the current problem requires. Replace every bracketed placeholder with concrete specification content and do not include the outer code fence in the saved file.
 
 ```markdown
 ## Specification Title
@@ -89,22 +111,14 @@ Use this complete Markdown template. Replace every bracketed placeholder with co
 **Created:** [YYYY-MM-DD]
 **Status:** Ready for implementation
 
-## Summary
+## Implementation Context
 
-[Summarize the requested outcome, selected solution, and expected system impact.]
-
-## Context and Current State
-
-[Describe the relevant existing behavior, desired change, architecture, and discovered constraints in direct prose. Clearly distinguish observed facts from user-confirmed intent.]
+[State the requested outcome, relevant current behavior, exact change from current to desired behavior, architectural constraints, and final implementation state in compact, direct prose. Include only context the downstream implementation task needs to make correct changes. Clearly distinguish observed facts from user-confirmed intent.]
 
 **Relevant evidence**
 
 - `[repository-relative/path:line-or-symbol]` - [What this evidence establishes]
 - [Authoritative external source, version, or access date when applicable]
-
-## Goal
-
-[Define the problem to solve and the exact end state.]
 
 ## Scope
 
@@ -115,23 +129,7 @@ Use this complete Markdown template. Replace every bracketed placeholder with co
 
 - [Explicit non-goal or adjacent work that must not be performed]
 
-## Confirmed Decisions
-
-- **[Decision]:** [Confirmed choice and its evidence or rationale]
-
-## Technical Approach
-
-### System Design
-
-[Describe the design and responsibility boundaries in enough detail to remove architectural guesswork.]
-
-### Affected Areas
-
-- `[path or symbol]` - [Current responsibility and exact planned change]
-
-### Contracts and Data
-
-[Specify APIs, events, commands, interfaces, schemas, persistence, migrations, and compatibility behavior.]
+[Insert zero or more problem-specific `##` sections here when the implementation needs shared contracts or explanations beyond the phase descriptions. Choose every title and internal structure from the current problem. Remove this instruction when no dynamic section is needed.]
 
 ## Implementation Stages
 
@@ -143,7 +141,7 @@ Use this complete Markdown template. Replace every bracketed placeholder with co
 
 **Deliverables and boundary**
 
-- [Exact behavior, component, contract, data change, validation, or failure handling implemented in this phase]
+- [Describe the concrete files, symbols, and implementation work owned by this phase. When behavior is defined in a dynamic section, reference that section by heading instead of repeating its rules.]
 - [Additional concrete deliverable]
 
 [State in a short paragraph what this phase deliberately excludes.]
@@ -165,7 +163,7 @@ Use this complete Markdown template. Replace every bracketed placeholder with co
 
 **Deliverables and boundary**
 
-- [Exact behavior and changes implemented in this phase]
+- [Describe the concrete files, symbols, and implementation work owned by this phase. When behavior is defined in a dynamic section, reference that section by heading instead of repeating its rules.]
 
 [State in a short paragraph what this phase deliberately excludes.]
 
@@ -179,24 +177,13 @@ Use this complete Markdown template. Replace every bracketed placeholder with co
 
 [Add only the additional cohesive phases required to cover the scope.]
 
-## Validation
+## Testing Decisions
 
-[Describe the concrete commands, existing checks, runtime observations, or focused scenarios that prove the implementation works. Tie them naturally to the relevant phases and risks without adding bookkeeping sections or splitting validation by type.]
+[If the user explicitly requested unit tests, specify only the exact unit-test scope and cases to create or change. Otherwise write only this sentence, translated into the document language: **Creating new unit tests is prohibited for this implementation.** Do not include build commands, existing test commands, integration tests, end-to-end tests, manual scenarios, runtime checks, or any other validation content in this section.]
 
-**Unit-test policy:** [If unit tests were explicitly requested, define their exact coverage. Otherwise write, translated into the document language: **Creating new unit tests is prohibited for this implementation.**]
+## Done When
 
-## Acceptance Criteria
-
-[Write cohesive prose describing what must be observably true for the work to be accepted. Cover the requested outcome, important failure behavior, and applicable quality constraints without a table, numbered list, identifiers, or cross-reference notation.]
-
-## Risks and Mitigations
-
-[Write concise narrative prose about the realistic risks, their impact, and how the implementation will avoid or detect them. Do not use a table, numbered list, severity labels, or risk identifiers.]
-
-## References
-
-- `[repository-relative/path:line-or-symbol]` - [Why it matters]
-- [Authoritative external source] - [Version or access date and relevance]
+[Write one direct terminal rule in natural prose. State that the implementation task may be marked complete only when the full requested outcome exists, every phase's `Advance only when` conditions have passed, applicable final integration behavior is proven, and all scope boundaries still hold. Include any task-specific end-state conditions that cannot be inferred from individual phase gates. If any condition is unproven, the task remains incomplete or blocked and must not be reported as complete. Do not use a table, numbered list, checklist, identifiers, or stakeholder-oriented acceptance language.]
 
 ## Implementation Rules
 
@@ -208,26 +195,37 @@ Use this complete Markdown template. Replace every bracketed placeholder with co
 
 ### Template Completion Rules
 
-- Keep every second-level section shown in the template and preserve their order. Add third-level subsections only when they materially improve precision.
+- Keep the core second-level sections shown in the scaffold. Add, remove, name, and organize dynamic sections according to the current problem rather than a fixed catalog.
+- Usually place shared design material before `Implementation Stages`, then keep implementation phases, testing decisions, `Done When`, and implementation rules in a direct execution order. Depart from that order when the problem genuinely reads more clearly another way.
 - If a required subject genuinely does not apply, replace its placeholder with the document-language equivalent of `Not applicable` and a brief reason. Do not leave a section blank.
 - Remove unused example phases and every bracketed instruction. The final file must read as a completed specification, not as a partially filled template.
-- Cite concrete repository-relative paths and symbols when they remove ambiguity. Include versions or access dates for external sources when freshness matters.
+- Use `Relevant evidence` as the only evidence index. Cite concrete repository-relative paths and symbols there when they establish implementation context, and include versions or access dates for external sources when freshness matters. Do not create a separate `References` section or duplicate the same evidence in another index.
 - Keep phases cohesive rather than creating a phase for each trivial edit. Each phase must contain enough detail to implement its slice on its own, and the phases together must cover all in-scope behavior without adding out-of-scope work.
-- Express dependencies, safe parallel work, and readiness gates inside each phase. Do not add a separate dependency matrix or cross-reference section.
-- If the user explicitly requested unit tests, replace the default prohibition with exact unit-test coverage. Otherwise include the translated prohibition exactly once and do not add unit-test creation to any stage or acceptance criterion. Running existing unit tests remains allowed as a regression check.
-- Write `Acceptance Criteria` and `Risks and Mitigations` as natural prose. Do not turn either section into a table, numbered list, checklist, or identifier system.
+- Express dependencies, safe parallel work, and readiness gates inside each phase. Put all build commands, existing test commands, integration or end-to-end checks, manual scenarios, runtime observations, and other non-unit verification in the applicable `Advance only when` blocks. Do not add a separate dependency matrix, validation section, or cross-reference section.
+- Do not create a standalone risk summary. Put a material implementation hazard only in the phase precondition, boundary, or advance gate that must control it.
+- Add a dynamic section only when it reduces ambiguity or prevents cross-phase duplication. Do not add one merely to make the document look comprehensive.
+- Add a dynamic decisions section only when a user-confirmed or externally constrained choice affects multiple phases and would otherwise be easy to miss. Omit it when each decision is already explicit in `Implementation Context`, scope boundaries, a problem-specific contract, or a phase. Never repeat those decisions in a separate summary.
+- Treat inspected specifications and documentation as sources of facts, constraints, and terminology only. Do not imitate their structure unless the user explicitly requests that structure.
+- Keep `Testing Decisions` exclusively about unit tests. If the user explicitly requested them, replace the default prohibition with their exact intended scope and cases. Otherwise include the translated prohibition as the section's only content and do not add unit-test creation to any phase or `Done When`. Running existing unit tests may still appear in a relevant phase gate as a regression check.
+- Write `Done When` as a terminal completion rule for the downstream task, not as stakeholder-facing acceptance prose. It must prevent the executor from marking the task complete while any required end state or phase gate remains unproven.
 - Include all four implementation rules translated into the document language without weakening them.
 
 ## Quality Check and Handoff
 
 Before reporting completion, reread the saved file and verify that:
 
-- every requested behavior is covered by the implementation phases, validation, and acceptance prose;
+- every requested behavior is covered by the implementation phases and the `Done When` terminal rule;
 - no material choice, placeholder, TODO, or unresolved question remains;
 - dependencies, safe parallel work, and advance conditions are explicit inside the phases and internally consistent;
-- the unit-test rule matches whether the user explicitly requested unit tests;
+- `Testing Decisions` contains only the correct unit-test decision and no other validation content;
+- `Relevant evidence` is the sole evidence index and no duplicate `References` section exists;
 - no identifier catalogs, cross-reference matrices, or extra bookkeeping sections remain;
-- acceptance criteria and risks are written as narrative prose rather than tables or numbered lists;
+- every dynamic section is justified by the current problem and is not structural imitation of a reference document;
+- no decisions section repeats choices already stated in the implementation context, scope, shared contracts, or phases;
+- every rule has one canonical location, and phases reference shared contracts without restating or paraphrasing them;
+- phase-specific details have not been pulled into standalone sections without reason;
+- no standalone risk summary exists, and implementation-critical hazards appear only where they constrain a phase;
+- `Done When` clearly forbids completion until every terminal condition is proven and is written as direct prose rather than a table or list;
 - the plan does not extend beyond the request;
 - the saved path follows the required naming convention.
 
