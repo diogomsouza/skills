@@ -49,7 +49,6 @@ Keep diffs focused.
 
 Define what success means and verify it.
 - For bugs, reproduce the issue when practical, then confirm the fix.
-- For behavior changes, add or update relevant tests when appropriate.
 - Run the smallest relevant validation first, then broader checks when
   justified.
 - For tasks where automated tests are not appropriate, use another concrete
@@ -59,19 +58,3 @@ Define what success means and verify it.
 
 For multi-step or high-risk tasks, state a brief implementation plan before
 making changes.
-
-# Local Agent Instructions
-
-## Shell
-
-- Prefer PowerShell 7 for shell commands in this workspace.
-- PowerShell 7 is installed on Windows and available in the system PATH for fresh sessions.
-- Prefer `pwsh -NoLogo -NoProfile -Command '<command>'` when `pwsh` is available.
-- In stale sessions where `pwsh` is not yet visible on PATH, use `& 'C:\Program Files\PowerShell\7\pwsh.exe' -NoLogo -NoProfile -Command '<command>'`.
-- For dev server starts or commands with complex quoting, run them under PowerShell 7 explicitly if there is any doubt about the active shell.
-- Treat PowerShell as PowerShell, not bash. Avoid bash-style escaping such as `\"`, `\$(...)`, and Unix-only quoting assumptions.
-- Prefer simple `rg` commands for search. Use single quotes for literal regex patterns, for example `rg -n 'SomePattern' .`.
-- For exact string search, prefer fixed-string mode: `rg -n -F 'text to find' .`.
-- Avoid long one-line commands with complex nested quoting. Split complex searches into smaller commands instead.
-- For PowerShell cmdlets that receive filesystem paths, prefer `-LiteralPath` when paths may contain spaces or special characters.
-- If a command fails due to quoting, retry with PowerShell-compatible quoting rather than treating it as an environment or configuration problem.
