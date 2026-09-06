@@ -1,0 +1,6 @@
+interface:
+  display_name: "Astra Cortex"
+  short_description: "Specification, phase review, and resumable progress"
+  default_prompt: >-
+    Use $astra-cortex for this task; create and maintain its runtime goal, preserve the specification, track phases through review and correction, and record progress and
+    local phase checkpoints.

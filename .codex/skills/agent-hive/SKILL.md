@@ -2,7 +2,8 @@
 name: agent-hive
 description: >-
   Coordinate complex, high-risk, parallelizable, or long-running work through durable goals, bounded ownership, controlled integration, and independent verification. Use for 
-  orchestration, delegation, parallel work, or consequential changes; avoid small, low-risk, single-threaded tasks.
+  orchestration, delegation, parallel work, or consequential changes; avoid small, low-risk, single-threaded tasks. When the root runs `gpt-6-astra` or a runtime-confirmed alias,
+  use this skill only when the user explicitly invokes Agent Hive.
 ---
 
 # Agent Hive
@@ -20,6 +21,9 @@ contract detail the runtime exposes, and convert applicable review lenses into c
 dimensions, invariants, fault paths, and evidence expectations—not predicted findings, private reasoning, prior verdicts, or personality-specific instructions.
 
 ## Admit Proportionally
+
+When the root's runtime-confirmed effective model is `gpt-6-astra` or an alias resolving to it, never select or admit Agent Hive implicitly. The user must explicitly invoke Agent
+Hive by name for that run; the authorization remains valid when resuming the same run. Risk, parallelism, prior use, or another run's goal or ledger never substitutes for that invocation.
 
 Always admit when the user explicitly invokes Agent Hive. On implicit activation, use a lightweight read-only screen and admit only when at least one is true:
 

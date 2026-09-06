@@ -9,8 +9,9 @@ precedence when they conflict with these defaults.
 
 Before implementing a non-trivial change:
 - Identify assumptions that materially affect the solution.
-- If an ambiguity could lead to a substantially different implementation,
-  ask or state the interpretation being used.
+- Resolve ambiguities from the available context when possible and state
+  material assumptions. Ask only when the answer is necessary to avoid a
+  substantially wrong implementation and cannot be reasonably inferred.
 - Mention meaningful tradeoffs when multiple approaches are viable.
 - Prefer the simplest approach that satisfies the request.
 
@@ -48,13 +49,18 @@ Keep diffs focused.
 ## 4. Goal-Driven Execution
 
 Define what success means and verify it.
+- For implementation requests, carry the authorized work through implementation
+  and verification. Do not stop at a plan when execution is requested, unless
+  a concrete blocker requires user input or an external change.
 - For bugs, reproduce the issue when practical, then confirm the fix.
-- Run the smallest relevant validation first, then broader checks when
-  justified.
+- Run the smallest relevant validation first and complete required checks.
+  Once those pass, broaden or repeat validation only when new changes,
+  failures, or concrete unresolved concerns justify it.
 - For tasks where automated tests are not appropriate, use another concrete
   verification method such as build, lint, query validation, migration
   review, or manual reproduction steps.
 - Report what was verified and any checks that could not be executed.
 
 For multi-step or high-risk tasks, state a brief implementation plan before
-making changes.
+making changes. Communicating the plan does not require waiting for approval
+for work already authorized by the user.
