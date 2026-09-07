@@ -57,8 +57,9 @@ history is forbidden. Map bounded context to the host's supported mechanism, or 
 Check the launch arguments against the selected configuration. Pass overrides only where the tool permits them; honor fixed roles without incompatible overrides.
 On a runtime-reported mismatch, stop affected work, reconcile writes, and replace the invalid assignment context.
 
-Give each agent the exact requested model ID, effort, and bounded scope. Require its first commentary message on each execution, including continuation, to announce
-those three facts as assigned configuration before working. Send the configuration again with continuation prompts; do not repeat the announcement during that execution.
+Give each agent its exact runtime role name, requested model ID, effort, and bounded scope. Require its first commentary message on each execution, including
+continuation, to announce all four as assigned configuration before working. Use the selected role identifier, not a generic task label. Send these facts again with
+continuation prompts; do not repeat the announcement during that execution.
 An announcement reports the requested configuration, not verified runtime identity. Claim confirmation only from authoritative runtime metadata.
 
 ## Select Verification Before Writes

@@ -3,8 +3,8 @@
 Copy the Markdown block into the run's progress file. Keep the seven sections in this order. Use ledger.md for state transitions and cleanup. Store each fact once: goal
 in the header, specification/scope in Objective, current evidence in Current State, delegated assignments in Active Assignments, phase criteria/status in Execution Plan,
 closed outcomes in Progress Log. Use None for known-empty fields and a single None row for an empty table. Actual assignments require concrete Model / Effort values under
-ledger.md; Unknown or Unverified is allowed only for other missing facts. Add implementation
-phase rows only after P0 investigation; replace example values with actual facts. Dates include the timezone offset. Use this template only for a new run, not to reset
+ledger.md; Unknown or Unverified is allowed only for other missing facts. Add implementation phase rows as P0 investigation establishes them; replace example values with
+actual facts. Dates include the timezone offset. Use this template only for a new run, not to reset
 resumed progress.
 
 ```markdown
@@ -14,7 +14,7 @@ Goal: {actual identity or exact objective} — {actual status}
 Task: {short task name}
 Created: {actual date/time}
 Updated: {actual date/time}
-Status: In Progress
+Status: Pending
 
 ## Objective
 
@@ -27,7 +27,7 @@ Status: In Progress
 
 ## Current State
 
-- Current phases and gates: P0 — investigate and establish the execution plan
+- Current phases and gates: P0 — Pending; ledger initialized, investigation not started
 - Working set: {workspace, protected changes and relevant external state}
 - Current evidence: {goal creation or reuse evidence; reviewed content and validation references}
 - Open review/correction obligations: None
@@ -46,7 +46,7 @@ Phase status: Pending | In Progress | Done | In Review | Accepted | Blocked | No
 
 | ID | Status | Work Item | Source Coverage | Owner | Depends On | Done When | Checkpoint Plan |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| P0 | In Progress | Investigate and define phases | Objective and relevant project sources | Root | None | Scope mapped to feasible phases, dependencies and evidence | Exact specification delta, or justified skip |
+| P0 | Pending | Investigate and define phases | Objective and relevant project sources | Root | None | Scope mapped to feasible phases, dependencies and evidence | Exact specification delta, or justified skip |
 
 ## Progress Log
 
@@ -56,7 +56,7 @@ Phase status: Pending | In Progress | Done | In Review | Accepted | Blocked | No
 
 ## Next Actions
 
-1. Resolve the specification source and complete P0 investigation and review.
+1. Start P0 investigation and maintain phase status under ledger.md's common lifecycle.
 
 ## Blockers And Risks
 

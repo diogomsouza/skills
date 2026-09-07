@@ -1,11 +1,15 @@
 # Review, correction and acceptance
 
-## Reviewed content
+## Applicability and evidence
 
-Enter In Review through the phase transitions in ledger.md, including its P0 exception. Identify the exact reviewed content using Git or another reproducible method,
-including new files, deletions and relevant generated/external artifacts. Keep coordination state and unrelated user work out of implementation deltas. For P0, include
-the substantive specification and execution plan in review scope, even when the plan lives in the uncommitted progress file. Root remains responsible for conformance of
-the integrated result, not only isolated outputs.
+Exploratory work, including P0 and explorer assignments in any phase, requires no review or ACCEPT/REJECT review verdict. Consume its findings and confirm that the
+required questions, evidence and deliverables are complete. For P0, this includes specification coverage, feasible phase decomposition, dependencies and validation.
+If exploration is incomplete, return it to In Progress and finish the missing work. Use ledger.md's exploratory closure path without a review stage. An implementation
+phase containing exploration still requires review of its implementation.
+
+For phases requiring review, identify the exact reviewed content using Git or another reproducible method, including new files, deletions and relevant generated/external
+artifacts. Keep coordination state and unrelated user work out of implementation
+deltas. Root remains responsible for conformance of the integrated result, not only isolated outputs.
 
 Review an identifiable, stable snapshot. Unaffected work may continue; the entire workspace need not stop. When reviewed content or relevant dependencies change,
 invalidate affected evidence and rerun the necessary checks. Integration must preserve the validity of evidence before it can be reused. A commit of identical content or
@@ -13,11 +17,10 @@ routine ledger bookkeeping does not alone invalidate review. No bundled scripts 
 
 ## Review contract
 
-Every executed phase receives an explicit ACCEPT or REJECT decision with its scope and evidence. For P0, review specification coverage, decomposition, dependencies and
-feasible validation; do not invent implementation checks for discovery. Dispensable phases follow the justified Not Applicable rule in ledger.md instead of a fictitious
-implementation review. Perform the review directly or delegate it, according to the environment's independence requirements and your judgment. Self-review is allowed when
-those requirements permit it; implementation or a completion claim alone is not review evidence. Inspect behavior, consumers, regressions, relevant failure paths and
-requirements, not merely formatting or the changed lines.
+Every phase requiring review receives an explicit ACCEPT or REJECT decision with its scope and evidence. Dispensable phases follow the justified Not Applicable rule in
+ledger.md instead of a fictitious implementation review. Perform the review directly or delegate it, according to the environment's independence requirements and your
+judgment. Self-review is allowed when those requirements permit it; implementation or a completion claim alone is not review evidence. Inspect behavior, consumers,
+regressions, relevant failure paths and requirements, not merely formatting or the changed lines.
 
 Report a defect only when all of these hold:
 
@@ -39,9 +42,9 @@ Choose how to schedule review and correction without losing findings or mixing e
 required reviews of that snapshot or explicitly supersede it and invalidate affected pending results. Preserve unresolved findings across revisions. Unrelated work does
 not impose a mandatory wait before correction.
 
-Map remedies to scope, then move affected phases to In Progress before writes. Provide qualifying findings to the executor; choose assignment reuse or replacement as
-appropriate. After correction, repeat Done -> In Review, using P0's direct In Progress -> In Review exception for planning fixes. Review affected behavior and carry
-forward other evidence only when the delta cannot affect it.
+On a phase REJECT, apply ledger.md's correction transitions and map remedies to scope. Provide qualifying findings and missing evidence to the executor; choose assignment
+reuse or replacement as appropriate. Review affected behavior after correction and execution checks, and carry forward other evidence only when the delta cannot affect
+it. Exploratory work follows its completion path without review.
 
 Repeat until acceptance conditions pass. Persistent defects or churn require revisiting the implementation approach and assumptions, not merely repeating identical fixes.
 Before changing accepted behavior, reopen affected phases and any dependents whose guarantees or acceptance evidence are affected. Missing authority or evidence keeps the
@@ -49,15 +52,18 @@ phase open or Blocked; do not accept simply to end a correction cycle.
 
 ## Checkpoint and closure
 
-While still In Review and after review acceptance, commit exactly the phase delta where permitted. Inspect staging, preserve unrelated changes and staging, and protect
-the selected content and shared Git index from concurrent changes during the checkpoint. Choose the isolation or coordination mechanism; unrelated implementation need not
-stop. Verify that the commit matches the reviewed integrated content. If hooks or integration change it, return to the affected correction/review gates before acceptance.
+After required review passes, remain In Review for the checkpoint; exploratory phases remain Done. Commit exactly the phase delta where permitted. Inspect staging,
+preserve unrelated changes and staging, and protect the selected content and shared Git index from concurrent changes during the checkpoint. Choose the isolation or
+coordination mechanism; unrelated implementation need not stop. Verify that the commit matches the content whose required evidence passed. If hooks or integration
+change it, repeat the affected execution checks and required review before acceptance. An existing commit satisfies the checkpoint only when its exact phase delta and
+content are verified.
 Never commit the live progress folder or aggregate unrelated phases. Follow project conventions; do not push, weaken hooks or alter Git configuration to force a
 checkpoint.
 
 Record the exact commit, or justify a skip only for no Git worktree, no phase-local delta or commits prohibited by applicable instructions or permissions. Hook failures,
-conflicts and other operational errors are not justified skips. A failed commit does not close the phase. Then update Accepted, the single phase summary, current evidence
-and next actions together under ledger.md.
+conflicts and other operational errors are not justified skips. After a successful checkpoint or justified skip, close the phase under ledger.md. A failed checkpoint or
+ledger update retains the unfinished closure; record Blocked when its resolution requires an external change. Never use a commit or an agent verdict alone as proof of
+phase acceptance.
 
 After all phases close, check the cumulative result and all specification requirements. Review material cross-phase interactions not already covered; reuse valid evidence
 and rerun checks when changes, failures, unresolved concerns or applicable requirements justify it. Final assurance is a completion check, not an extra implementation

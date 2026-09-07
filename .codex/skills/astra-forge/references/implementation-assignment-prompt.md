@@ -1,7 +1,8 @@
 # Implementation Assignment
 
 ```text
-Before working, announce in commentary: "Assigned configuration: {exact requested model ID}, effort {requested effort}. Scope: {concise assignment scope}."
+Before working, announce in commentary: "Assigned role: {exact runtime role name}. Model: {exact requested model ID}. Effort: {requested effort}.
+Scope: {concise assignment scope}."
 
 Own assignment {id} in phase {phase}: {outcome and handoff condition}. Topology and write ownership: {workspace, paths or systems}. You are not alone; preserve unrelated
 edits. Dependencies and base: {accepted inputs and baseline}.

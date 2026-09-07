@@ -1,7 +1,8 @@
 # Exploration Assignment
 
 ```text
-Before working, announce in commentary: "Assigned configuration: {exact requested model ID}, effort {requested effort}. Scope: {concise assignment scope}."
+Before working, announce in commentary: "Assigned role: {exact runtime role name}. Model: {exact requested model ID}. Effort: {requested effort}.
+Scope: {concise assignment scope}."
 
 Investigate {bounded question} for phase {phase}, assignment {id}. Read-only scope: {paths or systems}. Requirements and relevant sources: {locators and sections}.
 Collection instructions: {search targets, facts to extract, and stopping condition}.

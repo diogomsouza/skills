@@ -14,12 +14,13 @@ approved scope stable; later user amendments need a dated source and a clear dis
 
 ## P0 investigation
 
-For a new run, make P0 the only active phase; this does not limit the number of discovery or planning assignments. Read the specification, project instructions, relevant
-implementation, consumers, tests, working/staged changes and external dependencies. P0 may write the progress file and required specification, but no production
-implementation.
+P0 follows ledger.md's exploratory phase lifecycle without review. It is the only phase initially available for execution; this does not limit the number of
+discovery or planning assignments. Read the available specification or original request, project instructions, relevant implementation, consumers, tests, working/staged
+changes and external dependencies. When the specification must be created, use this investigation to establish it during P0 under the source rules above. P0 may update
+the progress file and write the required specification, but no production implementation.
 
 Use that evidence to define independently acceptable phases, observable completion criteria, requirement coverage and earliest dependencies. If code investigation reveals
-a conflict with the specification, resolve it before affected implementation; do not silently change scope. Review P0 for complete coverage, feasible validation and
+a conflict with the specification, resolve it before affected implementation; do not silently change scope. Confirm complete coverage, feasible validation and
 coherent dependencies before closing it. If P0 creates the specification, checkpoint its exact delta under acceptance.md.
 
 ## Execution plan
@@ -29,7 +30,7 @@ optional validation explicitly. Keep dependencies acyclic; every implementation 
 Unassigned. Group inseparable invariants together; do not make one phase per file or agent.
 
 Refine phase decomposition as evidence changes without expanding approved scope. Record newly discovered required work in an existing or new phase before executing it,
-including its coverage, dependencies and validation. Review material planning changes and reopen affected acceptance when its supporting assumptions or evidence no longer
+including its coverage, dependencies and validation. Check material planning changes and reopen affected acceptance when its supporting assumptions or evidence no longer
 hold.
 
 Identify useful parallelism between phases and within a phase, and record dependencies or shared-write constraints that require sequencing. The executing model decides
