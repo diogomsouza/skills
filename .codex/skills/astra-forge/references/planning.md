@@ -25,7 +25,7 @@ exclusions need a reason consistent with the user's scope.
 P0 is bounded read-only discovery of implementation, consumers, tests, project instructions, existing changes, and relevant external state. Stop when remaining unknowns
 cannot change phase boundaries, dependencies, obligations, or evidence. No implementation writes precede P0 acceptance; coordination artifacts are permitted.
 
-Capture runtime topology, available roles, supported model/effort pairs, fixed configurations, context-transfer options, capacity, and lifecycle capabilities. Refresh
+Inspect runtime topology, available roles, supported model/effort pairs, fixed configurations, context-transfer options, capacity, and lifecycle capabilities. Recheck
 when these change or after resume. Unknown writer topology forbids concurrent writes.
 
 Group work by independently acceptable outcomes or a shared invariant whose parts must pass and be corrected together. Split when an outcome can start earlier, unlock

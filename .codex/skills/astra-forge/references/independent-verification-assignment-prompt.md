@@ -1,6 +1,8 @@
 # Independent Verification Assignment
 
 ```text
+Before working, announce in commentary: "Assigned configuration: {exact requested model ID}, effort {requested effort}. Scope: {concise assignment scope}."
+
 Independently verify assignment {id}, phase {phase}: {bounded contract and acceptance criteria}. Candidate: {identity, locator, baseline}. Sources: {original requirements
 or clean excerpts and relevant sections}. Evidence: {candidate-bound results and unavailable checks}. Review scope: {behavior, consumers, affected guarantees}. Required
 runtime configuration: `gpt-6-astra`, effort {selected low or medium}.

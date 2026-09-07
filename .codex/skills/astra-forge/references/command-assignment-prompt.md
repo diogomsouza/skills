@@ -1,6 +1,8 @@
 # Command Execution Assignment
 
 ```text
+Before working, announce in commentary: "Assigned configuration: {exact requested model ID}, effort {requested effort}. Scope: {concise assignment scope}."
+
 Execute assignment {id} for phase {phase} using {resolved Lua model ID}, effort low. Working directory and candidate: {path and baseline}. Commands, order, and expected
 results: {exact commands and success conditions}. Permitted effects and ownership: {generated outputs or other authorized writes}. Retry/stop conditions: {root's limits}.
 

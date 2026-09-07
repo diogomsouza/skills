@@ -14,7 +14,7 @@ method materially improves a concrete correctness problem within its declared do
 | Advanced | Sol | `gpt-5.6-sol` |
 | Astra | Astra | `gpt-6-astra` |
 
-Resolve each nickname to its runtime ID in Agent Selection, launch configurations, and assignment prompts. An alternative ID requires runtime confirmation that it
+Resolve each nickname to its runtime ID in launch configurations and assignment prompts. An alternative ID requires runtime confirmation that it
 resolves to the same model.
 
 ## Mandatory Model Routing
@@ -50,12 +50,16 @@ command-execution assignments to Lua when that provides a concrete coordination 
 Only select roles compatible with the required model and effort. A fixed role must not override this policy: use another eligible configurable role with the needed
 contract. If no compatible route exists, report the blocker; do not silently switch models, inherit the root configuration, or violate tool constraints.
 
-Record the concrete role, model, effort, context mode, and rationale in Next Actions before launch. Track confirmed executions under the [Agent Selection
-rules](progress-template.md#field-rules). Use `none` or bounded context for exploration and implementation; independent verification requires `none`. Full conversation
+Select the concrete role, model, effort, and context mode before launch. Use `none` or bounded context for exploration and implementation; independent verification
+requires `none`. Full conversation
 history is forbidden. Map bounded context to the host's supported mechanism, or supply a self-contained prompt with `none`; never invent tool parameters.
 
-Read back the selected configuration before spawning. Pass overrides only where the tool permits them; honor fixed roles without incompatible overrides. Record effective
-runtime metadata or `Unverified`. On a reported mismatch, stop affected work, reconcile writes, and replace the invalid assignment context.
+Check the launch arguments against the selected configuration. Pass overrides only where the tool permits them; honor fixed roles without incompatible overrides.
+On a runtime-reported mismatch, stop affected work, reconcile writes, and replace the invalid assignment context.
+
+Give each agent the exact requested model ID, effort, and bounded scope. Require its first commentary message on each execution, including continuation, to announce
+those three facts as assigned configuration before working. Send the configuration again with continuation prompts; do not repeat the announcement during that execution.
+An announcement reports the requested configuration, not verified runtime identity. Claim confirmation only from authoritative runtime metadata.
 
 ## Select Verification Before Writes
 
