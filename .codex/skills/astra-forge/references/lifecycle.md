@@ -68,8 +68,8 @@ Record `Complete goal and finalize ledger` in `Next Actions` and read it back. K
 completion fails, preserve the unfinished state and report the blocker; never manufacture success. Goal `blocked` updates must obey the runtime's recurrence rules.
 
 After goal completion succeeds, record its authoritative status and usage, final candidate, evidence, and risks. Set ledger status to `Ready For Final`, clear active
-ownership, and only then set `Next Actions` to `None`. Check changed portions and deliver outcome, files, validation, risks, and ledger locator. Include
-reliable goal token usage and elapsed time when available; never estimate missing metrics.
+ownership, and only then set `Next Actions` to `None`. Check changed portions and deliver outcome, files, validation, risks, and ledger locator. Include the goal's
+authoritative total token usage and human-friendly elapsed time when available, regardless of whether a token budget was configured; never estimate missing metrics.
 
 Before delivering, commit any remaining task-owned terminal ledger changes using the same commit protocol; no commit is needed if nothing changed. A completed runtime
 goal does not prove this final persistence step succeeded. On commit failure, report the pending checkpoint and retry it on resume without repeating goal completion.

@@ -24,7 +24,7 @@ If admission fails, work directly without Astra Forge artifacts. Do not infer mo
 
 ## Operating Rules
 
-- A matching runtime goal is mandatory. If its lifecycle is unavailable, unauthorized, or fails, stop the managed run; a ledger cannot substitute for it.
+- A matching runtime goal is mandatory. Create it at startup when missing; a ledger cannot substitute for it.
 - Root owns product decisions, architecture, scope, assignment contracts, integration, acceptance, goal lifecycle, and the ledger. Implementers choose technical details,
   diagnose failures, and correct their work within those boundaries. Return to root when a discovery requires changing the contract, shared architecture, or ownership.
   Independent reviewers judge evidence within their contracts; root decides the response to findings and cannot prescribe a favorable verdict.

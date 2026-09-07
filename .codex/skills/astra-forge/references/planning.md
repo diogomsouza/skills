@@ -2,12 +2,12 @@
 
 ## Start
 
-Inspect the goal tools and current goal before substantial discovery, delegation, or writes. Reuse only a matching unfinished goal. Resolve an objective conflict with the
-user. Create a missing goal only when its tool contract permits it; skill selection does not override a requirement for explicit user authorization. Set a token budget
-only when explicitly requested. If the mandatory goal cannot be established, stop and explain the exact requirement.
-
-Derive scope and observable completion evidence from the request and authoritative project sources. Use bounded Lua exploration to collect code evidence, then resolve
-technical choices as root.
+Before substantial discovery, delegation, ledger creation, or candidate writes, inspect goal-lifecycle capabilities and current goal state. Reuse an unfinished goal
+only when its objective matches the request; ask the user to resolve a conflicting unfinished goal. When no matching goal exists, derive the outcome, scope, non-scope,
+and completion evidence from the request and authoritative sources. Resolve only technical gaps needed to define the goal through bounded read-only inspection; leave
+implementation discovery and phase decomposition to P0. Ask only for material product or scope decisions that cannot be inferred from those sources, then create the goal.
+Set a token budget only when explicitly requested. If goal lifecycle is unavailable or fails, stop; preserve an existing matching ledger and record the blocker only
+when safe.
 
 Choose a unique `YYYY-MM-DD-{slug}` context ID. After goal activation:
 
@@ -57,7 +57,7 @@ Read `SKILL.md`, this reference, and the complete matching ledger. Inspect the g
 state. Then load only references governing the pending action.
 
 Reconcile durable records against authoritative sources. Treat summaries as memory, not permission. Stop for conflicting goals, ambiguous ledgers, or unreconstructable
-critical state. Recreate a missing goal only through its permitted lifecycle.
+critical state. Recreate a missing goal for the active objective.
 
 Reproduce evidence whose candidate binding, provenance, or independence is uncertain. If the goal is already complete, use the terminal recovery procedure in
 [lifecycle.md](lifecycle.md); do not restart accepted work.
