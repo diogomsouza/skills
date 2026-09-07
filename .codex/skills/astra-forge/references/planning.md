@@ -15,8 +15,8 @@ Choose a unique `YYYY-MM-DD-{slug}` context ID. After goal activation:
    concise implementation plan there from the request and project evidence.
 2. Distinguish user requirements from agent assumptions and implementation decisions. A generated plan is derived coordination material, not additional user authority.
    Preserve captured user wording; revise derived decisions as evidence changes and record the reason. Do not modify user-owned specifications without authorization.
-3. Create `.astra-forge/PLAN-PROGRESS-{context-id}.md` using the [progress template](progress-template.md), initially with only discovery phase P0. On Windows, 
-   attempt `attrib +h ".astra-cortex"` from the workspace root after folder creation; the leading dot alone does not hide it.
+3. Create `.astra-forge/PLAN-PROGRESS-{context-id}.md` using the [progress template](progress-template.md), initially with only discovery phase P0. On Windows,
+   attempt `attrib +h ".astra-forge"` from the workspace root after folder creation; the leading dot alone does not hide it.
 
 Record a concise request description and its source, specification origin and locator, scope references, and acceptance criteria. Preserve user requirements in the
 source specification rather than copying them into the ledger. Every applicable requirement must map to acceptance evidence;
