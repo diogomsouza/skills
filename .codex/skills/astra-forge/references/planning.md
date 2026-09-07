@@ -17,7 +17,8 @@ Choose a unique `YYYY-MM-DD-{slug}` context ID. After goal activation:
    Preserve captured user wording; revise derived decisions as evidence changes and record the reason. Do not modify user-owned specifications without authorization.
 3. Create `.astra-forge/PLAN-PROGRESS-{context-id}.md` using the [progress template](progress-template.md), initially with only discovery phase P0.
 
-Record the original request, specification origin and locator, scope, exclusions, and acceptance criteria. Every applicable requirement must map to acceptance evidence;
+Record a concise request description and its source, specification origin and locator, scope references, and acceptance criteria. Preserve user requirements in the
+source specification rather than copying them into the ledger. Every applicable requirement must map to acceptance evidence;
 exclusions need a reason consistent with the user's scope.
 
 ## Discover And Decompose
@@ -32,7 +33,8 @@ Group work by independently acceptable outcomes or a shared invariant whose part
 useful work, or be accepted and corrected independently. Do not split by file count, technical layer, or available agent slots alone.
 
 Map each required behavior and cross-phase guarantee to one primary phase and a resolvable source section. Give each phase its earliest dependencies and observable
-acceptance evidence. Keep future owners `Unassigned`; create assignments only when dependencies permit work. Reserve final integration phases for behavior that cannot be
+acceptance evidence in Outcome and Acceptance. Create assignments only when dependencies permit work and record responsibility in Active ownership.
+Reserve final integration phases for behavior that cannot be
 established earlier.
 
 Confirm P0 source coverage and decomposition, then close it through the [lifecycle](lifecycle.md) before dependent work.

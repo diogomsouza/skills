@@ -13,22 +13,21 @@ Check updates under Field Rules before dependent actions. Lifecycle and compacti
 ```markdown
 # Astra Forge Progress: {context-id}
 
-Goal: {runtime identity, objective, status}
+Goal: {runtime goal identity}
 Created: {timestamp}
 Updated: {timestamp}
 Status: {Pending | In Progress | Blocked | Ready For Final}
 
 ## Objective
 
-- Request: {original user request}
+- Request: {concise task description and source reference}
 - Specification: {locator; User Referenced | Captured User Plan | Generated}
-- Scope and exclusions: {authorized outcomes and boundaries}
+- Scope and exclusions: {specification reference and any additional authorized boundaries}
 - Done when: {observable result and required evidence}
-- Decisions: {material assumptions, derived decisions, and user amendments}
+- Decisions: {current execution decisions not already recorded in the specification}
 
 ## Current State
 
-- Phase and pending gate: {phase; action; governing reference}
 - Workspace and candidate: {root, baseline, identity recipe, current fingerprint}
 - Active ownership: {assignment -> runtime identity, scope, state}
 - Active contracts: {assignment -> essential constraints, review mode, pending evidence}
@@ -36,9 +35,9 @@ Status: {Pending | In Progress | Blocked | Ready For Final}
 
 ## Execution Plan
 
-| Phase | Status | Outcome | Source Coverage | Owner | Depends On | Done When |
-| --- | --- | --- | --- | --- | --- | --- |
-| P0 | In Progress | Discover and decompose | {request and sources} | Root | Objective | Scope, dependencies, evidence, and checkpoint established |
+| Phase | Status | Outcome and Acceptance | Source Coverage | Depends On |
+| --- | --- | --- | --- | --- |
+| P0 | In Progress | Define scope, dependencies, and acceptance evidence; complete phase closure | {request and sources} | Objective |
 
 ## Progress Log
 
@@ -48,7 +47,7 @@ Status: {Pending | In Progress | Blocked | Ready For Final}
 
 ## Next Actions
 
-1. {immediately executable action, owner, dependency, governing reference}
+1. {phase, immediate action, pending condition, governing reference; owner or dependency only if otherwise unclear}
 
 ## Blockers And Risks
 
@@ -75,9 +74,9 @@ Keep terminal identities, superseded candidates, and verdicts in Progress Log ra
 and resume; a timeout alone does not establish termination. Record required exceptional-selection justifications in Progress Log, linked to the assignment, before launch.
 
 Every source requirement has one primary phase. Source Coverage points to relevant sections; generated decisions remain revisable and do not acquire user authority.
-Future phases have owner `Unassigned` until assignment selection begins.
+Record assigned responsibility only in Active ownership. Consult the runtime for the goal's current status.
 
-Next Actions contains only immediate work, including goal completion until it succeeds. Reconcile stale actions against current scope and evidence before proceeding.
+Next Actions identifies the exact pending step for each actionable phase, including goal completion until it succeeds. Reconcile stale actions before proceeding.
 
 On resume, identify the exact pending gate and load its governing reference. Keep terminal candidate identity, checkpoint/evidence locators, residual risks, and goal
 usage in the final event so clearing live fields does not erase recovery evidence.
