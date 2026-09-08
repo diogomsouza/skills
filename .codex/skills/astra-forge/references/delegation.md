@@ -24,8 +24,8 @@ correction](verification.md#direct-root-correction).
 
 | Work | Required model | Effort |
 | --- | --- | --- |
-| Code/file exploration, lookup, extraction, and mechanical inspection | Lua | `low` |
-| Standalone script, build, and validation assignments | Lua | `low` |
+| Code/file exploration, lookup, extraction, and mechanical inspection | Lua | `high` |
+| Standalone script, build, and validation assignments | Lua | `high` |
 | Conventional implementation | Terra | Start at `medium` |
 | Implementation requiring elevated reasoning | Sol | Start at `medium` |
 | Exceptionally complex implementation | Astra | `low` or `medium` |
