@@ -5,7 +5,8 @@ Use `.astra-forge/PLAN-PROGRESS-{context-id}.md` for resumable state. Root alone
 Keep each fact in one home: scope in Objective, workspace and ownership in Current State, phase acceptance in Execution
 Plan, material events in Progress Log, immediate work in Next Actions, and unresolved conditions in Blockers And Risks. Do not duplicate raw outputs or agent reports.
 
-Update on material decisions, ownership changes, transitions, candidate changes, or blockers. Use a consistent timestamp for each update and its new events.
+Update on material decisions, ownership changes, transitions, candidate changes, or blockers. Use clock-derived ISO 8601 timestamps with time and UTC offset for Created,
+Updated, and Time. Preserve Created and historical times; use the same current timestamp for Updated and the new events in each update.
 Check updates under Field Rules before dependent actions. Lifecycle and compaction rules live in [lifecycle.md](lifecycle.md).
 
 ## Template
@@ -62,9 +63,11 @@ a field is not applicable. Consult available roles, models, and capacity when se
 
 Preserve the template's headings, field labels, columns, and order. Edit only affected values or rows; put all content in its designated field or section.
 Keep one blank line between headings and content and between blocks, with none inside tables. Keep each table row on one line and escape literal pipes as `\|`.
+Append log rows immediately after the table's last row, before its trailing blank line; the next section's heading is not the insertion point.
 For an empty field, retain its label and write `None`. For empty Next Actions, retain the heading and use only `None` as its content.
-After a local update, inspect only the changed portions. Check the complete structure at creation, resume, and after compaction: section order, required fields,
-table columns, and empty-section representation. Expand a local check only when it reveals a structural problem.
+After a local update, read back changed fields and rows with adjacent lines to verify placement, separators, and agreement with the phase status and pending action.
+Check the complete structure at creation, resume, after compaction, and before goal completion: section order, required fields, timestamps, table continuity and columns,
+cell limits, phase summaries, and empty-section representation. Expand other local checks only when they reveal a problem.
 
 Evidence / Result contains at most 500 characters per cell, including spaces and punctuation. Reference longer evidence by source path, command, or result identifier.
 Progress Log has no row limit before compaction; record only material events and identify their phase. After compaction, each closed phase has exactly one summary row

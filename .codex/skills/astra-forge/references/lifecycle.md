@@ -1,7 +1,8 @@
 # Phase Lifecycle And Completion
 
-Root records transitions in the [ledger](progress-template.md) before dependent work. Update state, evidence, and next actions together; check the changed portions.
-On write or readback failure, reconcile durable state before continuing.
+Execution Plan's Status column is the authority for phase state. Before each transition, root confirms the recorded prior state and the evidence for the next state.
+Update that phase row, affected Current State fields, Progress Log, and Next Actions together in the [ledger](progress-template.md). Read back under its Field Rules
+before dependent work. Describing a transition in prose does not perform it. On write or readback failure, reconcile durable state before continuing.
 
 ## Transitions
 
@@ -59,13 +60,15 @@ append new events; its next closure commit preserves both before replacing them 
 
 Final assurance follows [verification](verification.md). Before goal completion require:
 
-- every phase closed, with its checkpoint and source-coverage evidence;
+- every phase closed, with its checkpoint, one compacted summary, and source-coverage evidence;
 - final assurance passed for the current reproducible candidate;
 - all required agents terminal, ownership released, and no pending evidence or blocker;
 - limitations and residual risks ready for the user handoff.
 
-Record `Complete goal and finalize ledger` in `Next Actions` and read it back. Keep that action pending while calling the goal completion tool under its contract. If
-completion fails, preserve the unfinished state and report the blocker; never manufacture success. Goal `blocked` updates must obey the runtime's recurrence rules.
+Record `Complete goal and finalize ledger` in `Next Actions`, then check the complete ledger under Field Rules and reconcile it against the prerequisites above. Resolve
+stale states, uncompacted phase logs, or structural errors before completing the goal; do not invent past transitions or evidence to make the ledger pass.
+Keep that action pending while calling the goal completion tool under its contract. If completion fails, preserve the unfinished state and report the blocker; never
+manufacture success. Goal `blocked` updates must obey the runtime's recurrence rules.
 
 After goal completion succeeds, record its authoritative status and usage, final candidate, evidence, and risks. Set ledger status to `Ready For Final`, clear active
 ownership, and only then set `Next Actions` to `None`. Check changed portions and deliver outcome, files, validation, risks, and ledger locator. Include the goal's

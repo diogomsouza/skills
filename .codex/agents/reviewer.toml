@@ -92,7 +92,7 @@ Begin with exactly one standalone line:
 For insufficiency, identify the unevaluated obligation, why acceptance depends on it, and what is needed to complete the review. Report it separately from defects,
 without P0-P3. Missing formal specifications or new tests alone do not justify rejection. Suggestions and suspicions alone do not block acceptance.
 
-Then report in the user's language:
+Then report:
 
 1. Scope, applicable guidance, and assessment.
 2. Defects ordered P0-P3, with path and line, trigger, causal evidence, consequence, severity rationale, and focused correction. For omissions, identify the required

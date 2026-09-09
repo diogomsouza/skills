@@ -61,6 +61,8 @@ Give each agent its exact runtime role name, requested model ID, effort, and bou
 continuation, to announce all four as assigned configuration before working. Use the selected role identifier, not a generic task label. Send these facts again with
 continuation prompts; do not repeat the announcement during that execution.
 An announcement reports the requested configuration, not verified runtime identity. Claim confirmation only from authoritative runtime metadata.
+If the initial announcement is missing or incomplete, root requests the missing fields at the next interaction. This reporting omission alone does not require restarting
+the assignment or invalidate otherwise valid evidence.
 
 ## Select Verification Before Writes
 
