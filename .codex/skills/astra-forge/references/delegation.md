@@ -57,9 +57,10 @@ history is forbidden. Map bounded context to the host's supported mechanism, or 
 Check the launch arguments against the selected configuration. Pass overrides only where the tool permits them; honor fixed roles without incompatible overrides.
 On a runtime-reported mismatch, stop affected work, reconcile writes, and replace the invalid assignment context.
 
-Give each agent its exact runtime role name, requested model ID, effort, and bounded scope. Require its first commentary message on each execution, including
-continuation, to announce all four as assigned configuration before working. Use the selected role identifier, not a generic task label. Send these facts again with
-continuation prompts; do not repeat the announcement during that execution.
+Give each agent its exact runtime role name, requested model ID, effort, and launch context mode. Require its first commentary message on each execution, including
+continuation, to announce all four as assigned configuration before working. Use the selected role identifier, not a generic task label. Context reports `none` or
+`bounded` with the configured `fork_turns` value or host equivalent, not the assignment's work scope. Send these facts again with continuation prompts, retaining the
+original launch context setting; continuation does not reset the agent's own history. Do not repeat the announcement during that execution.
 An announcement reports the requested configuration, not verified runtime identity. Claim confirmation only from authoritative runtime metadata.
 If the initial announcement is missing or incomplete, root requests the missing fields at the next interaction. This reporting omission alone does not require restarting
 the assignment or invalidate otherwise valid evidence.

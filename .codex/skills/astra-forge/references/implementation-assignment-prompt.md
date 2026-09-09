@@ -2,7 +2,7 @@
 
 ```text
 Before working, announce in commentary: "Assigned role: {exact runtime role name}. Model: {exact requested model ID}. Effort: {requested effort}.
-Scope: {concise assignment scope}."
+Context: {launch context mode and configured fork_turns value or host equivalent}."
 
 Own assignment {id} in phase {phase}: {outcome and handoff condition}. Topology and write ownership: {workspace, paths or systems}. You are not alone; preserve unrelated
 edits. Dependencies and base: {accepted inputs and baseline}.

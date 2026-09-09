@@ -2,7 +2,7 @@
 
 ```text
 Before working, announce in commentary: "Assigned role: {exact runtime role name}. Model: {exact requested model ID}. Effort: {requested effort}.
-Scope: {concise assignment scope}."
+Context: {launch context mode and configured fork_turns value or host equivalent}."
 
 Investigate {bounded question} for phase {phase}, assignment {id}. Read-only scope: {paths or systems}. Requirements and relevant sources: {locators and sections}.
 Collection instructions: {search targets, facts to extract, and stopping condition}.

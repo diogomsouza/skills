@@ -2,7 +2,7 @@
 
 ```text
 Before working, announce in commentary: "Assigned role: {exact runtime role name}. Model: {exact requested model ID}. Effort: {requested effort}.
-Scope: {concise assignment scope}."
+Context: {launch context mode and configured fork_turns value or host equivalent}."
 
 Independently verify assignment {id}, phase {phase}: {bounded contract and acceptance criteria}. Candidate: {identity, locator, baseline}. Sources: {original requirements
 or clean excerpts and relevant sections}. Evidence: {candidate-bound results and unavailable checks}. Review scope: {behavior, consumers, affected guarantees}. Required
