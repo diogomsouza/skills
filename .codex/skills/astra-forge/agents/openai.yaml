@@ -1,4 +1,0 @@
-interface:
-  display_name: "Astra Forge"
-  short_description: "Astra orchestration with independent verification"
-  default_prompt: "Use $astra-forge to complete this work with a mandatory goal, bounded delegation, staged verification, and phase checkpoints."
