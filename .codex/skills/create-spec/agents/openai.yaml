@@ -2,6 +2,3 @@ interface:
   display_name: "Create Spec"
   short_description: "Create complete, implementation-ready plan specs"
   default_prompt: "Use $create-spec to create and save a complete implementation specification for this request."
-
-policy:
-  allow_implicit_invocation: false
