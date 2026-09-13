@@ -8,6 +8,7 @@ A collection of active Codex agents and skills. Reusable definitions live under 
 - `state-machine-worker`: implementation agent only when an explicit state owner, legal and forbidden transitions, ordering, durable cuts, retry, replay, rollback, recovery, or cancellation dominate correctness. Sequential scripts, ordinary schema changes, CRUD, and disposable-object rebuilds are not state machines.
 - `reviewer`: general-purpose, read-only reviewer for material code changes when independent verification is useful and no narrower specialist is a better fit. Uses GPT-5.6 Sol with high reasoning and focuses on correctness, regressions, contracts, compatibility, and high-confidence maintainability concerns.
 - `code-reviewer-security`: reviews security-sensitive and high-risk changes involving authorization, privacy, cryptography, secrets, data integrity, feature gates, installers, drivers, or trust boundaries.
+- `document-reviewer`: independently reviews documentation, specifications, plans, proposals, and guides for writing quality, coherence, ambiguity, completeness against requirements, factual grounding, and fitness for purpose. Read-only; returns `ACCEPT`, `REJECT`, or `BLOCKED`.
 - `pr-test-analyzer`: reviews behavioral test coverage and identifies concrete gaps in changed behavior, error paths, state transitions, concurrency, and integrations.
 - `silent-failure-hunter`: reviews error handling, retries, fallbacks, background work, cleanup, and recovery paths for silent or misleading failures.
 - `type-design-analyzer`: reviews materially changed domain types, public contracts, state models, serialization boundaries, and their invariants.
@@ -171,6 +172,7 @@ For ordinary low-risk work, tests, builds, lint, reproducible checks, and coordi
 - I have a concrete production-critical failure consequence that the general implementation baseline cannot cover adequately: `high-risk-code-worker`
 - I need to implement an explicit state machine or lifecycle protocol whose transitions and failure cuts dominate correctness: `state-machine-worker`
 - I want a general independent code review: `reviewer`
+- I want to review a document before handoff: `document-reviewer`
 - I want a security-sensitive review: `code-reviewer-security`
 - I want a test-gap review: `pr-test-analyzer`
 - I want an error-recovery review: `silent-failure-hunter`
@@ -220,3 +222,5 @@ For targeted review risk, select the narrow specialist instead of stacking every
 ## Usage
 
 Copy or keep `.codex/` at the root of a workspace that should load these active agents and skills. The `deprecated/` directory is archival and should not be copied as active configuration. Native roles such as `worker` and `explorer` are supplied by Codex.
+
+When calling `document-reviewer`, provide the target document, original request and confirmed decisions, intended audience and purpose, relevant sources, and applicable authoring criteria. For example, a `create-spec` workflow can pass its saved candidate specification and skill requirements for independent review before handoff. The caller owns corrections and any user clarification, and submits the revised document for review before finalizing it. The agent adapts its review to those criteria without embedding a copy of the skill's template.
