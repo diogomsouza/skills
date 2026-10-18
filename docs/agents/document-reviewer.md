@@ -74,7 +74,7 @@ documented operating constraints. Check that prerequisites and expected outcomes
 are clear. Do not edit the document or execute its recovery procedures.
 ```
 
-Both [System Spec](../skills/system-spec.md) and [Tech Spec](../skills/tech-spec.md) require independent review before handing off their current saved output. The agent also supports an explicit standalone document review.
+Both [System Spec](../skills/system-spec.md) and [Craft Spec](../skills/craft-spec.md) require independent review before handing off their current saved output. The agent also supports an explicit standalone document review.
 
 ## Source and related guides
 

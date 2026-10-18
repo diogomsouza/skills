@@ -16,7 +16,7 @@ A document's title does not decide whether this workflow applies. What matters i
 | Learn an existing feature | User guide |
 | Operate or recover a system | Operational procedure |
 | Check an existing workflow | Test documentation with actions and expected results |
-| Implement a new behavior or software change | Use [Tech Spec](tech-spec.md) instead |
+| Implement a new behavior or software change | Use [Craft Spec](craft-spec.md) instead |
 
 System documentation can discuss an existing, recently changed, or planned system. Planned capabilities must be identified as planned; documentation cannot imply that writing about a feature implemented it.
 
@@ -80,7 +80,7 @@ The handoff links the saved document, summarizes its purpose and boundaries, and
 
 - [Skill definition](../../codex/skills/system-spec/SKILL.md) — evidence, writing, save, and review requirements.
 - [Document Reviewer](../agents/document-reviewer.md) — the independent documentation-review role.
-- [Tech Spec](tech-spec.md) — specifications directing software changes.
+- [Craft Spec](craft-spec.md) — specifications directing software changes.
 - [Repository catalog](../../readme.md).
 
 <!-- Context: 2026-10-18-skills-and-agents-catalog; Created: 2026-10-18T06:38:13-03:00 -->

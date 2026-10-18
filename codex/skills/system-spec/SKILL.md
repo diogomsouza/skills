@@ -89,14 +89,14 @@ Reuse exploratory results only while the code, contracts, inputs, and relevant e
 
 ### 5. Save the document
 
-Build `context-id` as `YYYY-MM-DD-{short-kebab-slug}` using the current local date when available, otherwise UTC. The slug must be lowercase, concise, and identify the requested outcome. Use three to six meaningful words when practical.
+Build `context-id` as `{short-kebab-slug}`. The slug must be lowercase, concise, and identify the requested outcome. Use three to six meaningful words when practical.
 
-Record the context ID and `Created` timestamp in the document without requiring a particular metadata layout. Record `Created` as the current local date and time in ISO 8601 format, including seconds and an explicit UTC offset, for example `2026-09-04T09:57:00-03:00`.
+Record `Created` as the current local date and time in ISO 8601 format, including seconds and an explicit UTC offset, for example `2026-09-04T09:57:00-03:00`.
 
 Save the completed document relative to the repository root as:
 
 ```text
-docs/SPECS-{context-id}.md
+docs/SPEC-{context-id}.md
 ```
 
 Create `docs/` when it does not exist. For an explicit revision of the same active document, update that file. For a new request whose candidate filename already exists, preserve the existing file and append the smallest available numeric suffix to the slug, such as `-2`.

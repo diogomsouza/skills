@@ -1,0 +1,4 @@
+interface:
+  display_name: "Craft Spec"
+  short_description: "Specify software changes to be developed"
+  default_prompt: "Use $craft-spec to create and save an implementation specification for the software change I want to develop."

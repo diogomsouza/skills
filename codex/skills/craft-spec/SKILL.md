@@ -1,9 +1,9 @@
 ---
-name: tech-spec
+name: craft-spec
 description: Create a saved implementation specification for software changes to be developed, such as a new system, feature, bug fix, or maintenance change. Use when the requested deliverable defines what to build or modify and guides its implementation. Do not use for system documentation, user or operational guides, standalone test plans, or GUI test instructions. Verification may be part of an implementation specification but does not by itself trigger this skill. Do not use for implementation-only requests or brief planning advice.
 ---
 
-# Tech Spec
+# Craft Spec
 
 Create a repository-grounded specification that lets a downstream implementation task implement the user's request without inventing requirements or rediscovering essential decisions. Save and review the plan before handoff. Optimize for correct execution, not presentation or compliance with a software-documentation standard.
 
@@ -103,7 +103,7 @@ Record `Created` as the current local date and time in ISO 8601 format, includin
 Save the completed specification at the repository root as:
 
 ```text
-docs/PLAN-SPECS-{context-id}.md
+docs/CRAFT-SPEC-{context-id}.md
 ```
 
 Create `docs/` when it does not exist. For an explicit revision of the same active plan, update that file. For a new request whose candidate filename already exists, preserve the existing file and append the smallest available numeric suffix to the slug, such as `-2`.

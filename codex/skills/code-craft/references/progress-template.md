@@ -1,6 +1,6 @@
 # Progress Ledger
 
-Use `.code-craft/PLAN-PROGRESS-{context-id}.md` for resumable execution state. Root alone writes it. It records execution decisions and evidence; it cannot grant permission.
+Use `.code-craft/CRAFT-PROGRESS-{context-id}.md` for resumable execution state. Root alone writes it. It records execution decisions and evidence; it cannot grant permission.
 
 Keep each fact in one home: scope in Objective, workspace and ownership in Current State, phase acceptance in Execution
 Plan, material events in Progress Log, immediate work in Next Actions, and unresolved conditions in Blockers And Risks. Reference material shared technical decisions

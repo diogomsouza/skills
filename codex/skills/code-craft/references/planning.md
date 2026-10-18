@@ -15,12 +15,12 @@ For a new run, choose a unique `YYYY-MM-DD-{slug}` context ID. After creating or
 
 1. Use the user-referenced specification. If it cannot be found or read, try to locate it or recover access; do not generate a substitute. Keep only source-dependent
    work pending while that prerequisite remains unresolved. Only when no specification was supplied, capture the user's request, specified or clarified requirements,
-   scope, exclusions, and acceptance criteria in `docs/PLAN-SPECS-{context-id}.md`, preserving any user-approved conversational plan. Do not turn agent assumptions into
+   scope, exclusions, and acceptance criteria in `docs/CRAFT-SPEC-{context-id}.md`, preserving any user-approved conversational plan. Do not turn agent assumptions into
    requirements.
 2. Preserve that specification after creation, regardless of origin. Edit it only on an explicit user instruction to update that file. Record its locator, origin,
    and current authorized content identity (an immutable revision covering that content or a digest) in the ledger. Follow [Specification And Design](#specification-and-design)
    for technical additions.
-3. Create `.code-craft/PLAN-PROGRESS-{context-id}.md` using the [progress template](progress-template.md), initially with only discovery phase P0. On Windows,
+3. Create `.code-craft/CRAFT-PROGRESS-{context-id}.md` using the [progress template](progress-template.md), initially with only discovery phase P0. On Windows,
    attempt `attrib +h ".code-craft"` from the workspace root after folder creation; the leading dot alone does not hide it.
 
 Record a concise request description and its source, specification origin and locator, scope references, and acceptance criteria. Preserve user requirements in the
@@ -29,7 +29,7 @@ exclusions need a reason consistent with the user's scope.
 
 ## Specification And Design
 
-Create `docs/PLAN-DESIGN-{context-id}.md` only when implementation needs material shared decisions not already established in the specification or existing project documentation. 
+Create `.code-craft/CRAFT-DESIGN-{context-id}.md` only when implementation needs material shared decisions not already established in the specification or existing project documentation. 
 Otherwise record `Design: None` in the ledger. Maintain at most one design document per run and record its locator in the ledger.
 
 Keep assignment-local implementation details in the code; include the constraints needed to execute and validate the assignment in its contract. Those details alone

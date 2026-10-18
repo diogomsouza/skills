@@ -32,7 +32,7 @@ The repository contains **8 skills**.
 | [create-codex-instance](docs/skills/create-codex-instance.md) | Creates a separate Codex profile on Windows with a launcher, colored tray icon, and shortcuts. | [SKILL.md](codex/skills/create-codex-instance/SKILL.md) |
 | [grill-code](docs/skills/grill-code.md) | Challenges a technical plan through a focused interview grounded in the current codebase. Adapted from [grill-with-docs](https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs) by Matt Pocock. | [SKILL.md](codex/skills/grill-code/SKILL.md) |
 | [system-spec](docs/skills/system-spec.md) | Writes and independently reviews system documentation, references, and operational or user guides. | [SKILL.md](codex/skills/system-spec/SKILL.md) |
-| [tech-spec](docs/skills/tech-spec.md) | Writes and independently reviews an implementation specification for a software change. | [SKILL.md](codex/skills/tech-spec/SKILL.md) |
+| [craft-spec](docs/skills/craft-spec.md) | Writes and independently reviews an implementation specification for a software change. | [SKILL.md](codex/skills/craft-spec/SKILL.md) |
 | [test-audit](docs/skills/test-audit.md) | Gates test authoring and audits suites to remove prohibited or unjustified tests while preserving critical proof. | [SKILL.md](codex/skills/test-audit/SKILL.md) |
 
 ## Codex agents
@@ -53,14 +53,14 @@ The repository contains **6 agents**. Implementation agents perform assigned wor
 | What you need | Start here |
 | --- | --- |
 | Document the system, its context, and intended behavior | [System Spec](docs/skills/system-spec.md) |
-| Use the system documentation to create an implementation specification | [Tech Spec](docs/skills/tech-spec.md) |
+| Use the system documentation to create an implementation specification | [Craft Spec](docs/skills/craft-spec.md) |
 | Implement the technical specification with integration, verification, and checkpoints | [Code Craft](docs/skills/code-craft.md) |
 | Find unused code or improve maintainability within a defined scope | [Code Quality Review](docs/skills/code-quality-review.md) |
 | Evaluate or reduce a test suite, or decide whether a new test is justified | [Test Audit](docs/skills/test-audit.md) |
 | Apply the bundled C# and C++ formatter | [Code Formatter](docs/skills/code-formatter.md) |
 | Create a separate Windows Codex profile | [Create Codex Instance](docs/skills/create-codex-instance.md) |
 
-The main development workflow follows **System Spec → Tech Spec → Code Craft**. Start by documenting the system with System Spec. Use that document as input to Tech Spec to define the software changes and their implementation requirements. Then use Code Craft to implement the accepted technical specification, carrying the work through integration, verification, and checkpoints. The remaining skills support focused tasks such as code review, test auditing, formatting, and environment setup.
+The main development workflow follows **System Spec → Craft Spec → Code Craft**. Start by documenting the system with System Spec. Use that document as input to Craft Spec to define the software changes and their implementation requirements. Then use Code Craft to implement the accepted technical specification, carrying the work through integration, verification, and checkpoints. The remaining skills support focused tasks such as code review, test auditing, formatting, and environment setup.
 
 The agent guides explain delegated responsibilities. For example, an algorithmic core can be assigned to `complex-code-worker`, lifecycle recovery can be assigned to `state-machine-worker`, and a completed change can be independently assessed by `reviewer`. Security and document review have dedicated roles. `grok-worker` coordinates an external implementation executor and has additional runtime prerequisites.
 

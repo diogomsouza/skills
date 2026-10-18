@@ -79,7 +79,7 @@ Resume the grill-code session in docs/SPEC-2026-10-18-order-cancellation-rules.m
 and its paired docs/CONTEXT-2026-10-18-order-cancellation-rules.md.
 ```
 
-The second example illustrates explicit paths; replace them with an existing active pair. For a saved implementation specification without the dedicated grilling interview, see [Tech Spec](tech-spec.md). For explanatory system documentation, see [System Spec](system-spec.md).
+The second example illustrates explicit paths; replace them with an existing active pair. For a saved implementation specification without the dedicated grilling interview, see [Craft Spec](craft-spec.md). For explanatory system documentation, see [System Spec](system-spec.md).
 
 ## Source and related guides
 

@@ -1,8 +1,8 @@
-# Tech Spec
+# Craft Spec
 
 **Create an implementation specification that lets development proceed without rediscovering essential decisions.**
 
-Tech Spec turns a request to build or change software into a saved, repository-grounded specification. It establishes the required outcome, the behavior and contracts that must hold, the essential technical decisions, and observable evidence of completion.
+Craft Spec turns a request to build or change software into a saved, repository-grounded specification. It establishes the required outcome, the behavior and contracts that must hold, the essential technical decisions, and observable evidence of completion.
 
 The result is written for the person or agent implementing the change. It focuses on information that affects execution: what must change, where the relevant behavior lives, which constraints must be preserved, and how the finished work will be verified.
 
@@ -10,7 +10,7 @@ The result is written for the person or agent implementing the change. It focuse
 
 The skill applies to specifications for new systems, features, bug fixes, and maintenance work. Both parts matter: the user needs a software change and asks for a saved specification that guides its implementation.
 
-A request to explain an existing system, write an operations guide, or document a standalone testing procedure belongs to [System Spec](system-spec.md). An implementation-only request or brief planning question does not automatically activate Tech Spec.
+A request to explain an existing system, write an operations guide, or document a standalone testing procedure belongs to [System Spec](system-spec.md). An implementation-only request or brief planning question does not automatically activate Craft Spec.
 
 Verification can be part of an implementation specification when it establishes that the proposed change was completed correctly. That does not make every test document an implementation plan.
 
@@ -70,13 +70,13 @@ If the same request already authorized implementation, development can continue 
 ## Example requests
 
 ```text
-Use $tech-spec to specify resumable CSV imports.
+Use $craft-spec to specify resumable CSV imports.
 Inspect the current import flow, preserve its validation rules, and define
 how retries avoid duplicate records.
 ```
 
 ```text
-Use $tech-spec to prepare an implementation plan for replacing the cache backend.
+Use $craft-spec to prepare an implementation plan for replacing the cache backend.
 Document compatibility constraints, failure behavior, and completion checks.
 Do not implement it yet.
 ```
@@ -85,7 +85,7 @@ For sustained execution of an accepted plan, [Code Craft](code-craft.md) provide
 
 ## Source and related guides
 
-- [Skill definition](../../codex/skills/tech-spec/SKILL.md) — investigation, implementation planning, verification, and review.
+- [Skill definition](../../codex/skills/craft-spec/SKILL.md) — investigation, implementation planning, verification, and review.
 - [Document Reviewer](../agents/document-reviewer.md) — independent review of the saved specification.
 - [Repository catalog](../../readme.md).
 
