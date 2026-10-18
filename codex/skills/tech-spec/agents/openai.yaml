@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tech Spec"
+  short_description: "Specify software changes to be developed"
+  default_prompt: "Use $tech-spec to create and save an implementation specification for the software change I want to develop."

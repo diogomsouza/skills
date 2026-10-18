@@ -1,0 +1,96 @@
+﻿param([switch]$OpenWindowOnly)
+
+$ErrorActionPreference = 'Stop'
+$profileName = '__INSTANCE_NAME__'
+
+try {
+    $launcherRoot = $PSScriptRoot
+    $profileRoot = Split-Path -Parent $launcherRoot
+    $scriptHost = Join-Path $env:SystemRoot 'System32\wscript.exe'
+    $hiddenLauncher = Join-Path $launcherRoot 'codex-hidden.vbs'
+    $hiddenArguments = '//nologo "' + $hiddenLauncher + '"'
+    $windowsPowerShell = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = [Security.Principal.WindowsPrincipal]::new($identity)
+    $isAdmin = $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+    $identity.Dispose()
+
+    if (-not $isAdmin -or $PSVersionTable.PSEdition -ne 'Desktop' -or [Threading.Thread]::CurrentThread.ApartmentState -ne 'STA') {
+        $startParameters = @{ FilePath = $scriptHost; ArgumentList = $hiddenArguments; WindowStyle = 'Hidden' }
+        if ($OpenWindowOnly) {
+            $startParameters.ArgumentList += ' -OpenWindowOnly'
+        }
+        if (-not $isAdmin) {
+            $startParameters.Verb = 'RunAs'
+        }
+        Start-Process @startParameters
+        return
+    }
+
+    $isDefaultProfile = $false
+    $pkg = Get-AppxPackage OpenAI.Codex
+    if ($null -eq $pkg) {
+      throw 'OpenAI.Codex package was not found.'
+    }
+
+    $manifest = Get-AppxPackageManifest -Package $pkg
+    $application = $manifest.Package.Applications.Application |
+      Where-Object { $_.Id -eq 'App' } |
+      Select-Object -First 1
+
+    if ($null -eq $application -or [string]::IsNullOrWhiteSpace($application.Executable)) {
+      throw 'The main application executable was not found in the OpenAI.Codex package manifest.'
+    }
+
+    $appExe = Join-Path $pkg.InstallLocation ($application.Executable -replace '/', '\')
+    if (-not (Test-Path -LiteralPath $appExe)) {
+      throw "ChatGPT executable was not found: $appExe"
+    }
+
+    if ([System.IO.Path]::GetFileName($appExe) -ne 'ChatGPT.exe') {
+      throw "The OpenAI.Codex package manifest points to an unexpected executable: $appExe"
+    }
+
+    if (-not (Get-Command Invoke-CommandInDesktopPackage -ErrorAction SilentlyContinue)) {
+      throw 'Invoke-CommandInDesktopPackage is not available on this Windows installation.'
+    }
+
+    $desktopRoot = Join-Path $env:APPDATA 'Codex __INSTANCE_NAME__'
+    $browserDataRoot = Join-Path $desktopRoot 'web\Codex'
+    $escapedProfileRoot = $profileRoot.Replace("'", "''")
+    $escapedDesktopRoot = $desktopRoot.Replace("'", "''")
+    $escapedBrowserDataRoot = $browserDataRoot.Replace("'", "''")
+    $escapedAppExe = $appExe.Replace("'", "''")
+    $packageLaunchScript = @"
+    `$startInfo = [System.Diagnostics.ProcessStartInfo]::new()
+    `$startInfo.FileName = '$escapedAppExe'
+    `$startInfo.UseShellExecute = `$false
+    `$startInfo.Arguments = '--do-not-de-elevate --user-data-dir="$escapedBrowserDataRoot"'
+    `$startInfo.EnvironmentVariables['CODEX_HOME'] = '$escapedProfileRoot'
+    `$startInfo.EnvironmentVariables['CODEX_ELECTRON_USER_DATA_PATH'] = '$escapedDesktopRoot'
+    `$startInfo.EnvironmentVariables['CODEX_SQLITE_HOME'] = '$escapedProfileRoot'
+    [void][System.Diagnostics.Process]::Start(`$startInfo)
+"@
+    $encodedLaunchScript = [Convert]::ToBase64String(
+        [Text.Encoding]::Unicode.GetBytes($packageLaunchScript)
+    )
+
+    Invoke-CommandInDesktopPackage `
+        -PackageFamilyName $pkg.PackageFamilyName `
+        -AppId $application.Id `
+        -Command $scriptHost `
+        -Args ($hiddenArguments + ' -EncodedCommand ' + $encodedLaunchScript) `
+        -PreventBreakaway
+
+    if ($OpenWindowOnly) {
+        return
+    }
+    Add-Type -Path (Join-Path $launcherRoot 'CodexTray.cs') -ReferencedAssemblies System.Windows.Forms, System.Drawing, System.Management, System.Core
+    $profile = [CodexPerfisTray.Profile]::new($profileName, $browserDataRoot, $PSCommandPath, (Join-Path $launcherRoot 'codex.ico'), $isDefaultProfile)
+    [CodexPerfisTray.TrayApplication]::Run($profile, $windowsPowerShell, $pkg.InstallLocation)
+}
+catch {
+    Add-Type -AssemblyName System.Windows.Forms
+    [void][Windows.Forms.MessageBox]::Show($_.Exception.Message, 'Codex — ' + $profileName, 'OK', 'Error')
+    exit 1
+}

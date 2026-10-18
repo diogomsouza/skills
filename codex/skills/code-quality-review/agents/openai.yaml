@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Quality Review"
+  short_description: "Review code quality and identify unused code"
+  default_prompt: "Use $code-quality-review to review this code, prioritize unused code, and report evidence-backed findings plus a brief bullet summary by area with results and material limitations, including checks that found no issues, without editing files."

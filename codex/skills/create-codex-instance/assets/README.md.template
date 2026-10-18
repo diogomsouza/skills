@@ -1,0 +1,49 @@
+# Codex __INSTANCE_NAME__ launcher
+
+This folder contains the custom elevated launcher for the **__INSTANCE_NAME__** Codex desktop instance.
+
+## Files and data locations
+
+- `codex-elevated-restart.ps1`: starts or opens this instance and hosts its tray controller.
+- `codex-hidden.vbs`: script entry point used by shortcuts, elevation, and package activation. Windows Script Host starts PowerShell with window style `0` (hidden), before PowerShell applies its own window settings. No custom executable is required.
+- `CodexTray.cs`: the separate C# source for the tray controller; compiled in memory at launch.
+- `codex.ico`: the icon used by the custom shortcuts and tray controller.
+- `Codex __INSTANCE_NAME__.lnk`: local shortcut; another shortcut is installed in the current user's Start menu.
+- Profile data: `__PROFILE_ROOT__`.
+- Desktop data: `__DESKTOP_ROOT__`.
+- Electron browser data: `__DESKTOP_ROOT__\web\Codex`.
+
+The launcher derives the profile root from its parent directory. Keep the `launcher` folder directly inside the profile root. Moving it requires updating the shortcuts.
+
+## Launching
+
+Use **Codex __INSTANCE_NAME__** in the Start menu or the shortcut in this folder. Windows may ask for administrator consent. The launcher uses Windows PowerShell 5.1 in STA mode and runs hidden; its PowerShell process stays alive while controlling the tray icon.
+
+The installed `OpenAI.Codex` package is discovered on each launch. The app starts through `Invoke-CommandInDesktopPackage` to preserve package identity. Its command is Windows `wscript.exe` running `codex-hidden.vbs`, which starts a hidden PowerShell child. Windows Script Host and VBScript must be available. No fixed WindowsApps version path is stored. The command-line options include `--do-not-de-elevate` and this instance's `--user-data-dir`. Windows may still display UAC consent; this launcher does not suppress it.
+
+Only the child application's environment is configured:
+
+| Variable | Value |
+| --- | --- |
+| `CODEX_HOME` | `__PROFILE_ROOT__` |
+| `CODEX_SQLITE_HOME` | `__PROFILE_ROOT__` |
+| `CODEX_ELECTRON_USER_DATA_PATH` | `__DESKTOP_ROOT__` |
+
+This is a fresh profile. Sign in on first use and configure preferences inside the app. No credentials, chats, or settings are copied from another profile. Separate data directories are not a Windows security boundary: processes run as the same Windows user, and this launcher requests administrator privileges.
+
+## Tray controls
+
+The custom colored tray icon is created when this launcher runs. It is not configured to start automatically at Windows login.
+
+- **Open**, or a left click, restores the existing instance window. If the process has no usable window, the launcher asks the same profile to open a window using `-OpenWindowOnly`.
+- **Exit** focuses the matching app and requests its normal Ctrl+Q shutdown. Native confirmation dialogs remain effective; the controller does not force termination.
+
+The controller matches the main app process using its executable location and exact browser data directory. It tracks the process identity and uses a mutex to avoid duplicate controllers. When the app process exits, the controller removes its icon and exits.
+
+The packaged app may also show its own native icon. This custom icon does not recolor or replace the app's native tray icon or taskbar icon.
+
+## Troubleshooting
+
+Launch errors are shown in a message box. Confirm that the Microsoft Store Codex package is installed for the current Windows user and that `Invoke-CommandInDesktopPackage` is available in Windows PowerShell 5.1. Keep all launcher files together. If the app is already open, use **Open** to restore its window. Closing a window may leave the application running, depending on its settings; use **Exit** to request full shutdown.
+
+App updates may change internal launch behavior or supported flags. If a future update breaks launching, inspect the current package manifest and the error before changing this configuration.

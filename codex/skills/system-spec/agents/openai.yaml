@@ -1,0 +1,4 @@
+interface:
+  display_name: "System Spec"
+  short_description: "Create system documentation for any purpose"
+  default_prompt: "Use $system-spec to create and save system documentation tailored to my purpose and audience."

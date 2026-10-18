@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Craft"
+  short_description: "Coordinated implementation with independent verification"
+  default_prompt: "Use $code-craft to lead and implement this work, delegating useful parallel or specialist assignments, with a mandatory goal, staged verification, and phase checkpoints."
