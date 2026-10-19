@@ -1,6 +1,6 @@
 # Skills and Agents
 
-This repository collects the custom skills and agents I create or adapt for use across different AI tools. It currently contains the Codex collection; collections for other tools can be added as the repository grows.
+This repository collects the custom skills and agents I create or adapt for use across different AI tools. It currently contains collections for Codex and Claude Code; collections for other tools can be added as the repository grows.
 
 A **skill** defines a reusable workflow for a particular task. An **agent** defines a delegated role with its own responsibilities, boundaries, and reporting rules. Skills can guide the lead agent directly or coordinate delegated work; agent roles define how an assigned part of that work is carried out or reviewed.
 
