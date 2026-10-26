@@ -1,4 +1,4 @@
 interface:
-  display_name: "Criar instância do Codex"
-  short_description: "Cria uma instância independente com nome e cor"
-  default_prompt: "Use $create-codex-instance para criar uma nova instância do Codex, perguntando o nome e depois a cor do ícone."
+  display_name: "Create Codex Instance"
+  short_description: "Create a separate instance with a name and icon color"
+  default_prompt: "Use $create-codex-instance to create a new Codex instance, asking for its name and then its icon color."

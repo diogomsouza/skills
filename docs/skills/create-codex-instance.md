@@ -20,7 +20,7 @@ The color applies to the custom shortcuts and tray controller. The packaged appl
 
 The defined workflow uses Windows PowerShell 5.1, the installed `OpenAI.Codex` Store package, and `Invoke-CommandInDesktopPackage`. It inspects the installed package and manifest rather than storing a fixed package-version path.
 
-The hidden entry point also requires Windows Script Host and VBScript. If VBScript is unavailable, the skill explains the limitation and offers a direct PowerShell launcher with possible console flashing. Enabling Windows components or introducing a different launcher is not an automatic fallback.
+Shortcuts run `codex-elevated-restart.ps1` directly with Windows PowerShell. Elevation, package activation, and the tray controller also use PowerShell directly, without a VBScript wrapper. Launch windows are requested hidden, although a brief console flash can still occur.
 
 The launcher requests elevation. Windows still handles UAC consent, and separate data directories are not a Windows security boundary: the processes use the same Windows account.
 
@@ -38,15 +38,17 @@ Paths are derived from the current Windows user's known folders, independently o
 
 The skill checks these exact destinations for collisions. An existing profile, data directory, or shortcut is not overwritten or merged; the user selects a different name.
 
-The [launcher assets](../../codex/skills/create-codex-instance/assets/) include a PowerShell template, hidden VBScript entry point, C# tray controller, README template, and icons. Preparation happens in a staging directory before the final profile is created.
+The [launcher assets](../../codex/skills/create-codex-instance/assets/) include a PowerShell template, C# tray controller, README template, and icons. Preparation happens in a staging directory before the final profile is created.
 
 ## From preparation to first launch
 
 1. **Prepare the assets.** Substitute the validated name and paths in the templates, retain the supplied controller behavior, and prepare the selected icon.
 2. **Validate before installing.** Parse the PowerShell, check unresolved template tokens, compile the C# source for validation, and confirm the ICO can be loaded.
 3. **Install the prepared files.** Recheck collisions, create the profile and launcher directory, and write a minimal configuration.
-4. **Create and inspect shortcuts.** Both shortcuts use the hidden script entry point and the custom icon.
+4. **Create and inspect shortcuts.** A bundled PowerShell helper starts through WMI/CIM, confirms it is outside the package and running as the same user, and resolves the real Start menu Programs folder. It checks collisions, creates both shortcuts without overwrite, and reads back their properties in that same context. Both shortcuts target Windows PowerShell's `powershell.exe` with `-File` followed by the quoted path to `codex-elevated-restart.ps1`, and use the custom icon.
 5. **Launch and verify.** Unless configuration only was requested, start the local shortcut and check the main app process with the exact new browser-data path and its tray controller.
+
+Shortcut creation and file verification do not require computer use. Pinning to Start remains a separate visual step. If the helper times out, its completion is unknown; inspect the reported worker and result before retrying.
 
 If setup fails, the handoff identifies partial state. Cleanup is limited to files established to have been created by that invocation. An incomplete installation is not launched.
 

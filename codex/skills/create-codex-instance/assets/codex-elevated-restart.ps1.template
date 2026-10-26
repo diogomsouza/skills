@@ -6,10 +6,9 @@ $profileName = '__INSTANCE_NAME__'
 try {
     $launcherRoot = $PSScriptRoot
     $profileRoot = Split-Path -Parent $launcherRoot
-    $scriptHost = Join-Path $env:SystemRoot 'System32\wscript.exe'
-    $hiddenLauncher = Join-Path $launcherRoot 'codex-hidden.vbs'
-    $hiddenArguments = '//nologo "' + $hiddenLauncher + '"'
     $windowsPowerShell = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+    $powerShellArguments = '-NoProfile -NonInteractive -STA -WindowStyle Hidden -ExecutionPolicy Bypass'
+    $launcherArguments = $powerShellArguments + ' -File "' + $PSCommandPath + '"'
     $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
     $principal = [Security.Principal.WindowsPrincipal]::new($identity)
     $isAdmin = $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
@@ -23,7 +22,7 @@ try {
         if ($TrayOnly) {
             throw 'The tray controller requires elevated Windows PowerShell in STA mode.'
         }
-        $startParameters = @{ FilePath = $scriptHost; ArgumentList = $hiddenArguments; WindowStyle = 'Hidden' }
+        $startParameters = @{ FilePath = $windowsPowerShell; ArgumentList = $launcherArguments; WindowStyle = 'Hidden'; WorkingDirectory = $launcherRoot }
         if ($OpenWindowOnly) {
             $startParameters.ArgumentList += ' -OpenWindowOnly'
         }
@@ -92,20 +91,20 @@ try {
     Invoke-CommandInDesktopPackage `
         -PackageFamilyName $pkg.PackageFamilyName `
         -AppId $application.Id `
-        -Command $scriptHost `
-        -Args ($hiddenArguments + ' -EncodedCommand ' + $encodedLaunchScript) `
+        -Command $windowsPowerShell `
+        -Args ($powerShellArguments + ' -EncodedCommand ' + $encodedLaunchScript) `
         -PreventBreakaway
 
     if ($OpenWindowOnly) {
         return
     }
     # WMI creates the controller outside the caller's process tree and job.
-    # WScript supplies the hidden window style before PowerShell starts.
+    # Win32_ProcessStartup supplies the hidden window style at process creation.
     $startup = New-CimInstance -ClassName Win32_ProcessStartup -ClientOnly -Property @{
         ShowWindow = [uint16]0
         WinstationDesktop = 'WinSta0\Default'
     }
-    $controllerCommand = '"' + $scriptHost + '" ' + $hiddenArguments + ' -TrayOnly'
+    $controllerCommand = '"' + $windowsPowerShell + '" ' + $launcherArguments + ' -TrayOnly'
     $created = Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{
         CommandLine = $controllerCommand
         CurrentDirectory = $launcherRoot
