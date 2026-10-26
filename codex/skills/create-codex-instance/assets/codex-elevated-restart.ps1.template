@@ -1,4 +1,4 @@
-﻿param([switch]$OpenWindowOnly)
+﻿param([switch]$OpenWindowOnly, [switch]$TrayOnly)
 
 $ErrorActionPreference = 'Stop'
 $profileName = '__INSTANCE_NAME__'
@@ -15,7 +15,14 @@ try {
     $isAdmin = $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
     $identity.Dispose()
 
+    if ($OpenWindowOnly -and $TrayOnly) {
+        throw 'OpenWindowOnly and TrayOnly cannot be combined.'
+    }
+
     if (-not $isAdmin -or $PSVersionTable.PSEdition -ne 'Desktop' -or [Threading.Thread]::CurrentThread.ApartmentState -ne 'STA') {
+        if ($TrayOnly) {
+            throw 'The tray controller requires elevated Windows PowerShell in STA mode.'
+        }
         $startParameters = @{ FilePath = $scriptHost; ArgumentList = $hiddenArguments; WindowStyle = 'Hidden' }
         if ($OpenWindowOnly) {
             $startParameters.ArgumentList += ' -OpenWindowOnly'
@@ -57,6 +64,13 @@ try {
 
     $desktopRoot = Join-Path $env:APPDATA 'Codex __INSTANCE_NAME__'
     $browserDataRoot = Join-Path $desktopRoot 'web\Codex'
+    if ($TrayOnly) {
+        Add-Type -Path (Join-Path $launcherRoot 'CodexTray.cs') -ReferencedAssemblies System.Windows.Forms, System.Drawing, System.Management, System.Core
+        $profile = [CodexPerfisTray.Profile]::new($profileName, $browserDataRoot, $PSCommandPath, (Join-Path $launcherRoot 'codex.ico'), $isDefaultProfile)
+        [CodexPerfisTray.TrayApplication]::Run($profile, $windowsPowerShell, $pkg.InstallLocation)
+        return
+    }
+
     $escapedProfileRoot = $profileRoot.Replace("'", "''")
     $escapedDesktopRoot = $desktopRoot.Replace("'", "''")
     $escapedBrowserDataRoot = $browserDataRoot.Replace("'", "''")
@@ -85,9 +99,21 @@ try {
     if ($OpenWindowOnly) {
         return
     }
-    Add-Type -Path (Join-Path $launcherRoot 'CodexTray.cs') -ReferencedAssemblies System.Windows.Forms, System.Drawing, System.Management, System.Core
-    $profile = [CodexPerfisTray.Profile]::new($profileName, $browserDataRoot, $PSCommandPath, (Join-Path $launcherRoot 'codex.ico'), $isDefaultProfile)
-    [CodexPerfisTray.TrayApplication]::Run($profile, $windowsPowerShell, $pkg.InstallLocation)
+    # WMI creates the controller outside the caller's process tree and job.
+    # WScript supplies the hidden window style before PowerShell starts.
+    $startup = New-CimInstance -ClassName Win32_ProcessStartup -ClientOnly -Property @{
+        ShowWindow = [uint16]0
+        WinstationDesktop = 'WinSta0\Default'
+    }
+    $controllerCommand = '"' + $scriptHost + '" ' + $hiddenArguments + ' -TrayOnly'
+    $created = Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{
+        CommandLine = $controllerCommand
+        CurrentDirectory = $launcherRoot
+        ProcessStartupInformation = $startup
+    }
+    if ($created.ReturnValue -ne 0) {
+        throw ('Could not start the independent tray controller. Windows error: ' + $created.ReturnValue)
+    }
 }
 catch {
     Add-Type -AssemblyName System.Windows.Forms

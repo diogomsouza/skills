@@ -1,6 +1,6 @@
 ---
 name: create-codex-instance
-description: Create a separate Codex desktop instance on Windows, asking for its name and icon color, then configuring an isolated profile, elevated launcher, per-instance tray icon, and Start menu shortcut. Use for requests to create a new Codex instance or profile, not a new chat or Git worktree.
+description: Create a separate Codex desktop instance on Windows, asking for its name and icon color, then configuring an isolated profile, elevated launcher, per-instance tray icon, and shortcut pinned to Start. Use for requests to create a new Codex instance or profile, not a new chat or Git worktree.
 ---
 
 # Create a Codex instance
@@ -30,10 +30,12 @@ Derive paths from the current Windows user's known folders, not from `CODEX_HOME
 | Launcher files | `<profileRoot>/launcher` |
 | Desktop data | `<ApplicationData>/Codex <displayName>` |
 | Electron data | `<desktopRoot>/web/Codex` |
-| Start menu shortcut | `<Programs>/Codex <displayName>.lnk` |
+| Start menu application-list shortcut | `<Programs>/Codex <displayName>.lnk` |
 | Local shortcut | `<launcherRoot>/Codex <displayName>.lnk` |
 
 Use `[Environment]::GetFolderPath(...)` for `UserProfile`, `ApplicationData`, and `Programs`. Verify that the computed paths stay within their intended parent directories. Check only these exact destinations for collisions; do not enumerate other instances. If any destination already exists, stop and ask for another name. Never overwrite or merge an existing profile, data directory, or shortcut.
+
+For the Start menu destination, also check the real `Programs` folder in Windows File Explorer using the computer-use skill before installation. A shell running under the Codex Store package can see a redirected AppData view: a write to `Programs` may land under `<LocalApplicationData>/Packages/<PackageFamilyName>/LocalCache/Roaming/Microsoft/Windows/Start Menu/Programs`. Even `Test-Path`, directory listings, and shortcut readback from that shell can succeed while Explorer and Start cannot see the shortcut. The known-folder path alone does not prevent this redirection.
 
 ## Prepare the icon
 
@@ -61,7 +63,7 @@ Add-Type -Path $stagedCsPath -ReferencedAssemblies System.Windows.Forms, System.
 
 Validate the ICO can be loaded with `System.Drawing.Icon`. Recheck collisions immediately before installing. Create the new profile and launcher directories; copy only the prepared output. Create a minimal `config.toml` containing a comment such as `# Fresh Codex instance; preferences are configured in the app.` The application creates its databases and authentication state on first launch. Do not copy credentials, conversations, settings, plugins, or skills from any other profile.
 
-Create both shortcuts with `WScript.Shell.CreateShortcut`, using these properties:
+Create only the local shortcut at `<launcherRoot>/Codex <displayName>.lnk` with `WScript.Shell.CreateShortcut`, using these properties. Install its copy in the real Start menu folder through Explorer in the next section; do not call `CreateShortcut` or `Copy-Item` against `Programs` from the packaged process.
 
 ```powershell
 $shortcut.TargetPath = Join-Path $env:SystemRoot 'System32\wscript.exe'
@@ -73,7 +75,31 @@ $shortcut.Description = 'Open Codex ' + $displayName
 $shortcut.Save()
 ```
 
-Read back each shortcut's properties and verify the final files. Track files created during this invocation. If setup fails, report the partial state; clean up only files proven to have been created by this invocation. Never recursively delete a computed profile path without resolving it and verifying its scope. Do not launch an incomplete installation.
+Read back the local shortcut's properties and verify the final files. Track files created during this invocation, including the Start menu copy installed through Explorer. If setup fails, report the partial state; clean up only files proven to have been created by this invocation. Never recursively delete a computed profile path without resolving it and verifying its scope. Do not launch an incomplete installation.
+
+## Install the shortcut in the real Start menu folder
+
+Use the Windows computer-use skill and tools to perform the copy in the user's File Explorer. This makes Explorer perform the filesystem operation rather than a child of the packaged Codex process. Read that skill before UI automation and use its supported APIs; do not use terminal commands in Explorer or the Run dialog.
+
+1. Open the exact `launcherRoot` in Explorer and select the validated **Codex <displayName>** shortcut. Copy it using Explorer's Copy action or Ctrl+C; copy the `.lnk` itself, not its target, and do not use Paste shortcut.
+2. Navigate Explorer to the exact `Programs` known-folder path. Recheck that **Codex <displayName>.lnk** is absent in this real folder, then paste with Explorer's Paste action or Ctrl+V. If Windows reports a name collision, cancel the copy without replacing anything and report the blocker.
+3. Refresh the destination and visually verify the shortcut name and chosen icon color. Open its Properties in Explorer and verify its location is the real `Programs` folder, its target and arguments point to `wscript.exe` and this instance's `codex-hidden.vbs`, and its working directory and icon match the validated local shortcut. Do not accept a location under `Packages/.../LocalCache` as the Start menu destination.
+
+Only this verification in Explorer establishes that the Start menu shortcut was installed. Launching `explorer.exe /select,...` without observing the result, starting another PowerShell process, or elevating a helper does not establish that package redirection was avoided. Keep the local shortcut in place after copying.
+
+If Explorer automation is unavailable or the copy cannot be verified, report the Start menu installation as pending with the concrete reason. Give the manual copy steps from `launcherRoot` to `Programs`; do not silently fall back to the packaged shell or claim the shortcut is installed. Pinning is attempted only after the real-folder installation is verified.
+
+## Pin the shortcut to Start
+
+Creating the `.lnk` in `Programs` registers the shortcut in the Start application list; it does not establish that the icon appears in **Pinned**. Complete both steps by default unless the user asks to omit pinning.
+
+After validating the installed shortcuts, use the available Windows computer-use skill and tools to find the exact **Codex <displayName>** entry in Start search or All apps. Inspect its context menu and choose **Pin to Start** (localized equivalent, such as **Fixar em Iniciar**). If it already offers **Unpin from Start**, leave it pinned. Select the custom instance shortcut, not the packaged Codex app or `wscript.exe` itself.
+
+Reopen Start and visually verify the instance name and chosen icon color in the Pinned area, checking additional pinned pages or scrolling if needed. Preserve existing pins and their order; do not move the new pin to a particular position unless requested. A `.lnk` existence check, successful launch, or silent shell command is not proof of pinning.
+
+If computer-use tools are unavailable, the entry cannot be identified, or Windows does not offer the pin action, keep the valid installation and report pinning as pending with the observed reason. Give the manual action: search for **Codex <displayName>**, right-click the matching shortcut, and choose **Pin to Start**. Do not replace the user's Start layout through policy/imports, edit Start's internal databases, or introduce a custom executable to force a pin.
+
+Windows documents the user-facing pin action in [Customize the Windows Start Menu](https://support.microsoft.com/en-au/windows/experience/personalization/customize-the-windows-start-menu).
 
 ## Preserve the launcher behavior
 
@@ -89,4 +115,4 @@ Do not add Windows login autostart. The icon color applies to the custom shortcu
 
 Start the installed launcher once through its local shortcut unless the user requested configuration only. Use a hidden window for any helper process. Check for the main `ChatGPT.exe` process with the exact new `--user-data-dir`; do not count Electron child processes. Verify the controller remains alive for that process. Do not close or restart any other instance, and do not force-kill the new app as a test. If UAC or login requires user interaction, report the pending step accurately.
 
-Report the instance name, chosen color, profile path, Start menu shortcut, and checks actually performed. Mention that the user signs in on first use. Distinguish prepared files from a verified launch; never claim tray interaction was tested if only static checks ran.
+Report the instance name, chosen color, profile path, Start menu shortcut, and checks actually performed. Report the real Start menu folder installation and Start pinning separately as verified in Explorer/Start or pending; never infer either from a packaged-shell file check. Mention that the user signs in on first use. Distinguish prepared files from a verified launch; never claim tray interaction was tested if only static checks ran.

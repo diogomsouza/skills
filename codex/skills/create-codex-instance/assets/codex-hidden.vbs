@@ -10,7 +10,7 @@ command = Chr(34) & powerShell & Chr(34) & " -NoProfile -NonInteractive -STA -Wi
 Select Case WScript.Arguments.Count
     Case 0, 1
         If WScript.Arguments.Count = 1 Then
-            If WScript.Arguments(0) <> "-OpenWindowOnly" Then
+            If WScript.Arguments(0) <> "-OpenWindowOnly" And WScript.Arguments(0) <> "-TrayOnly" Then
                 Err.Raise 5, "Codex launcher", "Unsupported launcher arguments."
             End If
         End If
@@ -19,7 +19,7 @@ Select Case WScript.Arguments.Count
         End If
         command = command & "-File " & Chr(34) & files.BuildPath(launcherRoot, "codex-elevated-restart.ps1") & Chr(34)
         If WScript.Arguments.Count = 1 Then
-            command = command & " -OpenWindowOnly"
+            command = command & " " & WScript.Arguments(0)
         End If
     Case 2
         If WScript.Arguments(0) <> "-EncodedCommand" Then
