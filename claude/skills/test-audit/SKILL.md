@@ -1,6 +1,8 @@
 ---
 name: test-audit
-description: "Use before creating or changing tests, and when reviewing or auditing test suites. Audits remove prohibited or unjustified tests and validate by default; explicit report-only requests stay read-only. Prevent UI/presentation tests, redundant proof, and test-only production scaffolding."
+description: >-
+  Use before creating or changing tests, and when reviewing or auditing test suites. Audits remove prohibited or unjustified tests and validate by default; explicit
+  report-only requests stay read-only. Prevent UI/presentation tests, redundant proof, and test-only production scaffolding.
 ---
 
 # Test Audit

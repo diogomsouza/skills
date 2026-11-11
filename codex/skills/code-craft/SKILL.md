@@ -39,8 +39,9 @@ constraints. Use one orchestration workflow and a ledger dedicated to the curren
 
 ## Read On Demand
 
-Read the applicable reference before its first use. Reuse instructions already available in the current context. Reread only when the relevant instructions are unavailable 
-after context loss, the reference changed, or a concrete uncertainty requires checking the source. A new turn, phase, assignment, or tool call alone does not require rereading.
+Read the applicable reference before its first use. Reuse instructions already available in the current context. Reread only when the relevant instructions are
+unavailable  after context loss, the reference changed, or a concrete uncertainty requires checking the source. A new turn, phase, assignment, or tool call alone does not
+require rereading.
 
 Load only the sections needed for the pending action. Do not preload every reference.
 
