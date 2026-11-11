@@ -1,9 +1,11 @@
 ---
 name: code-formatter
-description: Formats C# and C++ with the bundled executable when the user explicitly requests code-formatter, by name or as $code-formatter.
+description: Formats C#, C++, TypeScript/Angular, HTML and CSS/SCSS with the bundled executable when explicitly requested as code-formatter or $code-formatter.
 ---
 
-Use this skill's `scripts/code-formatter.exe`. For "format this project", use the current project's absolute root directory: the executable discovers C# and C++ together. For an explicit file, project, solution, or directory, use that absolute target.
+Use this skill's `scripts/code-formatter.exe`. For general requests such as "format this project" or "format this solution", use the absolute root directory of the project indicated by the user, otherwise the current workspace root. A root directory includes C#, C++ and TypeScript/Angular together. Do not infer a `.sln` or `.slnx` target from the word "solution". Use a specific file only when the user explicitly names it or provides its path; explicit `.sln`, `.slnx` and `.csproj` targets cover C# only. Respect requested scope and project exclusions.
+
+Angular formatting (TypeScript, templates and styles) uses bundled Prettier and Node.js. The executable handles supported project configuration and ignore files; do not install packages, invoke Prettier separately, or create configuration files.
 
 Run once in the foreground: `code-formatter.exe format "<target>" --silent`. Never run `check`.
 
