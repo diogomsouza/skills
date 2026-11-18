@@ -15,8 +15,8 @@ For a new run, choose a unique `YYYY-MM-DD-{slug}` context ID. After creating or
 
 1. Use the user-referenced specification. If it cannot be found or read, try to locate it or recover access; do not generate a substitute. Keep only source-dependent
    work pending while that prerequisite remains unresolved. Only when no specification was supplied, capture the user's request, specified or clarified requirements,
-   scope, exclusions, and acceptance criteria in `docs/CRAFT-SPECS-{context-id}.md`, preserving any user-approved conversational plan. Do not turn agent assumptions into
-   requirements.
+   scope, exclusions, and acceptance criteria in `.code-craft/CRAFT-SPECS-{context-id}.md`. Create the directory if needed. Preserve any user-approved
+   conversational plan. Do not turn agent assumptions into requirements.
 2. Preserve that specification after creation, regardless of origin. Edit it only on an explicit user instruction to update that file. Record its locator, origin,
    and current authorized content identity (an immutable revision covering that content or a digest) in the ledger. Follow [Specification And Design](#specification-and-design)
    for technical additions.

@@ -53,7 +53,7 @@ Verification should also be assigned where its prerequisites exist. If a check r
 
 ## Save a plan that can be handed off
 
-The default output is `docs/PLAN-SPECS-{context-id}.md`, with a creation timestamp. Explicit revisions update the active document; new requests preserve colliding files by selecting an available suffix.
+New specifications are saved at `.code-craft/CRAFT-SPECS-{context-id}.md` under the repository root, with a creation timestamp. The skill creates the directory when needed and sets its Hidden attribute on Windows. Explicit revisions update the active document in place. New requests preserve existing files by selecting an available suffix.
 
 The skill chooses a structure suited to the change. Its suggested scaffold is a starting point, not a requirement to create empty sections or artificial phases. Full definitions of shared decisions live in one canonical place, with references where needed.
 

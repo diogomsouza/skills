@@ -27,8 +27,8 @@ implementation specification.
 ## Operating Contract
 
 - During specification authoring, do not implement production code, change application behavior, edit tests, or alter configuration.
-- Creating or revising the active plan file is the only intentional repository change during authoring. Safe exploratory checks may produce disposable local build or test
-  artifacts under the rules below.
+- Limit intentional repository changes to the active specification and the directory setup described in step 5. Safe exploratory checks may produce disposable local
+  build or test artifacts under the rules below.
 - If the user requested only a specification, stop after handoff. If the request explicitly includes implementation, obtain the specification's independent acceptance
   first, then continue the already-authorized implementation outside this authoring workflow without requiring another request. Preserve any explicit user checkpoint
   before implementation.
@@ -176,14 +176,10 @@ requested outcome. Use three to six meaningful words when practical.
 
 Record `Created` as the current local date and time in ISO 8601 format, including seconds and an explicit UTC offset, for example `2026-09-04T09:57:00-03:00`.
 
-Save the completed specification at the repository root as:
-
-```text
-docs/CRAFT-SPEC-{context-id}.md
-```
-
-Create `docs/` when it does not exist. For an explicit revision of the same active plan, update that file. For a new request whose candidate filename already exists,
-preserve the existing file and append the smallest available numeric suffix to the slug, such as `-2`.
+Save a new specification at `.code-craft/CRAFT-SPECS-{context-id}.md` relative to the repository root. Create `.code-craft` if missing.
+On Windows, run `attrib +h ".code-craft"` from the repository root to set the directory's Hidden attribute. On Unix-like systems the leading dot hides the directory.
+If the filename already exists for a different request, append the smallest available numeric suffix to the slug, such as `-2`.
+For an explicit revision, update the identified active specification in place, including one saved under the previous convention.
 
 ### 6. Obtain independent approval
 

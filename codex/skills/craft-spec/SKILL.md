@@ -27,8 +27,8 @@ implementation specification.
 ## Operating Contract
 
 - During specification authoring, do not implement production code, change application behavior, edit tests, or alter configuration.
-- Creating or revising the active plan file is the only intentional repository change during authoring. Safe exploratory checks may produce disposable local build or test
-  artifacts under the rules below.
+- Limit intentional repository changes to the active specification and the directory setup described in step 5. Safe exploratory checks may produce disposable local
+  build or test artifacts under the rules below.
 - If the user requested only a specification, stop after handoff. If the request explicitly includes implementation, obtain the specification's independent acceptance
   first, then continue the already-authorized implementation outside this authoring workflow without requiring another request. Preserve any explicit user checkpoint
   before implementation.
@@ -63,9 +63,8 @@ references beside the implementation instructions they support, following the re
 - When necessary to establish a design premise, run focused, safe exploratory checks such as existing tests, a local build, or a disposable reproduction. Inspect
   prerequisites and side effects first; use local or isolated resources and do not mutate application source, configuration, shared data, or live systems. Record relevant
   observations and limitations beside the decisions they support. Defer checks that require the proposed implementation until that implementation exists.
-- When the investigation is broad enough to benefit from delegation and an explorer agent is available, delegate a read-only, bounded fact-gathering task. Configure that
-  explorer to **use the most cost-efficient suitable model**; its role is to locate and report evidence, not to perform the specification's reasoning or make product,
-  architecture, or scope decisions.
+- When a broad investigation benefits from delegation, give an available explorer a bounded, read-only fact-gathering task. Prefer the lowest-cost suitable model
+  available for that assignment. Keep the inherited model when the runtime offers no suitable lower-cost option. The author retains product, architecture, and scope decisions.
 - The root agent owns all analysis of the explorer's return. Review the reported paths, symbols, current behavior, conflicts, and unknowns; verify material claims against
   the repository; resolve contradictions; and decide how the evidence affects the specification. Never adopt the explorer's conclusions without this root-agent analysis.
 - Research the internet only when current or external authoritative information is necessary to design the requested change. Prefer primary documentation, record the
@@ -176,14 +175,10 @@ requested outcome. Use three to six meaningful words when practical.
 
 Record `Created` as the current local date and time in ISO 8601 format, including seconds and an explicit UTC offset, for example `2026-09-04T09:57:00-03:00`.
 
-Save the completed specification at the repository root as:
-
-```text
-docs/CRAFT-SPEC-{context-id}.md
-```
-
-Create `docs/` when it does not exist. For an explicit revision of the same active plan, update that file. For a new request whose candidate filename already exists,
-preserve the existing file and append the smallest available numeric suffix to the slug, such as `-2`.
+Save a new specification at `.code-craft/CRAFT-SPECS-{context-id}.md` relative to the repository root. Create `.code-craft` if missing.
+On Windows, run `attrib +h ".code-craft"` from the repository root to set the directory's Hidden attribute. On Unix-like systems the leading dot hides the directory.
+If the filename already exists for a different request, append the smallest available numeric suffix to the slug, such as `-2`.
+For an explicit revision, update the identified active specification in place, including one saved under the previous convention.
 
 ### 6. Obtain independent approval
 
@@ -256,11 +251,11 @@ Express this in whatever concise form makes completion unambiguous.]
 
 - Deliver the specified behavior and preserve binding contracts, constraints, and scope. Resolve local implementation choices using repository conventions.
 - Preserve unrelated user changes and avoid unrelated refactors or formatting.
-- When code evidence contradicts an incidental technical detail, adapt within those boundaries and record consequential adjustments in the plan. If a gap or conflict
-  admits plausible interpretations with materially different behavior, contracts, data effects, or permission boundaries, ask before choosing unless applicable context
+- When code evidence contradicts an incidental technical detail, adapt within those boundaries and report consequential adjustments in the implementation handoff.
+  If a gap or conflict admits plausible interpretations with materially different behavior, contracts, data effects, or permission boundaries, ask unless applicable context
   resolves the decision or the user delegated it. Present evidence, impact, viable choices, and a recommendation. Pause the affected work while continuing independent
   authorized work.
-- Do not treat a recommendation as authorization. Incorporate the user's answer and revise the plan when the approved direction changes it.
+- Apply the user's decision to the implementation. Edit the accepted specification only when the user explicitly requests a revision.
 ```
 
 ### Completion Guidance
