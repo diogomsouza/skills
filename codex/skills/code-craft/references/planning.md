@@ -67,7 +67,8 @@ under [Start](#start) and [Specification And Design](#specification-and-design).
 Inspect runtime topology, available roles, supported model/effort pairs, fixed configurations, context-transfer options, capacity, and lifecycle capabilities. Recheck
 when these change or after resume. Unknown writer topology forbids concurrent writes.
 
-Root defines the solution design: affected component responsibilities, dependency direction, interfaces, and what to reuse, adapt, separate, or create. Locate shared
+Apply [Model Selection](delegation.md#model-selection) to design work during P0. Root owns the resulting solution design, including
+affected component responsibilities, dependency direction, interfaces, and what to reuse, adapt, separate, or create. Locate shared
 behavior according to those responsibilities and identify how existing consumers will integrate with it. Resolve structural decisions before fixing the corresponding
 assignment boundaries. When an experiment is needed, P0 defines it and marks only the dependent design and decomposition as provisional. Root finalizes those decisions
 from the result before releasing dependent implementation. Maintain technical additions under [Specification And Design](#specification-and-design). A requirements

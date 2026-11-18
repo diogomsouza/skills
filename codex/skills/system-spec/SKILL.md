@@ -180,6 +180,9 @@ Keep the full definition of each rule or fact in one canonical location and refe
 affected procedure, particularly when a reader may consult it independently. Keep reminders consistent with the canonical definition; do not duplicate entire contracts or
 maintain competing versions. Put shared concepts where they are easiest to consult and specific detail beside the subject it explains.
 
+When revising a document, rewrite the affected passages in place so they read as if the change had been part of the original text. Include change history only when
+the document's purpose calls for it.
+
 ### Completion Guidance
 
 After checking factual completeness and before submitting for independent review, apply an editorial pass to improve clarity and remove unnecessary wording, not to

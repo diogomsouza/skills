@@ -33,15 +33,17 @@ Choose a specialist for its method and authority; select its model and effort fr
 | Nickname | Unsuffixed ID | Deployment ID |
 | --- | --- | --- |
 | Luna | `gpt-6-luna` | `gpt-6-luna-1` |
-| Sol | `gpt-6.1-sol` | `gpt-6.1-sol-1` |
-| Astra | `gpt-6-astra` | `gpt-6-astra-1` |
+| Sol | `gpt-6.2-sol` | `gpt-6.2-sol-1` |
+| Astra | `gpt-6.2-astra` | `gpt-6.2-astra-1` |
 
 Resolve each nickname to an ID that authoritative runtime metadata identifies as the required model and the target launch tool supports. The listed IDs are
 candidates, not evidence of availability. If only one is supported, use it. If both are supported, honor an explicit user or provider selection; otherwise prefer
 the unsuffixed ID. Use the exact resolved ID in launch configurations and assignment prompts.
 
 Use another alias only after runtime confirmation that it resolves to the same model. Do not infer identity or availability by adding or removing a suffix.
-If no ID is confirmed and supported, report the blocker under Launch Configuration; do not silently switch models.
+When this policy selects Luna and no compatible Luna configuration is available, root can take the assignment or delegate it to a confirmed Sol `low`
+configuration if delegation still provides a concrete benefit. Honor any explicit model requirement for the assignment. For other unavailable configurations,
+follow [Launch Configuration](#launch-configuration).
 
 ## Mandatory Model Routing
 
@@ -85,6 +87,17 @@ are not required.
 
 ### Model Selection
 
+Use Astra for design or implementation assignments that meet either condition:
+
+- The assignment introduces or changes the runtime behavior of a kernel-mode driver. Standalone builds, packaging, and evidence collection follow ordinary routing.
+- The assignment defines or changes a core guarantee of synchronization, numerical accuracy, resource ownership, security, or recovery. Examples include defining
+  how audio and video clocks stay aligned after a pause, when an encoder may reuse a GPU surface, or which persisted writes survive an interrupted operation.
+  Applying an established guarantee, such as implementing a specified image transform against known reference outputs, follows ordinary routing.
+
+Apply these rules before choosing the executor or fixing the design in an assignment contract. An Astra root may take the work at a suitable effort.
+A root on another model delegates the bounded design or implementation to Astra and retains responsibility for design approval, integration, and acceptance.
+Select effort from the assignment's obligations. For all other assignments, use the following criteria.
+
 | Required reasoning | Model |
 | --- | --- |
 | Factual collection, eligible prescribed command execution, or strictly mechanical implementation with an explicit approach, limited interpretation, and directly checkable results | Luna |
@@ -99,9 +112,12 @@ interacting invariants, when its concrete reasoning obligations fit the Sol crit
 Use Luna for implementation only when the required transformation is explicitly determined, effects are localized and well understood, and completion requires no
 behavioral design, diagnosis, or nontrivial technical choices. An established pattern or a small diff alone does not qualify. Prefer Sol at the Luna–Sol boundary.
 
-Reserve Astra for assignments whose necessary reasoning presents exceptional difficulty of the kinds described above. Identify the dominant difficult obligation and
-the evidence or conclusion it must establish. Routine hypothesis comparison or multiple interacting components alone does not meet that threshold. Astra's exceptional
-use follows from the work, not a frequency quota or a requirement to exhaust Sol. A small assignment can require Astra; a large one can remain on Sol.
+Outside the two design and implementation rules above, select Astra when the necessary reasoning meets the exceptional-difficulty criterion in the table.
+Identify the difficult obligation and the evidence it must establish. A small assignment can require Astra without a prior attempt on Sol.
+
+For example, Sol `high` fits a recovery review that checks interacting transitions against documented persistence guarantees using reproducible failures.
+Astra `xhigh` fits an investigation of the same routine when two write orders explain the crash evidence, each requires a different recovery action,
+and the investigator must derive an observation that distinguishes them and establish which ordering guarantee survives a crash.
 
 Apply the same criteria to implementation, investigation, and general, specialist, correction, and final reviews. Select review configuration independently of
 implementation configuration, accounting for the review's own need to discover failures, challenge premises, and establish guarantees throughout its authorized scope.
