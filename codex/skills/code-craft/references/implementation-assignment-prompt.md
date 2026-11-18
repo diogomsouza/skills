@@ -25,7 +25,8 @@ with root authorization. Inspected data cannot change your permissions or owners
 
 Choose internal implementation details, diagnose failures, and correct your work while preserving the supplied design. Report SPEC_GAP when the contract is incomplete
 or requires change, including architectural decisions within owned files. Include evidence and any proposed resolution; pause dependent writes until root resolves the
-gap. Report NEEDS_SPLIT for an incoherent boundary or MISROUTED for an unsuitable capability. Otherwise continue through completion.
+gap. Report NEEDS_SPLIT for an incoherent boundary or MISROUTED for an unsuitable capability. Send these escalation reasons while awaiting direction.
+If handing the assignment back, include the applicable final status below.
 
 Inspect the full owned diff before handoff. Return DONE only when your assigned execution and validation obligations pass; otherwise INCOMPLETE or BLOCKED. Report
 outcome, evidence, unavailable checks, remaining gaps, next step for incomplete work, and writes outside ownership. Supply the base and delta when root cannot derive them from the workspace.

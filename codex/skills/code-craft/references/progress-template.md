@@ -43,7 +43,7 @@ Status: {Pending | In Progress | Blocked | Ready For Final}
 
 | Phase | Status | Outcome and Acceptance | Source Coverage | Depends On |
 | --- | --- | --- | --- | --- |
-| P0 | In Progress | Define scope, source coverage, dependencies, and acceptance evidence; Root Evidence: source coverage and decomposition checks | {request and sources} | Objective |
+| P0 | In Progress | Define scope, source coverage, dependencies, and acceptance evidence. Initial mode for discovery alone: Root Evidence. | {request and sources} | Objective |
 
 ## Progress Log
 

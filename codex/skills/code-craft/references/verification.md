@@ -11,8 +11,10 @@ Independent phases may write only outside the frozen candidate and any dependenc
 design document unchanged. If the candidate covers the whole product, pause all product writers for the review. Do not narrow required coverage to keep writers running.
 
 Record the workspace, review scope, and baseline in Current State, using existing project revision or artifact references when available. This skill does not require
-an additional candidate digest. Inspect the diff and relevant files, including untracked files and required ignored outputs, before review and acceptance. On resume,
-check for changes before reusing evidence. Project-required integrity checks remain applicable.
+an additional candidate digest. Inspect the diff and relevant files, including untracked files and required ignored outputs, before review and acceptance.
+On resume, reuse a verdict when an immutable reference or a reproducible comparison establishes that the content covered by that review still matches the
+reviewed version. A base commit alone identifies only committed inputs. When equality cannot be established, repeat the affected review and retain evidence
+for independently verified, unchanged scopes. Project-required integrity checks remain applicable.
 
 ## Review A Phase
 
@@ -56,7 +58,8 @@ of subsequent changes.
 Keep each selected verifier on the same review assignment throughout the phase, including scope updates, corrections, reopening, and closure. Reassess the review
 configuration under [delegation](delegation.md#mandatory-model-routing) when discoveries materially change reasoning difficulty, uncertainty, coupled guarantees, or
 required verification depth. Preserve the assigned reviewer when its configuration remains suitable; replace it only if unavailable, incompatible with the required
-role/configuration, or no longer independent. Replacements follow the same independence rules as new review assignments. A rejection alone does not justify changing
+role/configuration, or no longer independent. Give a replacement the outstanding requirement, the current candidate and the reproducible scenario or relevant
+evidence gap. Withhold the previous reviewer's report, verdict and predicted conclusion under the fresh-review rules. A rejection alone does not justify changing
 the model or effort, and a configuration change does not reduce required review coverage.
 
 Continue while the next correction has scope, authority, and checkable evidence. If a guarantee fails again after a correction attempt, findings recur across its callers

@@ -15,7 +15,7 @@ For a new run, choose a unique `YYYY-MM-DD-{slug}` context ID. After creating or
 
 1. Use the user-referenced specification. If it cannot be found or read, try to locate it or recover access; do not generate a substitute. Keep only source-dependent
    work pending while that prerequisite remains unresolved. Only when no specification was supplied, capture the user's request, specified or clarified requirements,
-   scope, exclusions, and acceptance criteria in `docs/CRAFT-SPEC-{context-id}.md`, preserving any user-approved conversational plan. Do not turn agent assumptions into
+   scope, exclusions, and acceptance criteria in `docs/CRAFT-SPECS-{context-id}.md`, preserving any user-approved conversational plan. Do not turn agent assumptions into
    requirements.
 2. Preserve that specification after creation, regardless of origin. Edit it only on an explicit user instruction to update that file. Record its locator, origin,
    and current authorized content identity (an immutable revision covering that content or a digest) in the ledger. Follow [Specification And Design](#specification-and-design)
@@ -67,7 +67,9 @@ under [Start](#start) and [Specification And Design](#specification-and-design).
 Inspect runtime topology, available roles, supported model/effort pairs, fixed configurations, context-transfer options, capacity, and lifecycle capabilities. Recheck
 when these change or after resume. Unknown writer topology forbids concurrent writes.
 
-Apply [Model Selection](delegation.md#model-selection) to design work during P0. Root owns the resulting solution design, including
+Apply [Model Selection](delegation.md#model-selection) during P0. When the design requires Astra and root uses another model, assign Astra
+read-only [analytical exploration](exploration-assignment-prompt.md) to propose the design and the evidence needed to validate it. Root decides whether to
+approve the proposal before releasing dependent implementation. Root owns the resulting solution design, including
 affected component responsibilities, dependency direction, interfaces, and what to reuse, adapt, separate, or create. Locate shared
 behavior according to those responsibilities and identify how existing consumers will integrate with it. Resolve structural decisions before fixing the corresponding
 assignment boundaries. When an experiment is needed, P0 defines it and marks only the dependent design and decomposition as provisional. Root finalizes those decisions
@@ -84,12 +86,13 @@ under [Select The Executor](delegation.md#select-the-executor), and record respo
 Reserve final integration phases for behavior that cannot be established earlier. When independent final review is needed, assign it to that phase if its scope fits,
 or create a dedicated final-assurance phase under [Final Assurance](verification.md#final-assurance). A root coverage check using valid evidence needs no additional phase.
 
-For work whose correctness depends on ordering, durable state, or recovery, root defines the governing states, permitted transitions, partial effects, and evidence
+For work whose correctness depends on ordering, durable state, or recovery, root records the approved states, permitted transitions, partial effects, and evidence
 authorizing continuation or compensation in the applicable assignment contract, including interruption during recovery and affected callers. Reference existing
 definitions; record new material shared decisions in the design document only under [Specification And Design](#specification-and-design). Local transition details
 stay in the contract and code. Unresolved platform behavior remains an explicit prerequisite, not an assumed guarantee.
 
-Confirm P0 source coverage and decomposition, then close it through the [lifecycle](lifecycle.md) before dependent work.
+Before accepting P0, confirm source coverage and decomposition and select the verification mode for its actual outputs. Use independent review when accepting
+a design requires substantive judgment. Close P0 through the [lifecycle](lifecycle.md) before dependent work.
 
 ## Scope And Changes
 
@@ -109,7 +112,8 @@ Inspect the current goal, complete matching ledger, workspace, agent identities 
 instructions under `SKILL.md`'s Read On Demand rule, then load only the references governing the pending action. Revalidate execution state even when the governing 
 instructions remain available.
 
-Read the specification sections governing the pending work, effective user amendments, and, when a design document exists, its relevant sections and dependencies
+Use the specification locator already recorded in the ledger, including for older filenames. Read the sections governing the pending work, effective user
+amendments, and, when a design document exists, its relevant sections and dependencies
 before reconstructing assignments or making design decisions. Read the complete design only when the affected scope cannot be determined or a cross-cutting change
 requires it. Reuse the recorded design locator. With `Design: None`, recover applicable constraints from existing sources and assignment contracts; resuming alone
 does not justify creating a design document.

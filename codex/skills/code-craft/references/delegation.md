@@ -119,8 +119,8 @@ For example, Sol `high` fits a recovery review that checks interacting transitio
 Astra `xhigh` fits an investigation of the same routine when two write orders explain the crash evidence, each requires a different recovery action,
 and the investigator must derive an observation that distinguishes them and establish which ordering guarantee survives a crash.
 
-Apply the same criteria to implementation, investigation, and general, specialist, correction, and final reviews. Select review configuration independently of
-implementation configuration, accounting for the review's own need to discover failures, challenge premises, and establish guarantees throughout its authorized scope.
+For every review, including a kernel-driver review, select the model and effort independently using the review's own reasoning and evidence obligations.
+An Astra implementation may receive a Sol review when established checks and methods suffice, or an Astra review when the exceptional-difficulty criterion applies.
 
 ### Effort Selection
 
@@ -195,9 +195,9 @@ confirmed defect is not a prerequisite for selecting the review. Read available 
 and evidence obligations. Do not infer hidden instructions; missing internals block only when eligibility or coverage cannot otherwise be established.
 
 Escalate the recorded phase obligations and affected contracts after new risk, missing evidence, or consumer impact appears. Do not relax applicable obligations after
-material writes to accommodate difficulty, cost, or rejection. Only root may remove or revise an obligation introduced by a disproven premise, after recording the
-premise, the evidence that disproves it, and the corrected contract in the ledger. Preserve authoritative requirements and all still-applicable guarantees; notify
-affected agents before dependent work resumes.
+material writes to accommodate difficulty, cost, or rejection. Only root may narrow or remove an obligation when evidence disproves its premise or an explicit user
+amendment changes the requirement it covers. Record the evidence or amendment source and update the affected obligations and contracts in the ledger.
+Preserve all still-applicable guarantees and notify affected agents before dependent work resumes.
 Reusing valid, unaffected evidence under [verification](verification.md#correct-and-revalidate) does not de-escalate those obligations. Serialize required review when capacity is limited.
 
 ## Build The Contract
@@ -255,7 +255,8 @@ Before transferring ownership, obtain the prior writer's explicit release or con
 then record the new owner and notify any continuing agent before writes resume. Disjoint ownership does not override an active [candidate freeze](verification.md#bind-evidence-to-the-candidate).
 
 Each delegated executor carries out only the work authorized by its contract and returns evidence. Report `SPEC_GAP` when a discovery requires a contract change, `NEEDS_SPLIT` for an
-incoherent boundary, or `MISROUTED` for an unsuitable capability. Pause only dependent work; root decides and updates the contract. Implementers continue local diagnosis and
+incoherent boundary, or `MISROUTED` for an unsuitable capability. These signals request a root decision. Keep the assignment open while awaiting direction or
+include its final execution status when handing it back. Pause only dependent work. Root decides and updates the contract. Implementers continue local diagnosis and
 corrections that preserve their contract boundaries.
 
 Reassess executor, model, and effort when discoveries materially change reasoning difficulty, uncertainty, coupled guarantees, or required verification depth. Preserve

@@ -15,5 +15,6 @@ Return findings in your response without creating files. Return DONE when the in
 Include requested facts or conclusions, source locations, relevant excerpts, unresolved questions, and any out-of-scope effects. Distinguish observations, inferences,
 and uncertainty. Under a collection-only contract, do not choose a root cause, design, correction, or phase plan; root interprets the evidence. Under an analytical
 contract, evaluate hypotheses and draw only the conclusions required by the assignment; return proposed design, scope, or correction decisions to root.
-Report SPEC_GAP for a required contract change or MISROUTED when the required reasoning exceeds the assigned capability. Stop at the stated investigation boundary.
+Report SPEC_GAP for a required contract change or MISROUTED when the required reasoning exceeds the assigned capability. Send the reason while awaiting direction
+or include it with the final status when handing the assignment back. Stop at the stated investigation boundary.
 ```
